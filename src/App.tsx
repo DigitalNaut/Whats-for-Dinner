@@ -11,7 +11,7 @@ function App() {
     to: async (
       next: (
         prop: Object,
-        settings?: SpringConfig,
+        settings: SpringConfig,
         config?: SpringConfig
       ) => Promise<void>
     ) => {

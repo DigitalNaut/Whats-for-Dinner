@@ -10,8 +10,7 @@
   border: solid red 10px,
 }
 
-@media (prefers-reduced-motion: no-preference) {
-}
+@media (prefers-reduced-motion: no-preference) {}
 
 .App-header {
   background-color: #282c34;
