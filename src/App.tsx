@@ -1,29 +1,19 @@
 import logo from "./logo.svg";
 import "./App.css";
-import { SpringConfig, useSpring, animated, config } from "react-spring";
+import { useSpring, animated, config } from "react-spring";
 
 function App() {
   const spinFade = useSpring({
+    config: { duration: 3000 },
     from: {
       opacity: 1,
       rotate: "0deg",
     },
-    to: async (
-      next: (
-        prop: Object,
-        settings: SpringConfig,
-        config?: SpringConfig
-      ) => Promise<void>
-    ) => {
+    to: async (next: (prop: Object) => Promise<void>) => {
       while (true) {
-        await next(
-          {
-            rotate: "360deg",
-            opacity: 1,
-          },
-          { duration: 3000 },
-          config.stiff
-        );
+        await next({
+          rotate: "360deg",
+        });
       }
     },
     reset: true,
