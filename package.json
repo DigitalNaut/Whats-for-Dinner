@@ -3,28 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.11.9",
-    "@testing-library/react": "^11.2.5",
-    "@testing-library/user-event": "^12.8.3",
-    "@types/jest": "^26.0.21",
-    "@types/node": "^12.20.6",
-    "@types/react": "^17.0.3",
-    "@types/react-dom": "^17.0.2",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-scripts": "4.0.3",
-    "react-spring": "^8.0.27",
-    "typescript": "^4.2.3",
-    "web-vitals": "^1.1.1"
+    "@types/jest": "^29.2.0",
+    "@types/node": "^18.11.7",
+    "@types/react": "^18.0.24",
+    "@types/react-dom": "^18.0.8",
+    "@types/testing-library__jest-dom": "^5.14.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.8.4",
+    "web-vitals": "^3.0.4"
   },
   "scripts": {
-    "build:tailwind": "tailwind build src/tailwind.css -o src/tailwind.output.css",
-    "watch:tailwind": "chokidar 'src/**/*.css' 'src/**/*.scss' --ignore src/tailwind.output.css -c 'npm run build:tailwind'",
-
-    "start": "npm-run-all build:tailwind --parallel watch:tailwind start:react",
-    "start:react": "react-scripts start",
-    
-    "prebuild": "run-s build:tailwind",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -48,11 +39,11 @@
     ]
   },
   "devDependencies": {
-    "autoprefixer": "^10.2.5",
-    "chokidar-cli": "^2.1.0",
-    "npm-run-all": "^4.1.5",
-    "postcss": "^8.2.8",
-    "postcss-loader": "^5.2.0",
-    "tailwindcss": "^2.0.4"
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.4.3",
+    "autoprefixer": "^10.4.13",
+    "postcss": "^8.4.18",
+    "tailwindcss": "^3.2.1"
   }
 }
