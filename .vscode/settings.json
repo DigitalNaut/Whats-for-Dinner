@@ -1,0 +1,15 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "cSpell.words": [
+    "ecma",
+    "firefox",
+    "pnpx",
+    "tailwindcss",
+    "TTFB",
+    "typecheck"
+  ],
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  }
+}
