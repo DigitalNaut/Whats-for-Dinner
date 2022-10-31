@@ -1,4 +1,4 @@
-import { ReactComponent as Chopsticks } from './assets/chopsticks.svg';
+import { ReactComponent as Chopsticks } from "./assets/chopsticks.svg";
 
 function App() {
   return (
@@ -8,8 +8,10 @@ function App() {
       before:bg-transparent-geometry before:inset-0 before:absolute before:bg-repeat before:bg-top before:rounded-[inherit] before:pointer-events-none"
     >
       <header className="flex flex-col">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bangers [text-shadow:1px_2px_0px_rgba(245,158,11,1)]">¿Qué para comer?</h1>
-        <Chopsticks className='w-full' />
+        <h1 className="font-bangers text-4xl sm:text-5xl md:text-6xl [text-shadow:1px_2px_0px_rgba(245,158,11,1)]">
+          ¿Qué para comer?
+        </h1>
+        <Chopsticks className="w-full" />
         <p className="text-amber-500">Building a brand new app</p>
       </header>
     </div>

@@ -17,7 +17,7 @@ module.exports = {
       fontFamily: {
         bangers: ["Bangers", "cursive"],
         montserrat: ["Montserrat", "sans-serif"],
-      }
+      },
     },
     screens: {
       xs: "360px",
