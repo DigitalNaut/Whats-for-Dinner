@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        "transparent-geometry": "url('/src/assets/transparent-geometry.png')",
+        "transparent-geometry": "url('/src/assets/transparent-geometry.svg')",
       },
       colors: {
         primary: "var(--color-primary)",
@@ -16,6 +16,7 @@ module.exports = {
       },
       fontFamily: {
         bangers: ["Bangers", "cursive"],
+        montserrat: ["Montserrat", "sans-serif"],
       }
     },
     screens: {

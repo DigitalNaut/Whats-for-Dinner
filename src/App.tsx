@@ -1,15 +1,16 @@
+import { ReactComponent as Chopsticks } from './assets/chopsticks.svg';
+
 function App() {
   return (
     <div
-      className="text-white text-center bg-gradient-to-br from-fuchsia-700 to-violet-800 shadow-lg
-      rounded-lg p-12 max-w-screen-md w-screen h-full relative overflow-hidden
-      after:bg-transparent-geometry after:z-10 after:inset-0 after:absolute"
+      className="text-white text-center bg-gradient-to-br from-[#5B0B68] to-[#4C1D95] shadow-2xl
+      rounded-xl p-12 max-w-screen-md w-screen h-full relative
+      before:bg-transparent-geometry before:inset-0 before:absolute before:bg-repeat before:bg-top before:rounded-[inherit] before:pointer-events-none"
     >
-      <header>
-        <h1 className="text-6xl font-bangers drop-shadow-sm shadow-amber-500">Hello, world!</h1>
-        <div className="flex flex-col">
-          <p className="">Building a brand new site</p>
-        </div>
+      <header className="flex flex-col">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bangers [text-shadow:1px_2px_0px_rgba(245,158,11,1)]">¿Qué para comer?</h1>
+        <Chopsticks className='w-full' />
+        <p className="text-amber-500">Building a brand new app</p>
       </header>
     </div>
   );
