@@ -2,30 +2,50 @@
   "name": "whats-for-dinner",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
+    "@react-oauth/google": "^0.2.8",
     "@types/jest": "^29.2.0",
     "@types/node": "^18.11.7",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
     "@types/testing-library__jest-dom": "^5.14.5",
+    "jwt-decode": "^3.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-error-boundary": "^3.1.4",
+    "react-router-dom": "^6.4.2",
     "react-scripts": "5.0.1",
     "typescript": "^4.8.4",
     "web-vitals": "^3.0.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "dev": "run-p dev:*",
+    "dev:css": "cross-env NODE_ENV=development pnpm generate:css --watch",
+    "dev:start": "react-scripts start",
+    "build": "run-s build:*",
+    "build:css": "cross-env NODE_ENV=production pnpm generate:css --minify",
+    "build:prod": "react-scripts build",
+    "serve": "pnpx serve -s build",
+    "eject": "react-scripts eject",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "generate:css": "tailwindcss -i ./src/styles/index.css -o ./src/styles/tailwind.css",
+    "format": "prettier --write .",
+    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
+    "typecheck": "pnpm exec tsc -b",
+    "validate": "run-s format lint typecheck && pnpm test -- --watchAll=false",
+    "clean": "pnpx rimraf pnpm-lock.yaml node_modules .cache styles/tailwind.css",
+    "tailwind:viewer": "tailwind-config-viewer -o",
+    "postinstall": "pnpm generate:css"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
+  "prettier": {},
+  "eslintIgnore": [
+    "node_modules",
+    "dist",
+    "build",
+    "public",
+    "src/index.css"
+  ],
   "browserslist": {
     "production": [
       ">0.2%",
@@ -39,11 +59,26 @@
     ]
   },
   "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.3",
+    "@tailwindcss/line-clamp": "^0.4.2",
+    "@tailwindcss/typography": "^0.5.7",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "@typescript-eslint/parser": "^5.41.0",
     "autoprefixer": "^10.4.13",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.26.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-react": "^7.31.10",
+    "eslint-plugin-tailwindcss": "^3.6.2",
+    "npm-run-all": "^4.1.5",
     "postcss": "^8.4.18",
+    "prettier": "^2.7.1",
+    "prettier-plugin-tailwindcss": "^0.1.13",
+    "tailwind-config-viewer": "^1.7.2",
     "tailwindcss": "^3.2.1"
   }
 }
