@@ -1,33 +1,43 @@
+import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { ErrorBoundary } from "react-error-boundary";
 
-import { ReactComponent as Chopsticks } from "src/assets/chopsticks.svg";
+import Header from "src/components/Header";
 import Home from "src/pages/Home";
-import { useUser } from "./hooks/UserContext";
+import UserSession from "src/components/UserSession";
+import ErrorFallback from "src/components/ErrorFallback";
 
 function App() {
-  const { UserSessionButton } = useUser();
+  const [googleOAuthLoaded, setGoogleOAuthLoaded] = useState(false);
 
   return (
-    <div
-      className="text-white text-center bg-gradient-to-br from-[#5B0B68] to-[#4C1D95] shadow-2xl
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <GoogleOAuthProvider
+        clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID || ""}
+        onScriptLoadError={() => {
+          throw new Error("Google OAuth script failed to load");
+        }}
+        onScriptLoadSuccess={() => {
+          setGoogleOAuthLoaded(true);
+        }}
+      >
+        <div
+          className="text-white text-center bg-gradient-to-br from-[#5B0B68] to-[#4C1D95] shadow-2xl
       rounded-xl p-12 max-w-screen-md w-screen h-full relative
       before:bg-transparent-geometry before:inset-0 before:absolute before:bg-repeat before:bg-top before:rounded-[inherit] before:pointer-events-none"
-    >
-      <header className="flex flex-col">
-        <div className="flex w-full justify-end p-3">
-          <UserSessionButton />
-        </div>
-        <h1 className="font-bangers text-4xl sm:text-5xl md:text-6xl [text-shadow:1px_2px_0px_rgba(245,158,11,1)]">
-          ¿Qué para comer?
-        </h1>
-        <Chopsticks className="w-full" />
-        <p className="text-amber-500">Building a brand new app</p>
-      </header>
+        >
+          <UserSession />
+          <Header>¿Qué para comer?</Header>
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </div>
+          {googleOAuthLoaded && (
+            <Routes>
+              <Route path="/" element={<Home />} />
+            </Routes>
+          )}
+        </div>
+      </GoogleOAuthProvider>
+    </ErrorBoundary>
   );
 }
 

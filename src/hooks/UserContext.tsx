@@ -1,9 +1,9 @@
+import { createContext, PropsWithChildren, useContext, useState } from "react";
 import {
   CredentialResponse,
   GoogleLogin,
   googleLogout,
 } from "@react-oauth/google";
-import { createContext, PropsWithChildren, useContext, useState } from "react";
 import jwt_decode from "jwt-decode";
 
 type UserContext = {
@@ -28,7 +28,9 @@ export function UserProvider({ children }: PropsWithChildren) {
     setUser(decodedInfo);
   };
 
-  const onSignInError = () => console.log("Login failed");
+  const onSignInError = () => {
+    throw new Error("Login failed");
+  };
 
   const logout = () => {
     googleLogout();
@@ -53,6 +55,7 @@ export function UserProvider({ children }: PropsWithChildren) {
         shape="pill"
         size="large"
         width="220"
+        context="signin"
       />
     );
   }
