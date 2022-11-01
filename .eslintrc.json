@@ -2,6 +2,9 @@
   "settings": {
     "react": {
       "version": "detect"
+    },
+    "tailwindcss": {
+      "whitelist": ["g_id_[a-z]+"]
     }
   },
   "env": {

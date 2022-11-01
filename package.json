@@ -2,14 +2,18 @@
   "name": "whats-for-dinner",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
+    "@react-oauth/google": "^0.2.8",
     "@types/jest": "^29.2.0",
     "@types/node": "^18.11.7",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
     "@types/testing-library__jest-dom": "^5.14.5",
+    "jwt-decode": "^3.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.2",
     "react-scripts": "5.0.1",
     "typescript": "^4.8.4",
     "web-vitals": "^3.0.4"

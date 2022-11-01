@@ -1,6 +1,12 @@
-import { ReactComponent as Chopsticks } from "./assets/chopsticks.svg";
+import { Route, Routes } from "react-router-dom";
+
+import { ReactComponent as Chopsticks } from "src/assets/chopsticks.svg";
+import Home from "src/pages/Home";
+import { useUser } from "./hooks/UserContext";
 
 function App() {
+  const { UserSessionButton } = useUser();
+
   return (
     <div
       className="text-white text-center bg-gradient-to-br from-[#5B0B68] to-[#4C1D95] shadow-2xl
@@ -8,12 +14,19 @@ function App() {
       before:bg-transparent-geometry before:inset-0 before:absolute before:bg-repeat before:bg-top before:rounded-[inherit] before:pointer-events-none"
     >
       <header className="flex flex-col">
+        <div className="flex w-full justify-end p-3">
+          <UserSessionButton />
+        </div>
         <h1 className="font-bangers text-4xl sm:text-5xl md:text-6xl [text-shadow:1px_2px_0px_rgba(245,158,11,1)]">
           ¿Qué para comer?
         </h1>
         <Chopsticks className="w-full" />
         <p className="text-amber-500">Building a brand new app</p>
       </header>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
     </div>
   );
 }
