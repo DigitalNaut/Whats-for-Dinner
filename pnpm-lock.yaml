@@ -9,6 +9,8 @@ specifiers:
   '@testing-library/jest-dom': ^5.16.5
   '@testing-library/react': ^13.4.0
   '@testing-library/user-event': ^14.4.3
+  '@types/gapi': ^0.0.43
+  '@types/gapi.auth2': ^0.0.56
   '@types/jest': ^29.2.0
   '@types/node': ^18.11.7
   '@types/react': ^18.0.24
@@ -21,6 +23,7 @@ specifiers:
   cross-env: ^7.0.3
   eslint: ^8.26.0
   eslint-config-prettier: ^8.5.0
+  eslint-plugin-no-relative-import-paths: ^1.4.0
   eslint-plugin-react: ^7.31.10
   eslint-plugin-tailwindcss: ^3.6.2
   jwt-decode: ^3.1.2
@@ -63,12 +66,15 @@ devDependencies:
   '@testing-library/jest-dom': 5.16.5
   '@testing-library/react': 13.4.0_biqbaboplfbrettd7655fr4n2y
   '@testing-library/user-event': 14.4.3
+  '@types/gapi': 0.0.43
+  '@types/gapi.auth2': 0.0.56
   '@typescript-eslint/eslint-plugin': 5.41.0_huremdigmcnkianavgfk3x6iou
   '@typescript-eslint/parser': 5.41.0_wyqvi574yv7oiwfeinomdzmc3m
   autoprefixer: 10.4.13_postcss@8.4.18
   cross-env: 7.0.3
   eslint: 8.26.0
   eslint-config-prettier: 8.5.0_eslint@8.26.0
+  eslint-plugin-no-relative-import-paths: 1.4.0
   eslint-plugin-react: 7.31.10_eslint@8.26.0
   eslint-plugin-tailwindcss: 3.6.2
   npm-run-all: 4.1.5
@@ -2457,6 +2463,16 @@ packages:
       '@types/serve-static': 1.15.0
     dev: false
 
+  /@types/gapi.auth2/0.0.56:
+    resolution: {integrity: sha512-kGaBtGVCqGS3Y05L56dGVlBpJflxLfwA0zpMQnQgGRFk1tsMPbQnogG51UQjt1vCuYfRO0Jd9/K5KDtzjAbMkA==}
+    dependencies:
+      '@types/gapi': 0.0.43
+    dev: true
+
+  /@types/gapi/0.0.43:
+    resolution: {integrity: sha512-GbnoTC1psXR1XlBE76LW0eanE/a56iGUzbUOImEI8/xXHuppdbhhIKX9Z71mTut2XoFADh58PgfRg1cyD7TnTw==}
+    dev: true
+
   /@types/graceful-fs/4.1.5:
     resolution: {integrity: sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw==}
     dependencies:
@@ -4655,6 +4671,10 @@ packages:
       minimatch: 3.1.2
       semver: 6.3.0
     dev: false
+
+  /eslint-plugin-no-relative-import-paths/1.4.0:
+    resolution: {integrity: sha512-J/ok26KqJM+20VsxNEcHc9kyW0dcFHBlihOO5FFv/GQqwcW+G1UngbHLpnPAdOQ1dJg5Ljk/40csqfZ3mnneUw==}
+    dev: true
 
   /eslint-plugin-react-hooks/4.6.0_eslint@8.26.0:
     resolution: {integrity: sha512-oFc7Itz9Qxh2x4gNHStv3BqJq54ExXmfC+a1NjAta66IAN87Wu0R/QArgIS9qKzX3dXKPI9H5crl9QchNMY9+g==}
