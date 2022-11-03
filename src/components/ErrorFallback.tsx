@@ -13,7 +13,9 @@ export default function ErrorFallback({
       <pre className="bg-white text-black rounded-md p-4 mb-2">
         {error.message}
       </pre>
-      <button onClick={resetErrorBoundary}>Try again</button>
+      <button data-filled onClick={resetErrorBoundary}>
+        Try again
+      </button>
     </div>
   );
 }
