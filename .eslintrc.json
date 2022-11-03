@@ -27,5 +27,7 @@
     "sourceType": "module"
   },
   "plugins": ["react", "@typescript-eslint", "tailwindcss"],
-  "rules": {}
+  "rules": {
+    "@typescript-eslint/consistent-type-imports": "warn"
+  }
 }
