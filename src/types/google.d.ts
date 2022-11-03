@@ -1,4 +1,6 @@
-declare type User =
+// * See: https://cloud.google.com/iam/docs/reference/sts/rest/v1/TopLevel/token#response-body
+
+declare type GoogleUserCredential =
   | {
       aud: string;
       azp: string;
