@@ -2,71 +2,74 @@ import { useEffect, useState } from "react";
 import useGoogleDrive from "src/hooks/GoogleDrive";
 
 export default function Main() {
-  const { uploadFile, listFiles, isLoaded } = useGoogleDrive();
+  const { uploadFile, fetchFiles, isLoaded } = useGoogleDrive();
   const [file, setFile] = useState<File>();
-  const [fileContent, setFileContent] = useState<string | ArrayBuffer | null>();
   const [error, setError] = useState<string>();
   const [driveFiles, setDriveFiles] = useState<gapi.client.drive.File[]>();
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const [file] = event.target.files || [];
 
     if (file) setFile(file);
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setFileContent(event.target?.result);
-    };
-    reader.readAsText(file);
-
-    setFileContent(reader.result);
   };
 
   const uploadFileHandler = async () => {
     setError(undefined);
 
     if (!file) return setError("No file selected");
-    if (!fileContent) return setError("Failed to read file");
 
-    uploadFile(
-      {
-        contentType: file.type,
-        fileData: fileContent.toString(),
-        filename: file.name,
-        metadata: {
-          name: file.name,
-          mimeType: "application/vnd.google-apps.file",
-          parents: ["root"],
+    try {
+      uploadFile(
+        {
+          contentType: file.type,
+          fileData: await file.text(),
+          filename: file.name,
+          metadata: {
+            name: file.name,
+            mimeType: "application/vnd.google-apps.file",
+            parents: ["root"],
+          },
         },
-      },
-      (jsonResp) => {
-        if (jsonResp === false) setError("File upload failed");
-        else if (jsonResp.error) {
-          setError(
-            `Error ${jsonResp.error.code || "unknown"}: ${
-              jsonResp.error.message
-            }`
-          );
-        } else {
-          console.log("File upload result:");
-          console.log(jsonResp);
+        (jsonResp) => {
+          if (jsonResp === false) setError("File upload failed");
+          else if (jsonResp.error) {
+            setError(
+              `Error ${jsonResp.error.code || "unknown"}: ${
+                jsonResp.error.message
+              }`
+            );
+          } else {
+            console.log("File upload result:");
+            console.log(jsonResp);
+
+            listFiles();
+          }
         }
-      }
-    );
+      );
+    } catch (error) {
+      if (error instanceof Error) setError(error.message);
+      else if (typeof error === "string") setError(error);
+      else console.error(error);
+    }
   };
+
+  async function listFiles() {
+    try {
+      const files = await fetchFiles();
+      if (files?.length) setDriveFiles(files);
+    } catch (error) {
+      if (error instanceof Error) setError(error.message);
+      else if (typeof error === "string") setError(error);
+      else console.error(error);
+    }
+  }
 
   useEffect(() => {
     if (!isLoaded) return;
 
-    (async function fetchFiles() {
-      try {
-        const files = await listFiles();
-        if (files?.length) setDriveFiles(files);
-      } catch (error) {
-        if (error instanceof Error) setError(error.message);
-        else if (typeof error === "string") setError(error);
-        else console.error(error);
-      }
-    })();
+    listFiles();
   }, [isLoaded]);
 
   if (!isLoaded) return <div>Loading...</div>;
@@ -74,7 +77,7 @@ export default function Main() {
   return (
     <div className="flex p-6">
       <div className="flex-1">
-        <h2 className="text-xl">Upload a File</h2>
+        <h2 className="text-xl mb-4">File upload</h2>
         <div className="flex flex-col gap-2">
           <input
             type="file"
@@ -104,12 +107,15 @@ export default function Main() {
         </div>
       </div>
       <div className="flex-1">
-        <h2 className="text-xl">Files</h2>
+        <h2 className="text-xl mb-4">Files saved</h2>
         {driveFiles ? (
           driveFiles.map((file) => <div key={file.id}>{file.name}</div>)
         ) : (
-          <div>No files</div>
+          <div>No files found</div>
         )}
+        <button data-filled onClick={listFiles}>
+          Refresh list
+        </button>
       </div>
     </div>
   );

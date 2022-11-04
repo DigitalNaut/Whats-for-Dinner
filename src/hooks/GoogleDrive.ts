@@ -101,7 +101,7 @@ export default function useGoogleDrive() {
     request.execute(callback);
   };
 
-  async function listFiles() {
+  async function fetchFiles() {
     if (!userTokens?.access_token)
       throw new Error("Drive upload failed: User not logged in");
     if (!isLoaded) throw new Error("Drive upload failed: Client is not ready");
@@ -115,5 +115,5 @@ export default function useGoogleDrive() {
     return result.files;
   }
 
-  return { uploadFile, listFiles, isLoaded };
+  return { uploadFile, fetchFiles, isLoaded };
 }
