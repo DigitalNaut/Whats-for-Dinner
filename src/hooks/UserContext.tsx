@@ -6,12 +6,7 @@ import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import GoogleLoginButton from "src/components/GoogleLoginButton";
 
-type UserContext = {
-  user: GoogleUserInfo;
-  LoginButton(): JSX.Element | null;
-  LogoutButton(): JSX.Element | null;
-  UserCard(): JSX.Element | null;
-};
+import { scope } from "src/hooks/GoogleDrive";
 
 type TokenResponseSuccess = Omit<
   TokenResponse,
@@ -25,14 +20,21 @@ type TokenInfo = {
   tokenExpiration: Date;
 };
 
+type UserContext = {
+  user: GoogleUserInfo;
+  userTokens: (TokenResponseSuccess & TokenInfo) | undefined;
+  LoginButton(): JSX.Element | null;
+  LogoutButton(): JSX.Element | null;
+  UserCard(): JSX.Element | null;
+};
+
 const userContext = createContext<UserContext>({
   user: undefined,
+  userTokens: undefined,
   LoginButton: () => null,
   LogoutButton: () => null,
   UserCard: () => null,
 });
-
-const scope = "https://www.googleapis.com/auth/drive.appdata";
 
 export function UserProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<GoogleUserInfo>();
@@ -137,7 +139,9 @@ export function UserProvider({ children }: PropsWithChildren) {
   }
 
   return (
-    <userContext.Provider value={{ user, UserCard, LoginButton, LogoutButton }}>
+    <userContext.Provider
+      value={{ user, userTokens, UserCard, LoginButton, LogoutButton }}
+    >
       {children}
     </userContext.Provider>
   );
