@@ -155,7 +155,7 @@ export default function Main() {
                       ? URL.createObjectURL(fileToUpload)
                       : "https://via.placeholder.com/128"
                   }
-                  className="w-[128px] h-[128px] rounded-md"
+                  className="w-[128px] h-[128px] rounded-md object-cover object-center"
                 />
                 <button
                   data-filled
@@ -242,7 +242,7 @@ export default function Main() {
                 : "https://via.placeholder.com/128"
             }
             alt="File preview"
-            className={`w-[128px] h-[128px] rounded-md ${
+            className={`w-[128px] h-[128px] object-cover object-center rounded-md ${
               driveFileSelected?.data ? "cursor-pointer bg-black" : ""
             }`}
             title={driveFileSelected?.fileInfo.name}
