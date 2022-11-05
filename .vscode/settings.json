@@ -4,6 +4,8 @@
   "cSpell.words": [
     "ecma",
     "firefox",
+    "fontawesome",
+    "fortawesome",
     "gapi",
     "montserrat",
     "pnpx",
@@ -11,7 +13,8 @@
     "signout",
     "tailwindcss",
     "TTFB",
-    "typecheck"
+    "typecheck",
+    "webp"
   ],
   "[javascript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
