@@ -7,6 +7,8 @@ import axios from "axios";
 import GoogleLoginButton from "src/components/GoogleLoginButton";
 
 import { scope } from "src/hooks/GoogleDrive";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 type TokenResponseSuccess = Omit<
   TokenResponse,
@@ -26,6 +28,7 @@ type UserContext = {
   LoginButton(): JSX.Element | null;
   LogoutButton(): JSX.Element | null;
   UserCard(): JSX.Element | null;
+  logout(reason?: string): void;
 };
 
 const userContext = createContext<UserContext>({
@@ -34,10 +37,12 @@ const userContext = createContext<UserContext>({
   LoginButton: () => null,
   LogoutButton: () => null,
   UserCard: () => null,
+  logout: () => null,
 });
 
 export function UserProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<GoogleUserInfo>();
+  const [notification, setNotification] = useState<string>();
   const [userTokens, setUserTokens] = useState<
     TokenResponseSuccess & TokenInfo
   >();
@@ -68,9 +73,13 @@ export function UserProvider({ children }: PropsWithChildren) {
     throw errorResponse.error;
   };
 
-  const logout = () => {
+  const logout = (reason: string) => {
     googleLogout();
     setUser(null);
+    setUserTokens(undefined);
+    setNotification(reason);
+
+    setTimeout(() => setNotification(undefined), 3000);
   };
 
   function LoginButton() {
@@ -89,7 +98,11 @@ export function UserProvider({ children }: PropsWithChildren) {
     if (!user) return null;
 
     return (
-      <button data-filled className="g_id_signout" onClick={logout}>
+      <button
+        data-filled
+        className="g_id_signout"
+        onClick={() => logout("Logged out")}
+      >
         Logout
       </button>
     );
@@ -140,9 +153,29 @@ export function UserProvider({ children }: PropsWithChildren) {
 
   return (
     <userContext.Provider
-      value={{ user, userTokens, UserCard, LoginButton, LogoutButton }}
+      value={{
+        user,
+        userTokens,
+        UserCard,
+        LoginButton,
+        LogoutButton,
+        logout,
+      }}
     >
       {children}
+      {notification && (
+        <div className="fixed flex gap-2 top-0 left-0 w-full bg-blue-400 text-white justify-center shadow-xl p-1 sm:p-2 md:p-4">
+          <div className="flex w-full sm:max-w-sm md:max-w-md lg:max-w-lg justify-between px-4 sm:px-0">
+            <div className="flex gap-2 items-center">
+              <FontAwesomeIcon icon={faInfoCircle} />
+              <span>{notification}</span>
+            </div>
+            <button onClick={() => setNotification(undefined)}>
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+          </div>
+        </div>
+      )}
     </userContext.Provider>
   );
 }
