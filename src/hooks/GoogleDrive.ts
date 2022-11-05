@@ -13,61 +13,13 @@ type FileParams = {
   metadata: MetadataType;
 };
 
-export const scope = "https://www.googleapis.com/auth/drive.file";
-const spaces = "drive";
+export const scope = "https://www.googleapis.com/auth/drive.appdata";
+const spaces = "appDataFolder";
 const DISCOVERY_DOC =
   "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest";
 
-function constructMultipartBody({ file, metadata }: FileParams) {
-  const formData = new FormData();
-  formData.append(
-    "metadata",
-    new Blob([JSON.stringify(metadata)], { type: "application/json" })
-  );
-  formData.append("file", file);
-
-  return formData;
-}
-
-function crateMultipartUploadRequest(body: FormData, accessToken: string) {
-  const newRequest = axios.post<FileUploadJSONResponse>(
-    "https://www.googleapis.com/upload/drive/v3/files",
-    body,
-    {
-      method: "POST",
-      params: { uploadType: "multipart" },
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
-
-  return newRequest;
-}
-
-function createFileFetchRequest(
-  file: gapi.client.drive.File,
-  accessToken: string
-) {
-  const { id, mimeType } = file;
-
-  const newRequest = axios.get(
-    `https://www.googleapis.com/drive/v3/files/${id}`,
-    {
-      params: { mimeType, alt: "media" },
-      method: "GET",
-      headers: {
-        authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
-
-  // return newRequest as unknown as gapi.client.HttpRequest<FileJSONResponse>;
-  return newRequest;
-}
-
 export default function useGoogleDrive() {
-  const { userTokens } = useUser();
+  const { userTokens, logout } = useUser();
   const [isLoaded, setIsLoaded] = useState(false);
 
   async function initGapiClient() {
@@ -92,28 +44,41 @@ export default function useGoogleDrive() {
     onLoad: handleGapiLoad,
   });
 
-  const uploadFile = ({ file, metadata }: FileParams) => {
-    if (!userTokens?.access_token)
-      throw new Error("Drive upload failed: User not logged in");
+  function guard() {
+    if (!userTokens?.access_token) logout("Session expired");
+
     if (!isLoaded) throw new Error("Drive upload failed: Client is not ready");
+  }
 
-    const requestBody = constructMultipartBody({
-      file,
-      metadata,
-    });
+  const uploadFile = ({ file, metadata }: FileParams) => {
+    guard();
 
-    const request = crateMultipartUploadRequest(
-      requestBody,
-      userTokens.access_token
+    metadata.parents = [spaces];
+
+    const body = new FormData();
+    body.append(
+      "metadata",
+      new Blob([JSON.stringify(metadata)], { type: "application/json" })
+    );
+    body.append("file", file);
+
+    const request = axios.post<FileUploadJSONResponse>(
+      "https://www.googleapis.com/upload/drive/v3/files",
+      body,
+      {
+        method: "POST",
+        params: { uploadType: "multipart" },
+        headers: {
+          Authorization: `Bearer ${userTokens?.access_token}`,
+        },
+      }
     );
 
     return request;
   };
 
   const fetchFiles = async () => {
-    if (!userTokens?.access_token)
-      throw new Error("Drive upload failed: User not logged in");
-    if (!isLoaded) throw new Error("Drive upload failed: Client is not ready");
+    guard();
 
     const { result } = await gapi.client.drive.files.list({
       pageSize: 10,
@@ -127,11 +92,22 @@ export default function useGoogleDrive() {
   };
 
   const fetchFile = (file: gapi.client.drive.File) => {
-    if (!userTokens?.access_token)
-      throw new Error("Drive upload failed: User not logged in");
-    if (!isLoaded) throw new Error("Drive upload failed: Client is not ready");
+    guard();
 
-    const request = createFileFetchRequest(file, userTokens.access_token);
+    const { id } = file;
+
+    const request = axios.get(
+      `https://www.googleapis.com/drive/v3/files/${id}`,
+      {
+        params: { alt: "media" },
+        method: "GET",
+        responseType: "arraybuffer",
+        headers: {
+          authorization: `Bearer ${userTokens?.access_token}`,
+        },
+      }
+    );
+
     return request;
   };
 

@@ -19,8 +19,8 @@ export default function Main() {
   const [driveFiles, setDriveFiles] = useState<gapi.client.drive.File[]>();
   const [driveFileSelected, setDriveFileSelected] = useState<{
     fileInfo: gapi.client.drive.File;
-    blob: File;
     data: string;
+    file: File;
   }>();
 
   const [loadingDriveFiles, setLoadingDriveFiles] = useState(true);
@@ -99,18 +99,18 @@ export default function Main() {
         );
       }
 
-      const newImageFile = new File([data], fileInfo.name || "Unknown image", {
-        type: fileInfo.mimeType,
-      });
-
       setDriveFileSelected({
         fileInfo,
-        blob: newImageFile,
         data,
+        file: new File([data], fileInfo.name || "Unknown file", {
+          type: fileInfo.mimeType || "application/octet-stream",
+        }),
       });
     } catch (error) {
-      if (error instanceof Error) setError(error.message);
-      else if (typeof error === "string") setError(error);
+      if (error instanceof Error)
+        setError(`Error fetching image: ${error.message}`);
+      else if (typeof error === "string")
+        setError(`Error fetching image: ${error}`);
       else {
         setError("An unknown error ocurred");
         console.error(error);
@@ -177,9 +177,9 @@ export default function Main() {
           </div>
         </div>
 
-        <div className="flex-1">
+        <div className="flex-1 flex flex-col gap-4">
           <h2 className="text-xl mb-4">Files saved</h2>
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-2">
             {driveFiles &&
               driveFiles.map((file) =>
                 file.id ? (
@@ -230,11 +230,15 @@ export default function Main() {
 
             {!driveFiles && <div>No files found</div>}
           </div>
+          <button data-filled onClick={listFiles} disabled={loadingDriveFiles}>
+            {loadingDriveFiles ? <Spinner /> : "Refresh list"}
+          </button>
 
+          <h3 className="text-lg">Image preview</h3>
           <img
             src={
               driveFileSelected
-                ? URL.createObjectURL(driveFileSelected.blob)
+                ? URL.createObjectURL(driveFileSelected.file)
                 : "https://via.placeholder.com/128"
             }
             alt="File preview"
@@ -246,10 +250,6 @@ export default function Main() {
             height="128"
             onClick={() => setDriveFileSelected(undefined)}
           />
-
-          <button data-filled onClick={listFiles} disabled={loadingDriveFiles}>
-            {loadingDriveFiles ? <Spinner /> : "Refresh list"}
-          </button>
         </div>
       </div>
     </>
