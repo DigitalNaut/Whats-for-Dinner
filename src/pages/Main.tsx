@@ -17,12 +17,16 @@ export default function Main() {
   const [error, setError] = useState<string>();
 
   const [driveFiles, setDriveFiles] = useState<gapi.client.drive.File[]>();
-  // const [driveFile, setDriveFile] = useState<gapi.client.drive.File>();
+  const [driveFileSelected, setDriveFileSelected] = useState<{
+    fileInfo: gapi.client.drive.File;
+    blob: File;
+    data: string;
+  }>();
 
   const [loadingDriveFiles, setLoadingDriveFiles] = useState(true);
   const [uploadingFile, setUpLoadingFile] = useState(false);
 
-  const handleInputChange = async (
+  const handleImageInputChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const [file] = event.target.files || [];
@@ -37,35 +41,22 @@ export default function Main() {
     if (!fileToUpload) return setError("No file selected");
 
     try {
-      const fileData = await fileToUpload.text();
-
-      uploadFile(
-        {
-          fileData,
-          metadata: {
-            name: fileToUpload.name,
-            mimeType: fileToUpload.type,
-            parents: ["appDataFolder"],
-          },
+      const { data } = await uploadFile({
+        file: fileToUpload,
+        metadata: {
+          name: fileToUpload.name,
+          mimeType: fileToUpload.type,
         },
-        (jsonResp) => {
-          if (jsonResp === false) setError("File upload failed");
-          else if (jsonResp.error) {
-            setError(
-              `Error ${jsonResp.error.code || "unknown"}: ${
-                jsonResp.error.message
-              }`
-            );
-          } else {
-            console.log("File upload result:");
-            console.log(jsonResp);
+      });
 
-            listFiles();
-          }
+      if (data === false) setError("File upload failed");
+      else if (data.error) {
+        setError(
+          `Error ${data.error.code || "unknown"}: ${data.error.message}`
+        );
+      } else listFiles();
 
-          setUpLoadingFile(false);
-        }
-      );
+      setUpLoadingFile(false);
     } catch (error) {
       setUpLoadingFile(false);
 
@@ -97,18 +88,26 @@ export default function Main() {
     setLoadingDriveFiles(false);
   }
 
-  async function getFile(fileId: string, mimeType: string) {
+  async function getFile(fileInfo: gapi.client.drive.File) {
     try {
-      await fetchFile(
-        {
-          fileId,
-          mimeType,
-        },
-        (response) => {
-          console.log(`File fetched: ${String(response).length}`);
-          console.log(JSON.parse(response as string));
-        }
-      );
+      const { data } = await fetchFile(fileInfo);
+
+      if (data === false) setError("File download failed");
+      else if (data.error) {
+        setError(
+          `Error ${data.error.code || "unknown"}: ${data.error.message}`
+        );
+      }
+
+      const newImageFile = new File([data], fileInfo.name || "Unknown image", {
+        type: fileInfo.mimeType,
+      });
+
+      setDriveFileSelected({
+        fileInfo,
+        blob: newImageFile,
+        data,
+      });
     } catch (error) {
       if (error instanceof Error) setError(error.message);
       else if (typeof error === "string") setError(error);
@@ -125,7 +124,12 @@ export default function Main() {
     listFiles();
   }, [isLoaded]);
 
-  if (!isLoaded) return <div>Loading...</div>;
+  if (!isLoaded)
+    return (
+      <div>
+        <Spinner />
+      </div>
+    );
 
   return (
     <>
@@ -140,7 +144,7 @@ export default function Main() {
           <div className="flex flex-col gap-2">
             <input
               type="file"
-              onChange={handleInputChange}
+              onChange={handleImageInputChange}
               accept="image/png, image/jpeg, image/webp"
             />
             {fileToUpload && (
@@ -149,9 +153,9 @@ export default function Main() {
                   src={
                     fileToUpload
                       ? URL.createObjectURL(fileToUpload)
-                      : "https://via.placeholder.com/150"
+                      : "https://via.placeholder.com/128"
                   }
-                  className="w-[150px] h-[150px] rounded-md"
+                  className="w-[128px] h-[128px] rounded-md"
                 />
                 <button
                   data-filled
@@ -208,9 +212,7 @@ export default function Main() {
                     </a>
                     {file.id && (
                       <button
-                        onClick={() =>
-                          getFile(file.id || "", file.mimeType || "")
-                        }
+                        onClick={() => getFile(file)}
                         className="flex gap-2"
                         title="Get file"
                       >
@@ -228,6 +230,23 @@ export default function Main() {
 
             {!driveFiles && <div>No files found</div>}
           </div>
+
+          <img
+            src={
+              driveFileSelected
+                ? URL.createObjectURL(driveFileSelected.blob)
+                : "https://via.placeholder.com/128"
+            }
+            alt="File preview"
+            className={`w-[128px] h-[128px] rounded-md ${
+              driveFileSelected?.data ? "cursor-pointer bg-black" : ""
+            }`}
+            title={driveFileSelected?.fileInfo.name}
+            width="128"
+            height="128"
+            onClick={() => setDriveFileSelected(undefined)}
+          />
+
           <button data-filled onClick={listFiles} disabled={loadingDriveFiles}>
             {loadingDriveFiles ? <Spinner /> : "Refresh list"}
           </button>
