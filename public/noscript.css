@@ -1,0 +1,26 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.noscript {
+  width: 100vw;
+  height: 100vh;
+  padding: 2em;
+  display: grid;
+  place-items: center;
+  background-image: linear-gradient(#334155, #1e293b);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.noscript > div {
+  text-align: center;
+  background-image: linear-gradient(to bottom right, #5b0b68, #4c1d95);
+  box-shadow: 4px 8px 16px #1e293b;
+  color: white;
+  padding: 2em;
+  border-radius: 1em;
+  font-size: large;
+  font-weight: 500;
+}
