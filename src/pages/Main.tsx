@@ -126,7 +126,7 @@ export default function Main() {
 
   if (!isLoaded)
     return (
-      <div>
+      <div className="absolute inset-0 grid place-items-center">
         <Spinner />
       </div>
     );
