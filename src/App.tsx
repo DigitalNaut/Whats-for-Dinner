@@ -6,6 +6,8 @@ import { ErrorBoundary } from "react-error-boundary";
 import Header from "src/components/Header";
 import Login from "src/pages/Login";
 import Main from "src/pages/Main";
+import Privacy from "src/pages/Privacy";
+import Terms from "src/pages/Terms";
 import ErrorFallback from "src/components/ErrorFallback";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
 import { useUser } from "src/hooks/UserContext";
@@ -36,6 +38,8 @@ function App() {
           {googleOAuthLoaded && (
             <Routes>
               <Route path="/" element={<Login />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
               <Route element={<ProtectedRoutes />}>
                 <Route path="/home" element={<Main />} />
               </Route>

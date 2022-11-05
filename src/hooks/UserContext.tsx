@@ -1,40 +1,71 @@
-import { createContext, PropsWithChildren, useContext, useState } from "react";
-import {
-  CredentialResponse,
-  GoogleLogin,
-  googleLogout,
-} from "@react-oauth/google";
-import jwt_decode from "jwt-decode";
+import type { AxiosResponse } from "axios";
+import type { TokenResponse } from "@react-oauth/google";
+import type { PropsWithChildren } from "react";
+import { createContext, useContext, useState } from "react";
+import { googleLogout, useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
+import GoogleLoginButton from "src/components/GoogleLoginButton";
+
+import { scope } from "src/hooks/GoogleDrive";
+
+type TokenResponseSuccess = Omit<
+  TokenResponse,
+  "error" | "error_description" | "error_uri"
+>;
+type TokenResponseError = Pick<
+  TokenResponse,
+  "error" | "error_description" | "error_uri"
+>;
+type TokenInfo = {
+  tokenExpiration: Date;
+};
 
 type UserContext = {
-  user: User;
+  user: GoogleUserInfo;
+  userTokens: (TokenResponseSuccess & TokenInfo) | undefined;
   LoginButton(): JSX.Element | null;
   LogoutButton(): JSX.Element | null;
   UserCard(): JSX.Element | null;
 };
 
 const userContext = createContext<UserContext>({
-  user: null,
+  user: undefined,
+  userTokens: undefined,
   LoginButton: () => null,
   LogoutButton: () => null,
   UserCard: () => null,
 });
 
 export function UserProvider({ children }: PropsWithChildren) {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<GoogleUserInfo>();
+  const [userTokens, setUserTokens] = useState<
+    TokenResponseSuccess & TokenInfo
+  >();
 
-  const onSignInSuccess = (response: CredentialResponse) => {
-    const { credential } = response || {};
+  const onSignInSuccess = async (tokenResponse: TokenResponseSuccess) => {
+    const tokenExpiration = new Date(
+      Date.now() + tokenResponse.expires_in * 1000
+    );
+    setUserTokens({ ...tokenResponse, tokenExpiration });
 
-    if (!credential) throw new Error("No JWT found in credentials");
+    try {
+      const userInfo: AxiosResponse<GoogleUserInfo> = await axios.get(
+        "https://www.googleapis.com/oauth2/v3/userinfo",
+        { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } }
+      );
 
-    const decodedInfo = jwt_decode(credential) as User;
-    setUser(decodedInfo);
+      setUser(userInfo.data);
+    } catch (error) {
+      if (axios.isAxiosError(error))
+        throw new Error(`Failed to fetch user info: ${error.message}`);
+
+      if (error instanceof Error) throw error;
+    }
   };
 
-  const onSignInError = () => {
+  const onSignInError = (errorResponse: TokenResponseError) => {
     setUser(null);
-    throw new Error("Login failed");
+    throw errorResponse.error;
   };
 
   const logout = () => {
@@ -45,26 +76,20 @@ export function UserProvider({ children }: PropsWithChildren) {
   function LoginButton() {
     if (user) return null;
 
-    return (
-      <GoogleLogin
-        theme="filled_blue"
-        auto_select
-        useOneTap
-        onSuccess={onSignInSuccess}
-        onError={onSignInError}
-        shape="pill"
-        size="large"
-        width="220"
-        context="signin"
-      />
-    );
+    const requestAccess = useGoogleLogin({
+      onSuccess: onSignInSuccess,
+      onError: onSignInError,
+      scope,
+    });
+
+    return <GoogleLoginButton onClick={() => requestAccess()} />;
   }
 
   function LogoutButton() {
     if (!user) return null;
 
     return (
-      <button className="g_id_signout" onClick={logout}>
+      <button data-filled className="g_id_signout" onClick={logout}>
         Logout
       </button>
     );
@@ -73,14 +98,23 @@ export function UserProvider({ children }: PropsWithChildren) {
   function UserCard() {
     if (!user) return null;
 
-    const { picture, name, email, exp } = user;
-    const expirationDate = new Date(exp * 1000).toLocaleTimeString('en-US');
+    const { picture, name, email } = user;
+    const isTokenExpired =
+      userTokens === undefined || userTokens.tokenExpiration < new Date();
 
     return (
       <div className="justify-end align-baseline flex w-full">
         <div
           className="group flex gap-2 align-middle hover:bg-white hover:text-black hover:rounded-md p-1 cursor-pointer -mt-10 -mr-10"
-          title={`Session ends: ${expirationDate}`}
+          title={`${
+            isTokenExpired
+              ? "Token expired"
+              : `Token expires ${userTokens?.tokenExpiration.toLocaleTimeString()}`
+          }\nUser info: ${JSON.stringify(
+            user,
+            null,
+            2
+          )}\nTokens: ${JSON.stringify(userTokens, null, 2)}`}
         >
           <img
             src={picture}
@@ -95,18 +129,19 @@ export function UserProvider({ children }: PropsWithChildren) {
               <div className="hidden sm:block text-xs">{email}</div>
             </div>
 
-            <div className="hidden group-hover:block">
+            <div className="hidden group-hover:flex flex-col">
               <LogoutButton />
             </div>
           </div>
-
         </div>
       </div>
     );
   }
 
   return (
-    <userContext.Provider value={{ user, UserCard, LoginButton, LogoutButton }}>
+    <userContext.Provider
+      value={{ user, userTokens, UserCard, LoginButton, LogoutButton }}
+    >
       {children}
     </userContext.Provider>
   );
