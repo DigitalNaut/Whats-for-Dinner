@@ -4,19 +4,15 @@ import { useUser } from "src/hooks/UserContext";
 
 type MetadataType = {
   name: string;
-  mimeType:
-    | "application/vnd.google-apps.folder"
-    | "application/vnd.google-apps.file";
+  mimeType: string;
   parents: string[];
 };
 type FileParams = {
-  filename: string;
   fileData: string;
-  contentType: string;
   metadata: MetadataType;
 };
 
-export const scope = "https://www.googleapis.com/auth/drive.file";
+export const scope = "https://www.googleapis.com/auth/drive.appdata";
 const DISCOVERY_DOC =
   "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest";
 
@@ -26,20 +22,19 @@ const close_delimiter = `\r\n--${boundary}--`;
 
 function constructMultipartRequestBody({
   fileData,
-  contentType,
   metadata,
-}: Pick<FileParams, "fileData" | "contentType" | "metadata">) {
+}: Pick<FileParams, "fileData" | "metadata">) {
   return (
     delimiter +
     "Content-Type: application/json; charset-UTF-8\r\n\r\n" +
     JSON.stringify(metadata) +
     delimiter +
-    `Content-Type: ${contentType}\r\n\r\n${fileData}\r\n` +
+    `Content-Type: ${metadata.mimeType}\r\n\r\n${fileData}\r\n` +
     close_delimiter
   );
 }
 
-function crateMultipartRequest(body: string, accessToken: string) {
+function crateMultipartUploadRequest(body: string, accessToken: string) {
   const newRequest = gapi.client.request({
     path: "https://www.googleapis.com/upload/drive/v3/files",
     method: "POST",
@@ -52,6 +47,25 @@ function crateMultipartRequest(body: string, accessToken: string) {
   });
 
   return newRequest as unknown as gapi.client.HttpRequest<FileUploadJSONResponse>;
+}
+
+function createFileFetchRequest(
+  file: { fileId: string; mimeType: string },
+  accessToken: string
+) {
+  const { fileId, mimeType } = file;
+
+  const newRequest = gapi.client.request({
+    path: `https://www.googleapis.com/drive/v3/files/${fileId}`,
+    params: { mimeType, alt: "media" },
+    method: "GET",
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  // return newRequest as unknown as gapi.client.HttpRequest<FileJSONResponse>;
+  return newRequest;
 }
 
 export default function useGoogleDrive() {
@@ -81,7 +95,7 @@ export default function useGoogleDrive() {
   });
 
   const uploadFile = (
-    { fileData, contentType, metadata }: FileParams,
+    { fileData, metadata }: FileParams,
     callback: Parameters<
       gapi.client.HttpRequest<FileUploadJSONResponse>["execute"]
     >[0]
@@ -92,28 +106,44 @@ export default function useGoogleDrive() {
 
     const requestBody = constructMultipartRequestBody({
       fileData,
-      contentType,
       metadata,
     });
 
-    const request = crateMultipartRequest(requestBody, userTokens.access_token);
+    const request = crateMultipartUploadRequest(
+      requestBody,
+      userTokens.access_token
+    );
 
     request.execute(callback);
   };
 
-  async function fetchFiles() {
+  const fetchFiles = async () => {
     if (!userTokens?.access_token)
       throw new Error("Drive upload failed: User not logged in");
     if (!isLoaded) throw new Error("Drive upload failed: Client is not ready");
 
     const { result } = await gapi.client.drive.files.list({
       pageSize: 10,
-      fields: "files(id, name)",
+      fields:
+        "files(id, name, mimeType, hasThumbnail, thumbnailLink, webViewLink, iconLink, size)",
+      spaces: "appDataFolder",
       oauth_token: userTokens?.access_token,
     });
 
     return result.files;
-  }
+  };
 
-  return { uploadFile, fetchFiles, isLoaded };
+  const fetchFile = (
+    file: { fileId: string; mimeType: string },
+    callback: (response: unknown) => unknown
+  ) => {
+    if (!userTokens?.access_token)
+      throw new Error("Drive upload failed: User not logged in");
+    if (!isLoaded) throw new Error("Drive upload failed: Client is not ready");
+
+    const request = createFileFetchRequest(file, userTokens.access_token);
+    request.execute(callback);
+  };
+
+  return { uploadFile, fetchFiles, fetchFile, isLoaded };
 }
