@@ -1,7 +1,10 @@
+import type { TokenResponse } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
+import axios from "axios";
+
 import { useScript } from "src/hooks/UseScript";
 import { useUser } from "src/hooks/UserContext";
-import axios from "axios";
 
 type MetadataType = {
   name: string;
@@ -12,14 +15,30 @@ type FileParams = {
   file: File;
   metadata: MetadataType;
 };
+type TokenResponseSuccess = Omit<
+  TokenResponse,
+  "error" | "error_description" | "error_uri"
+>;
+type TokenResponseError = Pick<
+  TokenResponse,
+  "error" | "error_description" | "error_uri"
+>;
+type TokenInfo = {
+  tokenExpiration: Date;
+};
 
-export const scope = "https://www.googleapis.com/auth/drive.appdata";
+const scope = "https://www.googleapis.com/auth/drive.appdata";
 const spaces = "appDataFolder";
 const DISCOVERY_DOC =
   "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest";
 
 export default function useGoogleDrive() {
-  const { userTokens, logout } = useUser();
+  const { user } = useUser();
+
+  const [userTokens, setUserTokens] = useState<
+    TokenResponseSuccess & TokenInfo
+  >();
+
   const [isLoaded, setIsLoaded] = useState(false);
 
   async function initGapiClient() {
@@ -44,14 +63,41 @@ export default function useGoogleDrive() {
     onLoad: handleGapiLoad,
   });
 
-  function guard() {
-    if (!userTokens?.access_token) logout("Session expired");
+  const onSignInSuccess = async (tokenResponse: TokenResponseSuccess) => {
+    const tokenExpiration = new Date(
+      Date.now() + tokenResponse.expires_in * 1000
+    );
+    setUserTokens({ ...tokenResponse, tokenExpiration });
+  };
 
-    if (!isLoaded) throw new Error("Drive upload failed: Client is not ready");
+  const onSignInError = (errorResponse: TokenResponseError) => {
+    setUserTokens(undefined);
+    throw errorResponse.error;
+  };
+
+  const requestAccess = useGoogleLogin({
+    onSuccess: onSignInSuccess,
+    onError: onSignInError,
+    scope,
+  });
+
+  async function guardTokens() {
+    const promise = new Promise<string>((resolve, reject) => {
+      if (!isLoaded) reject("Drive upload failed: Client is not ready");
+      if (!user) {
+        setUserTokens(undefined);
+        reject("User not logged in");
+      }
+
+      if (userTokens === undefined) requestAccess();
+      else if (userTokens.tokenExpiration > new Date()) resolve("OK");
+    });
+
+    return promise;
   }
 
-  const uploadFile = ({ file, metadata }: FileParams) => {
-    guard();
+  const uploadFile = async ({ file, metadata }: FileParams) => {
+    await guardTokens();
 
     metadata.parents = [spaces];
 
@@ -78,7 +124,12 @@ export default function useGoogleDrive() {
   };
 
   const fetchFiles = async () => {
-    guard();
+    try {
+      await guardTokens();
+    } catch (error) {
+      console.error(error);
+      return;
+    }
 
     const { result } = await gapi.client.drive.files.list({
       pageSize: 10,
@@ -91,8 +142,8 @@ export default function useGoogleDrive() {
     return result.files;
   };
 
-  const fetchFile = (file: gapi.client.drive.File) => {
-    guard();
+  const fetchFile = async (file: gapi.client.drive.File) => {
+    await guardTokens();
 
     const { id } = file;
 
@@ -111,5 +162,11 @@ export default function useGoogleDrive() {
     return request;
   };
 
-  return { uploadFile, fetchFiles, fetchFile, isLoaded };
+  return {
+    uploadFile,
+    fetchFiles,
+    fetchFile,
+    isLoaded,
+    userTokens,
+  };
 }
