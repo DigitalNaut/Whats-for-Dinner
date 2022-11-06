@@ -30,6 +30,7 @@ type TokenInfo = {
 };
 type FileUploadJSONResponse = (FileUploadSuccess & GoogleDriveError) | false;
 type FileDownloadJSONResponse = ArrayBuffer | GoogleDriveError | false;
+type FileDeletedJSONResponse = GoogleDriveError | "";
 
 type GoogleDriveContextType = {
   uploadFile({
@@ -40,6 +41,9 @@ type GoogleDriveContextType = {
   fetchFile(
     file: gapi.client.drive.File
   ): Promise<AxiosResponse<FileDownloadJSONResponse, unknown>>;
+  deleteFile(
+    file: gapi.client.drive.File
+  ): Promise<AxiosResponse<FileDeletedJSONResponse, unknown>>;
   isLoaded: boolean;
   userTokens?: TokenResponseSuccess & TokenInfo;
 };
@@ -52,6 +56,9 @@ const googleDriveContext = createContext<GoogleDriveContextType>({
     throw new Error("Google Drive context is uninitialized");
   },
   fetchFile: () => {
+    throw new Error("Google Drive context is uninitialized");
+  },
+  deleteFile: () => {
     throw new Error("Google Drive context is uninitialized");
   },
   isLoaded: false,
@@ -114,7 +121,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
 
   async function guardTokens() {
     const promise = new Promise<string>((resolve, reject) => {
-      if (!isLoaded) reject("Drive upload failed: Client is not ready");
+      if (!isLoaded) reject("Drive operation: Client is not ready");
       if (!user) {
         setUserTokens(undefined);
         reject("User not logged in");
@@ -143,7 +150,6 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
       "https://www.googleapis.com/upload/drive/v3/files",
       body,
       {
-        method: "POST",
         params: { uploadType: "multipart" },
         headers: {
           Authorization: `Bearer ${userTokens?.access_token}`,
@@ -176,14 +182,26 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
   const fetchFile = async (file: gapi.client.drive.File) => {
     await guardTokens();
 
-    const { id } = file;
-
     const request = axios.get(
-      `https://www.googleapis.com/drive/v3/files/${id}`,
+      `https://www.googleapis.com/drive/v3/files/${file.id}`,
       {
         params: { alt: "media" },
-        method: "GET",
         responseType: "arraybuffer",
+        headers: {
+          authorization: `Bearer ${userTokens?.access_token}`,
+        },
+      }
+    );
+
+    return request;
+  };
+
+  const deleteFile = async (file: gapi.client.drive.File) => {
+    await guardTokens();
+
+    const request = axios.delete(
+      `https://www.googleapis.com/drive/v3/files/${file.id}`,
+      {
         headers: {
           authorization: `Bearer ${userTokens?.access_token}`,
         },
@@ -199,6 +217,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
         uploadFile,
         fetchFiles,
         fetchFile,
+        deleteFile,
         isLoaded,
         userTokens,
       }}

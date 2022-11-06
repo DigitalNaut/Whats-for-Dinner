@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { faDownload, faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+  faDownload,
+  faTimes,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
@@ -8,7 +12,7 @@ import ImagePreview from "src/components/ImagePreview";
 import AwaitingPermissionsNotice from "src/components/AwaitingPermissionsNotice";
 
 export default function ImageList() {
-  const { fetchFiles, fetchFile, userTokens } = useGoogleDrive();
+  const { fetchFiles, fetchFile, deleteFile, userTokens } = useGoogleDrive();
   const [error, setError] = useState<string>();
 
   const [driveFiles, setDriveFiles] = useState<gapi.client.drive.File[]>();
@@ -70,6 +74,32 @@ export default function ImageList() {
     }
   }
 
+  async function removeFile(fileInfo: gapi.client.drive.File) {
+    try {
+      const { data } = await deleteFile(fileInfo);
+
+      console.log("File delete:");
+      console.log(data);
+
+      if (data === "") listFiles();
+      else if (data.error)
+        setError(
+          `Error ${data.error.code || "unknown"}: ${
+            data.error.message || "No message"
+          }`
+        );
+    } catch (error) {
+      if (error instanceof Error)
+        setError(`Error fetching image: ${error.message}`);
+      else if (typeof error === "string")
+        setError(`Error fetching image: ${error}`);
+      else {
+        setError("An unknown error ocurred");
+        console.error(error);
+      }
+    }
+  }
+
   useEffect(() => {
     listFiles();
   }, [userTokens]);
@@ -90,40 +120,53 @@ export default function ImageList() {
           {error}
         </div>
       )}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col">
         {driveFiles &&
           driveFiles.map((file) =>
             file.id ? (
-              <div key={file.id} className="w-fit flex gap-2">
-                <div
-                  title={`MIME Type: "${file.mimeType}"\nFile size: ${
-                    file.size
-                      ? (Number(file.size) * 0.001).toFixed(2) + " bytes"
-                      : "Unknown"
-                  }`}
-                  className="flex gap-2 items-center"
+              <div
+                key={file.id}
+                className="group w-full flex gap-2 hover:bg-white/20 rounded-sm items-center p-2"
+              >
+                {file.iconLink && (
+                  <img
+                    title={`MIME Type: "${file.mimeType}"`}
+                    src={file.iconLink}
+                    className="w-[20px] h-[20px]"
+                    alt="File icon"
+                  />
+                )}
+                <span
+                  title={file.name}
+                  className="flex-1 text-ellipsis overflow-hidden whitespace-nowrap"
                 >
-                  {file.iconLink && (
-                    <img
-                      src={file.iconLink}
-                      className="w-[20px] h-[20px]"
-                      alt="File icon"
-                    />
-                  )}
-                  {file.name}
-                </div>
+                  {file.name?.split(".")[0]}
+                </span>
+                <span>
+                  {file.size ? (Number(file.size) * 0.001).toFixed(2) : "?"}
+                  &nbsp;kb
+                </span>
                 {file.id && (
-                  <button
-                    onClick={() => getFile(file)}
-                    className="flex gap-2"
-                    title="Get file"
-                  >
-                    <FontAwesomeIcon icon={faDownload} />
-                  </button>
+                  <>
+                    <button
+                      className="flex gap-2"
+                      title="Descargar"
+                      onClick={() => getFile(file)}
+                    >
+                      <FontAwesomeIcon icon={faDownload} />
+                    </button>
+                    <button
+                      className="flex gap-2"
+                      title="Borrar"
+                      onClick={() => removeFile(file)}
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </>
                 )}
               </div>
             ) : (
-              <div>
+              <div className="flex gap-2 items-center">
                 <FontAwesomeIcon icon={faTimes} />
                 <em>File unavailable</em>
               </div>
