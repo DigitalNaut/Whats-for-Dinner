@@ -11,6 +11,7 @@ import Terms from "src/pages/Terms";
 import ErrorFallback from "src/components/ErrorFallback";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
 import { useUser } from "src/hooks/UserContext";
+import { GoogleDriveProvider } from "src/hooks/GoogleDriveContext";
 
 function App() {
   const [googleOAuthLoaded, setGoogleOAuthLoaded] = useState(false);
@@ -40,7 +41,13 @@ function App() {
               <Route path="/" element={<Login />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
-              <Route element={<ProtectedRoutes />}>
+              <Route
+                element={
+                  <GoogleDriveProvider>
+                    <ProtectedRoutes />
+                  </GoogleDriveProvider>
+                }
+              >
                 <Route path="/home" element={<Main />} />
               </Route>
               <Route path="*" element={<Navigate to="/" />} />

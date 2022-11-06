@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import jwtDecode from "jwt-decode";
 
-import useGoogleDrive from "src/hooks/GoogleDrive";
+import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
 
 type UserContext = {
   user?: GoogleUserCredential | null;
@@ -157,8 +157,7 @@ export function UserProvider({ children }: PropsWithChildren) {
 }
 
 export function useUser() {
-  if (!userContext)
-    throw new Error("useUser must be used within a UserProvider");
-
-  return useContext(userContext);
+  const context = useContext(userContext);
+  if (!context) throw new Error("useUser must be used within a UserProvider");
+  return context;
 }

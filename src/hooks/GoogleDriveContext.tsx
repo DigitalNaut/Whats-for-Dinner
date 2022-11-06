@@ -1,6 +1,8 @@
 import type { TokenResponse } from "@react-oauth/google";
+import type { AxiosResponse } from "axios";
+import type { PropsWithChildren } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
-import { useState } from "react";
+import { useState, createContext, useContext } from "react";
 import axios from "axios";
 
 import { useScript } from "src/hooks/UseScript";
@@ -26,13 +28,42 @@ type TokenResponseError = Pick<
 type TokenInfo = {
   tokenExpiration: Date;
 };
+type FileUploadJSONResponse = (FileUploadSuccess & GoogleDriveError) | false;
+type FileDownloadJSONResponse = ArrayBuffer | GoogleDriveError | false;
+
+type GoogleDriveContextType = {
+  uploadFile({
+    file,
+    metadata,
+  }: FileParams): Promise<AxiosResponse<FileUploadJSONResponse, unknown>>;
+  fetchFiles(): Promise<gapi.client.drive.File[] | undefined>;
+  fetchFile(
+    file: gapi.client.drive.File
+  ): Promise<AxiosResponse<FileDownloadJSONResponse, unknown>>;
+  isLoaded: boolean;
+  userTokens?: TokenResponseSuccess & TokenInfo;
+};
+
+const googleDriveContext = createContext<GoogleDriveContextType>({
+  uploadFile: () => {
+    throw new Error("Google Drive context is uninitialized");
+  },
+  fetchFiles: () => {
+    throw new Error("Google Drive context is uninitialized");
+  },
+  fetchFile: () => {
+    throw new Error("Google Drive context is uninitialized");
+  },
+  isLoaded: false,
+  userTokens: undefined,
+});
 
 const scope = "https://www.googleapis.com/auth/drive.appdata";
 const spaces = "appDataFolder";
 const DISCOVERY_DOC =
   "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest";
 
-export default function useGoogleDrive() {
+export function GoogleDriveProvider({ children }: PropsWithChildren) {
   const { user } = useUser();
 
   const [userTokens, setUserTokens] = useState<
@@ -134,7 +165,7 @@ export default function useGoogleDrive() {
     const { result } = await gapi.client.drive.files.list({
       pageSize: 10,
       fields:
-        "files(id, name, mimeType, hasThumbnail, thumbnailLink, webViewLink, iconLink, size)",
+        "files(id, name, mimeType, hasThumbnail, thumbnailLink, iconLink, size)",
       spaces,
       oauth_token: userTokens?.access_token,
     });
@@ -162,11 +193,24 @@ export default function useGoogleDrive() {
     return request;
   };
 
-  return {
-    uploadFile,
-    fetchFiles,
-    fetchFile,
-    isLoaded,
-    userTokens,
-  };
+  return (
+    <googleDriveContext.Provider
+      value={{
+        uploadFile,
+        fetchFiles,
+        fetchFile,
+        isLoaded,
+        userTokens,
+      }}
+    >
+      {children}
+    </googleDriveContext.Provider>
+  );
+}
+
+export function useGoogleDrive() {
+  const context = useContext(googleDriveContext);
+  if (!context)
+    throw new Error("useGoogleDrive must be used within a GoogleDriveContext");
+  return context;
 }
