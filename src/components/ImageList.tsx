@@ -1,3 +1,4 @@
+import { forwardRef, useImperativeHandle } from "react";
 import { useEffect, useState } from "react";
 import {
   faDownload,
@@ -11,7 +12,11 @@ import Spinner from "src/components/Spinner";
 import ImagePreview from "src/components/ImagePreview";
 import AwaitingPermissionsNotice from "src/components/AwaitingPermissionsNotice";
 
-export default function ImageList() {
+export type ImageListActions = {
+  listFiles(): void;
+};
+
+const ImageList = forwardRef<ImageListActions>(function List(_, ref) {
   const { fetchFiles, fetchFile, deleteFile, userTokens } = useGoogleDrive();
   const [error, setError] = useState<string>();
 
@@ -100,6 +105,10 @@ export default function ImageList() {
     }
   }
 
+  useImperativeHandle(ref, () => ({
+    listFiles,
+  }));
+
   useEffect(() => {
     listFiles();
   }, [userTokens]);
@@ -187,4 +196,6 @@ export default function ImageList() {
       />
     </>
   );
-}
+});
+
+export default ImageList;
