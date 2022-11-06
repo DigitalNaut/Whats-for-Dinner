@@ -57,7 +57,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 w-full overflow-hidden">
       {error && (
         <div className="p-2 rounded-sm w-full bg-red-500 text-white">
           {error}
@@ -67,6 +67,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
         type="file"
         onChange={handleImageInputChange}
         accept="image/png, image/jpeg, image/webp"
+        className="text-ellipsis w-full"
       />
       {imageFileToUpload && (
         <>
