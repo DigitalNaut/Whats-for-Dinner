@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
 import Spinner from "src/components/Spinner";
 import ImagePreview from "src/components/ImagePreview";
+import AwaitingPermissionsNotice from "src/components/AwaitingPermissionsNotice";
 
 export default function ImageList() {
   const { fetchFiles, fetchFile, userTokens } = useGoogleDrive();
@@ -75,17 +76,12 @@ export default function ImageList() {
 
   if (!userTokens)
     return (
-      <div className="grid place-items-center">
-        <div className="p-2 text-center">
-          <h3 className="font-bold">Esperando permisos</h3>
-          <p>Otorga los permisos que aparecen en pantalla para continuar</p>
-        </div>
-      </div>
+      <AwaitingPermissionsNotice>
+        <button data-filled onClick={listFiles}>
+          Reintentar
+        </button>
+      </AwaitingPermissionsNotice>
     );
-  else
-    <div className="flex flex-col items-center">
-      {JSON.stringify(userTokens, null, 2)}
-    </div>;
 
   return (
     <>
