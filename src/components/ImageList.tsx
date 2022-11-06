@@ -16,7 +16,7 @@ type ImageListProps = {
 };
 
 export default function ImageList({ refreshDate }: ImageListProps) {
-  const { fetchFiles, fetchFile, deleteFile, userTokens } = useGoogleDrive();
+  const { fetchList, fetchFile, deleteFile, userTokens } = useGoogleDrive();
   const [error, setError] = useState<string>();
 
   const [driveFiles, setDriveFiles] = useState<gapi.client.drive.File[]>();
@@ -28,13 +28,16 @@ export default function ImageList({ refreshDate }: ImageListProps) {
 
   const [loadingDriveFiles, setLoadingDriveFiles] = useState(true);
 
-  async function listFiles() {
+  async function listFiles(signal?: AbortSignal) {
     setLoadingDriveFiles(true);
 
     try {
-      const files = await fetchFiles();
-      if (files?.length) setDriveFiles(files);
-      else setDriveFiles(undefined);
+      const { data } = await fetchList(signal);
+      if (data.files?.length) setDriveFiles(data.files);
+      else {
+        setDriveFiles(undefined);
+        if (data.error) setError(`${data.error.code}: ${data.error.message}`);
+      }
     } catch (error) {
       if (error instanceof Error) setError(error.message);
       else if (typeof error === "string") setError(error);
@@ -105,13 +108,18 @@ export default function ImageList({ refreshDate }: ImageListProps) {
   }
 
   useEffect(() => {
-    listFiles();
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    listFiles(signal);
+
+    return () => controller.abort();
   }, [userTokens, refreshDate]);
 
   if (!userTokens)
     return (
       <AwaitingPermissionsNotice>
-        <button data-filled onClick={listFiles}>
+        <button data-filled onClick={() => listFiles()}>
           Reintentar
         </button>
       </AwaitingPermissionsNotice>
@@ -179,7 +187,11 @@ export default function ImageList({ refreshDate }: ImageListProps) {
 
         {!driveFiles && <div>No files found</div>}
       </div>
-      <button data-filled onClick={listFiles} disabled={loadingDriveFiles}>
+      <button
+        data-filled
+        onClick={() => listFiles()}
+        disabled={loadingDriveFiles}
+      >
         {loadingDriveFiles ? <Spinner /> : "Refresh list"}
       </button>
 

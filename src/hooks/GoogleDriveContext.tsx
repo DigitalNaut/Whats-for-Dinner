@@ -31,13 +31,18 @@ type TokenInfo = {
 type FileUploadJSONResponse = (FileUploadSuccess & GoogleDriveError) | false;
 type FileDownloadJSONResponse = ArrayBuffer | GoogleDriveError | false;
 type FileDeletedJSONResponse = GoogleDriveError | "";
+type FilesListJSONResponse = {
+  files?: gapi.client.drive.File[];
+} & GoogleDriveError;
 
 type GoogleDriveContextType = {
   uploadFile({
     file,
     metadata,
   }: FileParams): Promise<AxiosResponse<FileUploadJSONResponse, unknown>>;
-  fetchFiles(): Promise<gapi.client.drive.File[] | undefined>;
+  fetchList(
+    signal?: AbortSignal
+  ): Promise<AxiosResponse<FilesListJSONResponse, unknown>>;
   fetchFile(
     file: gapi.client.drive.File
   ): Promise<AxiosResponse<FileDownloadJSONResponse, unknown>>;
@@ -52,7 +57,7 @@ const googleDriveContext = createContext<GoogleDriveContextType>({
   uploadFile: () => {
     throw new Error("Google Drive context is uninitialized");
   },
-  fetchFiles: () => {
+  fetchList: () => {
     throw new Error("Google Drive context is uninitialized");
   },
   fetchFile: () => {
@@ -160,23 +165,21 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     return request;
   };
 
-  const fetchFiles = async () => {
-    try {
-      await guardTokens();
-    } catch (error) {
-      console.error(error);
-      return;
-    }
+  const fetchList = async (signal?: AbortSignal) => {
+    await guardTokens();
 
-    const { result } = await gapi.client.drive.files.list({
-      pageSize: 10,
-      fields:
-        "files(id, name, mimeType, hasThumbnail, thumbnailLink, iconLink, size)",
-      spaces,
-      oauth_token: userTokens?.access_token,
+    const request = axios.get("https://www.googleapis.com/drive/v3/files", {
+      params: {
+        pageSize: 10,
+        fields:
+          "files(id, name, mimeType, hasThumbnail, thumbnailLink, iconLink, size)",
+        spaces,
+        oauth_token: userTokens?.access_token,
+      },
+      signal,
     });
 
-    return result.files;
+    return request;
   };
 
   const fetchFile = async (file: gapi.client.drive.File) => {
@@ -215,7 +218,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     <googleDriveContext.Provider
       value={{
         uploadFile,
-        fetchFiles,
+        fetchList,
         fetchFile,
         deleteFile,
         isLoaded,
