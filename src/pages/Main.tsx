@@ -16,12 +16,12 @@ export default function Main() {
   return (
     <div className="flex p-6">
       <div className="flex-1">
-        <h2 className="text-xl mb-4">File upload</h2>
+        <h2 className="text-xl mb-4">Guardar imagen</h2>
         <ImageUpload onUpload={() => console.log("Needs to refresh list")} />
       </div>
 
       <div className="flex-1 flex flex-col gap-4">
-        <h2 className="text-xl mb-4">Saved files</h2>
+        <h2 className="text-xl mb-4">Imágenes guardadas</h2>
         <ImageList />
       </div>
     </div>
