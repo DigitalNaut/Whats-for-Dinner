@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { ErrorBoundary } from "react-error-boundary";
 
-import ErrorFallback from "./ErrorFallback";
+import ErrorFallback from "src/components/ErrorFallback";
 
 function ErrorComponent() {
   throw new Error("Error!");

@@ -34,12 +34,7 @@
   ],
   "rules": {
     "@typescript-eslint/consistent-type-imports": "warn",
-    "no-relative-import-paths/no-relative-import-paths": [
-      "warn",
-      {
-        "allowSameFolder": true
-      }
-    ],
+    "no-relative-import-paths/no-relative-import-paths": "warn",
     "object-shorthand": ["error", "always"]
   }
 }
