@@ -63,13 +63,15 @@ declare interface GoogleUserInfo {
   locale: string;
 }
 
-type FileUploadError = {
+type GoogleDriveError = {
   error: {
     errors: [
       {
         domain: string;
         reason: string;
         message: string;
+        locationType?: string;
+        location?: string;
       }
     ];
     code: number;
@@ -83,7 +85,3 @@ type FileUploadSuccess = {
   name: string;
   mimeType: string;
 };
-
-declare type FileUploadJSONResponse =
-  | (FileUploadError & FileUploadSuccess)
-  | false;
