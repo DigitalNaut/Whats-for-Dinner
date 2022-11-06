@@ -15,6 +15,90 @@ type ImageListProps = {
   refreshDate: Date;
 };
 
+type ListItemProps = {
+  file: gapi.client.drive.File;
+  downloadFile: (file: gapi.client.drive.File) => Promise<void>;
+  removeFile: (file: gapi.client.drive.File) => Promise<boolean>;
+};
+
+function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  if (!file.id)
+    return (
+      <div className="flex gap-2 items-center">
+        <FontAwesomeIcon icon={faTimes} />
+        <i>File unavailable</i>
+      </div>
+    );
+
+  return (
+    <div
+      key={file.id}
+      className={`group w-full flex gap-2 hover:bg-white/20 rounded-sm items-center p-2 ${
+        isDeleting ? "opacity-50 line-through grayscale" : ""
+      }`}
+    >
+      {file.iconLink && (
+        <img
+          title={`MIME Type: "${file.mimeType}"`}
+          src={file.iconLink}
+          className={`w-[20px] h-[20px] ${isDeleting ? "grayscale" : ""}`}
+          alt="File icon"
+        />
+      )}
+      <span
+        title={file.name}
+        className="flex-1 text-ellipsis overflow-hidden whitespace-nowrap"
+      >
+        {file.name?.split(".")[0]}
+      </span>
+      <span>
+        {file.size ? (Number(file.size) * 0.001).toFixed(2) : "?"}
+        &nbsp;kb
+      </span>
+      {file.id && (
+        <>
+          <button
+            disabled={isDownloading || isDeleting}
+            className="flex gap-2"
+            title="Descargar"
+            onClick={async () => {
+              setIsDownloading(true);
+              await downloadFile(file);
+              setIsDownloading(false);
+            }}
+          >
+            {isDownloading ? (
+              <Spinner size="sm" />
+            ) : (
+              <FontAwesomeIcon icon={faDownload} />
+            )}
+          </button>
+          <button
+            disabled={isDownloading || isDeleting}
+            className="flex gap-2"
+            title="Borrar"
+            onClick={async () => {
+              setIsDeleting(true);
+              const wasDeleted = await removeFile(file);
+              await new Promise((resolve) => setTimeout(resolve, 500));
+              setIsDeleting(!wasDeleted);
+            }}
+          >
+            {isDeleting ? (
+              <Spinner size="sm" />
+            ) : (
+              <FontAwesomeIcon icon={faTrash} />
+            )}
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function ImageList({ refreshDate }: ImageListProps) {
   const { fetchList, fetchFile, deleteFile, userTokens } = useGoogleDrive();
   const [error, setError] = useState<string>();
@@ -50,7 +134,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     setLoadingDriveFiles(false);
   }
 
-  async function getFile(fileInfo: gapi.client.drive.File) {
+  async function downloadFile(fileInfo: gapi.client.drive.File) {
     try {
       const { data } = await fetchFile(fileInfo);
 
@@ -88,8 +172,12 @@ export default function ImageList({ refreshDate }: ImageListProps) {
       console.log("File delete:");
       console.log(data);
 
-      if (data === "") listFiles();
-      else if (data.error)
+      if (data === "") {
+        listFiles();
+        return true;
+      }
+
+      if (data.error)
         setError(
           `Error ${data.error.code || "unknown"}: ${
             data.error.message || "No message"
@@ -105,6 +193,8 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         console.error(error);
       }
     }
+
+    return false;
   }
 
   useEffect(() => {
@@ -133,59 +223,15 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         </div>
       )}
       <div className="flex flex-col">
-        {driveFiles &&
-          driveFiles.map((file) =>
-            file.id ? (
-              <div
-                key={file.id}
-                className="group w-full flex gap-2 hover:bg-white/20 rounded-sm items-center p-2"
-              >
-                {file.iconLink && (
-                  <img
-                    title={`MIME Type: "${file.mimeType}"`}
-                    src={file.iconLink}
-                    className="w-[20px] h-[20px]"
-                    alt="File icon"
-                  />
-                )}
-                <span
-                  title={file.name}
-                  className="flex-1 text-ellipsis overflow-hidden whitespace-nowrap"
-                >
-                  {file.name?.split(".")[0]}
-                </span>
-                <span>
-                  {file.size ? (Number(file.size) * 0.001).toFixed(2) : "?"}
-                  &nbsp;kb
-                </span>
-                {file.id && (
-                  <>
-                    <button
-                      className="flex gap-2"
-                      title="Descargar"
-                      onClick={() => getFile(file)}
-                    >
-                      <FontAwesomeIcon icon={faDownload} />
-                    </button>
-                    <button
-                      className="flex gap-2"
-                      title="Borrar"
-                      onClick={() => removeFile(file)}
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                  </>
-                )}
-              </div>
-            ) : (
-              <div className="flex gap-2 items-center">
-                <FontAwesomeIcon icon={faTimes} />
-                <em>File unavailable</em>
-              </div>
-            )
-          )}
-
-        {!driveFiles && <div>No files found</div>}
+        {driveFiles?.map((file) => (
+          <ListItem
+            key={file.id}
+            file={file}
+            downloadFile={downloadFile}
+            removeFile={removeFile}
+          />
+        ))}
+        {!driveFiles && <i>No hay imágenes</i>}
       </div>
       <button
         data-filled
@@ -195,7 +241,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         {loadingDriveFiles ? <Spinner /> : "Refresh list"}
       </button>
 
-      <h3 className="text-lg">Image preview</h3>
+      <h3 className="text-lg">Imagen descargada</h3>
       <ImagePreview
         file={driveFilePreview?.file}
         fileName={driveFilePreview?.fileInfo.name}

@@ -42,6 +42,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
         );
       } else onUpload();
 
+      setImageFileToUpload(undefined);
       setUpLoadingFile(false);
     } catch (error) {
       setUpLoadingFile(false);
