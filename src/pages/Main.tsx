@@ -1,6 +1,5 @@
-import { createRef } from "react";
+import { useState } from "react";
 
-import type { ImageListActions } from "src/components/ImageList";
 import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
 import Spinner from "src/components/Spinner";
 import ImageUpload from "src/components/ImageUpload";
@@ -8,7 +7,7 @@ import ImageList from "src/components/ImageList";
 
 export default function Main() {
   const { isLoaded } = useGoogleDrive();
-  const listRef = createRef<ImageListActions>();
+  const [refreshDate, setRefreshDate] = useState(new Date());
 
   if (!isLoaded)
     return (
@@ -21,12 +20,12 @@ export default function Main() {
     <div className="flex p-6">
       <div className="flex-1">
         <h2 className="text-xl mb-4">Guardar imagen</h2>
-        <ImageUpload onUpload={() => listRef.current?.listFiles()} />
+        <ImageUpload onUpload={() => setRefreshDate(new Date())} />
       </div>
 
       <div className="flex-1 flex flex-col gap-4">
         <h2 className="text-xl mb-4">Imágenes guardadas</h2>
-        <ImageList ref={listRef} />
+        <ImageList refreshDate={refreshDate} />
       </div>
     </div>
   );

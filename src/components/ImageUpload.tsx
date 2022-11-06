@@ -5,12 +5,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
 import Spinner from "src/components/Spinner";
 
-type ImageUploadProps = {
-  onUpload: (file: File) => void;
-};
-
-export default function ImageUpload({ onUpload }: ImageUploadProps) {
+export default function ImageUpload({ onUpload }: { onUpload(): void }) {
   const { uploadFile } = useGoogleDrive();
+
   const [imageFileToUpload, setImageFileToUpload] = useState<File>();
   const [uploadingFile, setUpLoadingFile] = useState(false);
   const [error, setError] = useState<string>();
@@ -43,7 +40,7 @@ export default function ImageUpload({ onUpload }: ImageUploadProps) {
         setError(
           `Error ${data.error.code || "unknown"}: ${data.error.message}`
         );
-      } else onUpload(imageFileToUpload);
+      } else onUpload();
 
       setUpLoadingFile(false);
     } catch (error) {
