@@ -1,30 +1,15 @@
-import type { AxiosResponse } from "axios";
-import type { TokenResponse } from "@react-oauth/google";
+import type { CredentialResponse } from "@react-oauth/google";
 import type { PropsWithChildren } from "react";
+import { GoogleLogin, googleLogout } from "@react-oauth/google";
 import { createContext, useContext, useState } from "react";
-import { googleLogout, useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
-import GoogleLoginButton from "src/components/GoogleLoginButton";
-
-import { scope } from "src/hooks/GoogleDrive";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
+import jwtDecode from "jwt-decode";
 
-type TokenResponseSuccess = Omit<
-  TokenResponse,
-  "error" | "error_description" | "error_uri"
->;
-type TokenResponseError = Pick<
-  TokenResponse,
-  "error" | "error_description" | "error_uri"
->;
-type TokenInfo = {
-  tokenExpiration: Date;
-};
+import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
 
 type UserContext = {
-  user: GoogleUserInfo;
-  userTokens: (TokenResponseSuccess & TokenInfo) | undefined;
+  user?: GoogleUserCredential | null;
   LoginButton(): JSX.Element | null;
   LogoutButton(): JSX.Element | null;
   UserCard(): JSX.Element | null;
@@ -33,7 +18,6 @@ type UserContext = {
 
 const userContext = createContext<UserContext>({
   user: undefined,
-  userTokens: undefined,
   LoginButton: () => null,
   LogoutButton: () => null,
   UserCard: () => null,
@@ -41,42 +25,26 @@ const userContext = createContext<UserContext>({
 });
 
 export function UserProvider({ children }: PropsWithChildren) {
-  const [user, setUser] = useState<GoogleUserInfo>();
+  const [user, setUser] = useState<GoogleUserCredential | null>();
   const [notification, setNotification] = useState<string>();
-  const [userTokens, setUserTokens] = useState<
-    TokenResponseSuccess & TokenInfo
-  >();
 
-  const onSignInSuccess = async (tokenResponse: TokenResponseSuccess) => {
-    const tokenExpiration = new Date(
-      Date.now() + tokenResponse.expires_in * 1000
-    );
-    setUserTokens({ ...tokenResponse, tokenExpiration });
+  const onSignInSuccess = (credentialResponse: CredentialResponse) => {
+    const { credential } = credentialResponse;
 
-    try {
-      const userInfo: AxiosResponse<GoogleUserInfo> = await axios.get(
-        "https://www.googleapis.com/oauth2/v3/userinfo",
-        { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } }
-      );
+    if (!credential) throw new Error("No credential found");
 
-      setUser(userInfo.data);
-    } catch (error) {
-      if (axios.isAxiosError(error))
-        throw new Error(`Failed to fetch user info: ${error.message}`);
+    const userInfo: GoogleUserCredential = jwtDecode(credential);
 
-      if (error instanceof Error) throw error;
-    }
+    setUser(userInfo);
   };
 
-  const onSignInError = (errorResponse: TokenResponseError) => {
-    setUser(null);
-    throw errorResponse.error;
+  const onSignInError = () => {
+    logout("Error iniciando sesión");
   };
 
-  const logout = (reason: string) => {
+  const logout = (reason?: string) => {
     googleLogout();
     setUser(null);
-    setUserTokens(undefined);
     setNotification(reason);
 
     setTimeout(() => setNotification(undefined), 3000);
@@ -85,13 +53,20 @@ export function UserProvider({ children }: PropsWithChildren) {
   function LoginButton() {
     if (user) return null;
 
-    const requestAccess = useGoogleLogin({
-      onSuccess: onSignInSuccess,
-      onError: onSignInError,
-      scope,
-    });
-
-    return <GoogleLoginButton onClick={() => requestAccess()} />;
+    return (
+      <GoogleLogin
+        onSuccess={onSignInSuccess}
+        onError={onSignInError}
+        auto_select
+        context="signin"
+        itp_support
+        shape="pill"
+        locale="ES"
+        size="large"
+        theme="filled_blue"
+        useOneTap
+      />
+    );
   }
 
   function LogoutButton() {
@@ -110,6 +85,8 @@ export function UserProvider({ children }: PropsWithChildren) {
 
   function UserCard() {
     if (!user) return null;
+
+    const { userTokens } = useGoogleDrive();
 
     const { picture, name, email } = user;
     const isTokenExpired =
@@ -155,7 +132,6 @@ export function UserProvider({ children }: PropsWithChildren) {
     <userContext.Provider
       value={{
         user,
-        userTokens,
         UserCard,
         LoginButton,
         LogoutButton,
@@ -181,8 +157,7 @@ export function UserProvider({ children }: PropsWithChildren) {
 }
 
 export function useUser() {
-  if (!userContext)
-    throw new Error("useUser must be used within a UserProvider");
-
-  return useContext(userContext);
+  const context = useContext(userContext);
+  if (!context) throw new Error("useUser must be used within a UserProvider");
+  return context;
 }

@@ -1,9 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./styles/tailwind.css";
-import App from "./App";
 import { BrowserRouter } from "react-router-dom";
-import { UserProvider } from "./hooks/UserContext";
+
+import App from "src/App";
+import { UserProvider } from "src/hooks/UserContext";
+
+import "src/styles/tailwind.css";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
