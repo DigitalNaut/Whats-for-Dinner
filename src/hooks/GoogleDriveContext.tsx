@@ -1,5 +1,5 @@
 import type { TokenResponse } from "@react-oauth/google";
-import type { AxiosResponse } from "axios";
+import type { AxiosRequestConfig, AxiosResponse } from "axios";
 import type { PropsWithChildren } from "react";
 import { useEffect } from "react";
 import { useGoogleLogin, hasGrantedAnyScopeGoogle } from "@react-oauth/google";
@@ -41,16 +41,18 @@ type GoogleDriveContextType = {
   hasScope: boolean;
   uploadFile(
     { file, metadata }: FileParams,
-    signal?: AbortSignal
+    config?: AxiosRequestConfig
   ): Promise<AxiosResponse<FileUploadJSONResponse, unknown>>;
   fetchList(
-    signal?: AbortSignal
+    config?: AxiosRequestConfig
   ): Promise<AxiosResponse<FilesListJSONResponse, unknown>>;
   fetchFile(
-    file: gapi.client.drive.File
+    file: gapi.client.drive.File,
+    config?: AxiosRequestConfig
   ): Promise<AxiosResponse<FileDownloadJSONResponse, unknown>>;
   deleteFile(
-    file: gapi.client.drive.File
+    file: gapi.client.drive.File,
+    config?: AxiosRequestConfig
   ): Promise<AxiosResponse<FileDeletedJSONResponse, unknown>>;
   isLoaded: boolean;
   userTokens?: TokenResponseSuccess & TokenInfo;
@@ -147,9 +149,9 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     }
   }
 
-  const uploadFile = async (
-    { file, metadata }: FileParams,
-    signal: AbortSignal
+  const uploadFile: GoogleDriveContextType["uploadFile"] = async (
+    { file, metadata },
+    config
   ) => {
     const authStatus = authGuard();
     if (authStatus !== "OK") return Promise.reject(authStatus);
@@ -171,14 +173,14 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
         headers: {
           Authorization: `Bearer ${userTokens?.access_token}`,
         },
-        signal,
+        ...config,
       }
     );
 
     return request;
   };
 
-  const fetchList = async (signal?: AbortSignal) => {
+  const fetchList: GoogleDriveContextType["fetchList"] = async (config) => {
     const authStatus = authGuard();
     if (authStatus !== "OK") return Promise.reject(authStatus);
 
@@ -190,13 +192,16 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
         spaces,
         oauth_token: userTokens?.access_token,
       },
-      signal,
+      ...config,
     });
 
     return request;
   };
 
-  const fetchFile = async (file: gapi.client.drive.File) => {
+  const fetchFile: GoogleDriveContextType["fetchFile"] = async (
+    file,
+    config
+  ) => {
     const authStatus = authGuard();
     if (authStatus !== "OK") return Promise.reject(authStatus);
 
@@ -208,13 +213,17 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
         headers: {
           authorization: `Bearer ${userTokens?.access_token}`,
         },
+        ...config,
       }
     );
 
     return request;
   };
 
-  const deleteFile = async (file: gapi.client.drive.File) => {
+  const deleteFile: GoogleDriveContextType["deleteFile"] = async (
+    file,
+    config
+  ) => {
     const authStatus = authGuard();
     if (authStatus !== "OK") return Promise.reject(authStatus);
 
@@ -224,6 +233,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
         headers: {
           authorization: `Bearer ${userTokens?.access_token}`,
         },
+        ...config,
       }
     );
 
