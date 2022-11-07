@@ -113,15 +113,19 @@ export function UserProvider({ children }: PropsWithChildren) {
             height={32}
             className="w-8 h-8 rounded-full"
           />
-          <div className="flex gap-2">
+          <a
+            className="flex gap-2"
+            href="https://drive.google.com/drive/settings"
+            target="_blank"
+            rel="noreferrer"
+          >
             <div>
               <div className="hidden sm:block text-sm">{name}</div>
               <div className="hidden sm:block text-xs">{email}</div>
             </div>
-
-            <div className="hidden group-hover:flex flex-col">
-              <LogoutButton />
-            </div>
+          </a>
+          <div className="hidden group-hover:flex flex-col">
+            <LogoutButton />
           </div>
         </div>
       </div>

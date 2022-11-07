@@ -126,8 +126,8 @@ export default function ImageList({ refreshDate }: ImageListProps) {
       if (error === "Authorizing") return;
 
       if (error instanceof Error) {
-        if (error.name === "AbortError") return;
-        setError(error.message);
+        if (error.name === "CanceledError") return;
+        setError(`${error.name}: ${error.message}`);
       } else {
         setError("An unknown error ocurred");
         console.error(error);
@@ -157,10 +157,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
           }`
         );
     } catch (error) {
-      if (error instanceof Error)
-        setError(`Error fetching image: ${error.message}`);
-      else if (typeof error === "string")
-        setError(`Error fetching image: ${error}`);
+      if (error instanceof Error) setError(`${error.name}: ${error.message}`);
       else {
         setError("An unknown error ocurred");
         console.error(error);
@@ -184,10 +181,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
           }`
         );
     } catch (error) {
-      if (error instanceof Error)
-        setError(`Error fetching image: ${error.message}`);
-      else if (typeof error === "string")
-        setError(`Error fetching image: ${error}`);
+      if (error instanceof Error) setError(`${error.name}: ${error.message}`);
       else {
         setError("An unknown error ocurred");
         console.error(error);
