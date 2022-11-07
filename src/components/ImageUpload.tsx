@@ -1,15 +1,18 @@
-import { useState } from "react";
-import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useState } from "react";
+import {
+  faCloudArrowUp,
+  faShieldHalved,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
 import Spinner from "src/components/Spinner";
 
 export default function ImageUpload({ onUpload }: { onUpload(): void }) {
-  const { uploadFile } = useGoogleDrive();
+  const { uploadFile, hasScope } = useGoogleDrive();
 
   const [imageFileToUpload, setImageFileToUpload] = useState<File>();
-  const [uploadingFile, setUpLoadingFile] = useState(false);
+  const [isUploadingFile, setIsUpLoadingFile] = useState(false);
   const [error, setError] = useState<string>();
 
   const handleImageInputChange = async (
@@ -20,20 +23,23 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
     if (file) setImageFileToUpload(file);
   };
 
-  const uploadFileHandler = async () => {
+  const uploadFileHandler = async (signal?: AbortSignal) => {
     setError(undefined);
-    setUpLoadingFile(true);
+    setIsUpLoadingFile(true);
 
     if (!imageFileToUpload) return setError("No file selected");
 
     try {
-      const { data } = await uploadFile({
-        file: imageFileToUpload,
-        metadata: {
-          name: imageFileToUpload.name,
-          mimeType: imageFileToUpload.type,
+      const { data } = await uploadFile(
+        {
+          file: imageFileToUpload,
+          metadata: {
+            name: imageFileToUpload.name,
+            mimeType: imageFileToUpload.type,
+          },
         },
-      });
+        signal
+      );
 
       if (data === false) setError("File upload failed");
       else if (data.error) {
@@ -43,18 +49,28 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
       } else onUpload();
 
       setImageFileToUpload(undefined);
-      setUpLoadingFile(false);
+      setIsUpLoadingFile(false);
     } catch (error) {
-      setUpLoadingFile(false);
+      if (error === "Authorizing") return;
 
-      if (error instanceof Error) setError(error.message);
-      else if (typeof error === "string") setError(error);
+      if (error instanceof Error) {
+        if (error.name === "AbortError") return;
+        setError(error.message);
+      } else if (typeof error === "string") setError(error);
       else {
         setError("An unknown error ocurred");
         console.error(error);
       }
     }
   };
+
+  useEffect(() => {
+    if (!hasScope) return;
+
+    const controller = new AbortController();
+    const signal = controller.signal;
+    if (isUploadingFile) uploadFileHandler(signal);
+  }, [isUploadingFile, hasScope]);
 
   return (
     <div className="flex flex-col gap-2 w-full overflow-hidden">
@@ -81,16 +97,21 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
           />
           <button
             data-filled
-            onClick={uploadFileHandler}
-            disabled={uploadingFile}
+            onClick={() => uploadFileHandler()}
+            disabled={isUploadingFile}
             className="flex gap-2 items-center"
           >
-            {uploadingFile ? (
-              <Spinner text="Uploading..." />
-            ) : (
+            {isUploadingFile ? (
+              <Spinner text="Cargando..." />
+            ) : hasScope ? (
               <>
                 <FontAwesomeIcon icon={faCloudArrowUp} />
-                <span>Upload</span>
+                <span>Cargar</span>
+              </>
+            ) : (
+              <>
+                <FontAwesomeIcon icon={faShieldHalved} />
+                <span>Otorgar permiso y cargar</span>
               </>
             )}
           </button>

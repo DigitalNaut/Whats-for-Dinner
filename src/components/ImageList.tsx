@@ -100,7 +100,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
 }
 
 export default function ImageList({ refreshDate }: ImageListProps) {
-  const { fetchList, fetchFile, deleteFile, userTokens } = useGoogleDrive();
+  const { fetchList, fetchFile, deleteFile, hasScope } = useGoogleDrive();
   const [error, setError] = useState<string>();
 
   const [driveFiles, setDriveFiles] = useState<gapi.client.drive.File[]>();
@@ -123,9 +123,12 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         if (data.error) setError(`${data.error.code}: ${data.error.message}`);
       }
     } catch (error) {
-      if (error instanceof Error) setError(error.message);
-      else if (typeof error === "string") setError(error);
-      else {
+      if (error === "Authorizing") return;
+
+      if (error instanceof Error) {
+        if (error.name === "AbortError") return;
+        setError(error.message);
+      } else {
         setError("An unknown error ocurred");
         console.error(error);
       }
@@ -169,9 +172,6 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     try {
       const { data } = await deleteFile(fileInfo);
 
-      console.log("File delete:");
-      console.log(data);
-
       if (data === "") {
         listFiles();
         return true;
@@ -204,9 +204,9 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     listFiles(signal);
 
     return () => controller.abort();
-  }, [userTokens, refreshDate]);
+  }, [hasScope, refreshDate]);
 
-  if (!userTokens)
+  if (!hasScope)
     return (
       <AwaitingPermissionsNotice>
         <button data-filled onClick={() => listFiles()}>
