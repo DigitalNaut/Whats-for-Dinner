@@ -12,7 +12,7 @@ import ImagePreview from "src/components/ImagePreview";
 import AwaitingPermissionsNotice from "src/components/AwaitingPermissionsNotice";
 
 type ImageListProps = {
-  refreshDate: Date;
+  refreshDate: number;
 };
 
 type ListItemProps = {

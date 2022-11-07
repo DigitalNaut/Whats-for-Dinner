@@ -7,7 +7,7 @@ import ImageList from "src/components/ImageList";
 
 export default function Main() {
   const { isLoaded } = useGoogleDrive();
-  const [refreshDate, setRefreshDate] = useState(new Date());
+  const [refreshDate, setRefreshDate] = useState(Date.now());
 
   if (!isLoaded)
     return (
@@ -20,7 +20,7 @@ export default function Main() {
     <div className="flex p-6">
       <div className="flex-1">
         <h2 className="text-xl mb-4">Guardar imagen</h2>
-        <ImageUpload onUpload={() => setRefreshDate(new Date())} />
+        <ImageUpload onUpload={() => setRefreshDate(Date.now())} />
       </div>
 
       <div className="flex-1 flex flex-col gap-4">
