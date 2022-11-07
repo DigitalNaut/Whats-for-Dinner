@@ -17,13 +17,13 @@ export default function Main() {
     );
 
   return (
-    <div className="flex p-6">
-      <div className="flex-1">
+    <div className="flex pt-6">
+      <div className="w-1/2 p-2">
         <h2 className="text-xl mb-4">Guardar imagen</h2>
         <ImageUpload onUpload={() => setRefreshDate(Date.now())} />
       </div>
 
-      <div className="flex-1 flex flex-col gap-4">
+      <div className="w-1/2 p-2 flex flex-col gap-4">
         <h2 className="text-xl mb-4">Imágenes guardadas</h2>
         <ImageList refreshDate={refreshDate} />
       </div>
