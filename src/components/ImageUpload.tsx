@@ -18,9 +18,24 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
   const handleImageInputChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    setError(undefined);
+
     const [file] = event.target.files || [];
 
-    if (file) setImageFileToUpload(file);
+    if (!file) return;
+
+    console.log(file.size);
+
+    if (file.size > 1024 * 1024 * 5) {
+      setError("El archivo no puede ser mayor a 5.0 MB");
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      setError("El archivo debe ser una imagen");
+      return;
+    }
+
+    setImageFileToUpload(file);
   };
 
   const uploadFileHandler = async (signal?: AbortSignal) => {
@@ -81,6 +96,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
       )}
       <input
         type="file"
+        size={1_000_000}
         onChange={handleImageInputChange}
         accept="image/png, image/jpeg, image/webp"
         className="text-ellipsis w-full"
