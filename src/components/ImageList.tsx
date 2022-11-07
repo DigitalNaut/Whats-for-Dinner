@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   faDownload,
+  faSync,
   faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
@@ -10,9 +11,10 @@ import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
 import Spinner from "src/components/Spinner";
 import ImagePreview from "src/components/ImagePreview";
 import AwaitingPermissionsNotice from "src/components/AwaitingPermissionsNotice";
+import ProgressBar from "src/components/ProgressBar";
 
 type ImageListProps = {
-  refreshDate: Date;
+  refreshDate: number;
 };
 
 type ListItemProps = {
@@ -100,7 +102,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
 }
 
 export default function ImageList({ refreshDate }: ImageListProps) {
-  const { fetchList, fetchFile, deleteFile, userTokens } = useGoogleDrive();
+  const { fetchList, fetchFile, deleteFile, hasScope } = useGoogleDrive();
   const [error, setError] = useState<string>();
 
   const [driveFiles, setDriveFiles] = useState<gapi.client.drive.File[]>();
@@ -109,6 +111,8 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     data: ArrayBuffer;
     file: File;
   }>();
+  const [downloadProgress, setDownloadProgress] = useState<number>();
+  const downloadController = useRef<AbortController>();
 
   const [loadingDriveFiles, setLoadingDriveFiles] = useState(true);
 
@@ -116,16 +120,19 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     setLoadingDriveFiles(true);
 
     try {
-      const { data } = await fetchList(signal);
+      const { data } = await fetchList({ signal });
       if (data.files?.length) setDriveFiles(data.files);
       else {
         setDriveFiles(undefined);
         if (data.error) setError(`${data.error.code}: ${data.error.message}`);
       }
     } catch (error) {
-      if (error instanceof Error) setError(error.message);
-      else if (typeof error === "string") setError(error);
-      else {
+      if (error === "Authorizing") return;
+
+      if (error instanceof Error) {
+        if (error.name === "CanceledError") return;
+        setError(`${error.name}: ${error.message}`);
+      } else {
         setError("An unknown error ocurred");
         console.error(error);
       }
@@ -135,8 +142,15 @@ export default function ImageList({ refreshDate }: ImageListProps) {
   }
 
   async function downloadFile(fileInfo: gapi.client.drive.File) {
+    downloadController.current?.abort();
+    downloadController.current = new AbortController();
+
     try {
-      const { data } = await fetchFile(fileInfo);
+      const { data } = await fetchFile(fileInfo, {
+        signal: downloadController.current?.signal,
+        onDownloadProgress: ({ progress }) => setDownloadProgress(progress),
+      });
+      setTimeout(() => setDownloadProgress(undefined), 250);
 
       if (data === false) setError("File download failed");
       else if (data instanceof ArrayBuffer)
@@ -154,11 +168,10 @@ export default function ImageList({ refreshDate }: ImageListProps) {
           }`
         );
     } catch (error) {
-      if (error instanceof Error)
-        setError(`Error fetching image: ${error.message}`);
-      else if (typeof error === "string")
-        setError(`Error fetching image: ${error}`);
-      else {
+      if (error instanceof Error) {
+        if (error.name === "CanceledError") return;
+        setError(`${error.name}: ${error.message}`);
+      } else {
         setError("An unknown error ocurred");
         console.error(error);
       }
@@ -168,9 +181,6 @@ export default function ImageList({ refreshDate }: ImageListProps) {
   async function removeFile(fileInfo: gapi.client.drive.File) {
     try {
       const { data } = await deleteFile(fileInfo);
-
-      console.log("File delete:");
-      console.log(data);
 
       if (data === "") {
         listFiles();
@@ -184,10 +194,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
           }`
         );
     } catch (error) {
-      if (error instanceof Error)
-        setError(`Error fetching image: ${error.message}`);
-      else if (typeof error === "string")
-        setError(`Error fetching image: ${error}`);
+      if (error instanceof Error) setError(`${error.name}: ${error.message}`);
       else {
         setError("An unknown error ocurred");
         console.error(error);
@@ -197,6 +204,11 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     return false;
   }
 
+  const cancelDownload = () => {
+    downloadController.current?.abort();
+    setDownloadProgress(undefined);
+  };
+
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
@@ -204,9 +216,9 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     listFiles(signal);
 
     return () => controller.abort();
-  }, [userTokens, refreshDate]);
+  }, [hasScope, refreshDate]);
 
-  if (!userTokens)
+  if (!hasScope)
     return (
       <AwaitingPermissionsNotice>
         <button data-filled onClick={() => listFiles()}>
@@ -237,11 +249,24 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         data-filled
         onClick={() => listFiles()}
         disabled={loadingDriveFiles}
+        title="Actualizar lista"
       >
-        {loadingDriveFiles ? <Spinner /> : "Refresh list"}
+        {loadingDriveFiles ? (
+          <Spinner size="sm" />
+        ) : (
+          <FontAwesomeIcon icon={faSync} />
+        )}
       </button>
 
       <h3 className="text-lg">Imagen descargada</h3>
+      {downloadProgress && (
+        <>
+          <ProgressBar progress={downloadProgress} />{" "}
+          <button data-filled onClick={() => cancelDownload()}>
+            Cancelar
+          </button>
+        </>
+      )}
       <ImagePreview
         file={driveFilePreview?.file}
         fileName={driveFilePreview?.fileInfo.name}

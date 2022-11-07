@@ -1,7 +1,8 @@
 import type { TokenResponse } from "@react-oauth/google";
-import type { AxiosResponse } from "axios";
+import type { AxiosRequestConfig, AxiosResponse } from "axios";
 import type { PropsWithChildren } from "react";
-import { useGoogleLogin } from "@react-oauth/google";
+import { useEffect } from "react";
+import { useGoogleLogin, hasGrantedAnyScopeGoogle } from "@react-oauth/google";
 import { useState, createContext, useContext } from "react";
 import axios from "axios";
 
@@ -28,6 +29,7 @@ type TokenResponseError = Pick<
 type TokenInfo = {
   tokenExpiration: Date;
 };
+
 type FileUploadJSONResponse = (FileUploadSuccess & GoogleDriveError) | false;
 type FileDownloadJSONResponse = ArrayBuffer | GoogleDriveError | false;
 type FileDeletedJSONResponse = GoogleDriveError | "";
@@ -36,24 +38,28 @@ type FilesListJSONResponse = {
 } & GoogleDriveError;
 
 type GoogleDriveContextType = {
-  uploadFile({
-    file,
-    metadata,
-  }: FileParams): Promise<AxiosResponse<FileUploadJSONResponse, unknown>>;
+  hasScope: boolean;
+  uploadFile(
+    { file, metadata }: FileParams,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<FileUploadJSONResponse, unknown>>;
   fetchList(
-    signal?: AbortSignal
+    config?: AxiosRequestConfig
   ): Promise<AxiosResponse<FilesListJSONResponse, unknown>>;
   fetchFile(
-    file: gapi.client.drive.File
+    file: gapi.client.drive.File,
+    config?: AxiosRequestConfig
   ): Promise<AxiosResponse<FileDownloadJSONResponse, unknown>>;
   deleteFile(
-    file: gapi.client.drive.File
+    file: gapi.client.drive.File,
+    config?: AxiosRequestConfig
   ): Promise<AxiosResponse<FileDeletedJSONResponse, unknown>>;
   isLoaded: boolean;
   userTokens?: TokenResponseSuccess & TokenInfo;
 };
 
 const googleDriveContext = createContext<GoogleDriveContextType>({
+  hasScope: false,
   uploadFile: () => {
     throw new Error("Google Drive context is uninitialized");
   },
@@ -78,11 +84,11 @@ const DISCOVERY_DOC =
 export function GoogleDriveProvider({ children }: PropsWithChildren) {
   const { user } = useUser();
 
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasScope, setHasScope] = useState(false);
   const [userTokens, setUserTokens] = useState<
     TokenResponseSuccess & TokenInfo
   >();
-
-  const [isLoaded, setIsLoaded] = useState(false);
 
   async function initGapiClient() {
     try {
@@ -124,23 +130,31 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     scope,
   });
 
-  async function guardTokens() {
-    const promise = new Promise<string>((resolve, reject) => {
-      if (!isLoaded) reject("Drive operation: Client is not ready");
-      if (!user) {
-        setUserTokens(undefined);
-        reject("User not logged in");
-      }
+  function authGuard(): "OK" | "Authorizing" | "Unauthorized" {
+    if (!isLoaded)
+      throw new Error("Unauthorized", { cause: "Google Drive is not loaded" });
+    if (!user) {
+      setUserTokens(undefined);
+      throw new Error("User not authenticated");
+    }
 
-      if (userTokens === undefined) requestAccess();
-      else if (userTokens.tokenExpiration > new Date()) resolve("OK");
-    });
-
-    return promise;
+    if (userTokens === undefined) {
+      requestAccess({ prompt: "" });
+      return "Authorizing";
+    } else if (userTokens.tokenExpiration > new Date()) {
+      return "OK";
+    } else {
+      setUserTokens(undefined);
+      throw new Error("Unauthorized", { cause: "Session expired" });
+    }
   }
 
-  const uploadFile = async ({ file, metadata }: FileParams) => {
-    await guardTokens();
+  const uploadFile: GoogleDriveContextType["uploadFile"] = async (
+    { file, metadata },
+    config
+  ) => {
+    const authStatus = authGuard();
+    if (authStatus !== "OK") return Promise.reject(authStatus);
 
     metadata.parents = [spaces];
 
@@ -159,14 +173,16 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
         headers: {
           Authorization: `Bearer ${userTokens?.access_token}`,
         },
+        ...config,
       }
     );
 
     return request;
   };
 
-  const fetchList = async (signal?: AbortSignal) => {
-    await guardTokens();
+  const fetchList: GoogleDriveContextType["fetchList"] = async (config) => {
+    const authStatus = authGuard();
+    if (authStatus !== "OK") return Promise.reject(authStatus);
 
     const request = axios.get("https://www.googleapis.com/drive/v3/files", {
       params: {
@@ -176,14 +192,18 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
         spaces,
         oauth_token: userTokens?.access_token,
       },
-      signal,
+      ...config,
     });
 
     return request;
   };
 
-  const fetchFile = async (file: gapi.client.drive.File) => {
-    await guardTokens();
+  const fetchFile: GoogleDriveContextType["fetchFile"] = async (
+    file,
+    config
+  ) => {
+    const authStatus = authGuard();
+    if (authStatus !== "OK") return Promise.reject(authStatus);
 
     const request = axios.get(
       `https://www.googleapis.com/drive/v3/files/${file.id}`,
@@ -193,14 +213,19 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
         headers: {
           authorization: `Bearer ${userTokens?.access_token}`,
         },
+        ...config,
       }
     );
 
     return request;
   };
 
-  const deleteFile = async (file: gapi.client.drive.File) => {
-    await guardTokens();
+  const deleteFile: GoogleDriveContextType["deleteFile"] = async (
+    file,
+    config
+  ) => {
+    const authStatus = authGuard();
+    if (authStatus !== "OK") return Promise.reject(authStatus);
 
     const request = axios.delete(
       `https://www.googleapis.com/drive/v3/files/${file.id}`,
@@ -208,15 +233,22 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
         headers: {
           authorization: `Bearer ${userTokens?.access_token}`,
         },
+        ...config,
       }
     );
 
     return request;
   };
 
+  useEffect(() => {
+    if (!isLoaded || !userTokens) return;
+    setHasScope(hasGrantedAnyScopeGoogle(userTokens, scope));
+  }, [userTokens]);
+
   return (
     <googleDriveContext.Provider
       value={{
+        hasScope,
         uploadFile,
         fetchList,
         fetchFile,
