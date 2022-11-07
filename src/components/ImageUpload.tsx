@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
 import Spinner from "src/components/Spinner";
+import ProgressBar from "src/components/ProgressBar";
 
 export default function ImageUpload({ onUpload }: { onUpload(): void }) {
   const { uploadFile, hasScope } = useGoogleDrive();
@@ -12,8 +13,9 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
   const [isUploadingFile, setIsUpLoadingFile] = useState<
     "Authorizing" | boolean
   >(false);
+  const [uploadProgress, setUploadProgress] = useState<number>();
   const [error, setError] = useState<string>();
-  const abortController = useRef(new AbortController());
+  const uploadController = useRef<AbortController>();
 
   const handleImageInputChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -24,8 +26,6 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
 
     if (!file) return;
 
-    console.log(file.size);
-
     if (file.size > 1024 * 1024 * 5) {
       setError("El archivo no puede ser mayor a 5.0 MB");
       return;
@@ -35,15 +35,17 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
       return;
     }
 
+    setUploadProgress(undefined);
     setImageFileToUpload(file);
   };
 
-  const uploadFileHandler = async (signal?: AbortSignal) => {
+  const uploadFileHandler = async () => {
     setError(undefined);
     setIsUpLoadingFile(true);
-    abortController.current = new AbortController();
 
     if (!imageFileToUpload) return setError("No file selected");
+
+    uploadController.current = new AbortController();
 
     try {
       const { data } = await uploadFile(
@@ -54,7 +56,10 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
             mimeType: imageFileToUpload.type,
           },
         },
-        signal
+        {
+          signal: uploadController.current.signal,
+          onUploadProgress: ({ progress }) => setUploadProgress(progress),
+        }
       );
 
       if (data === false) setError("File upload failed");
@@ -79,6 +84,11 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
         console.error(error);
       }
     }
+    setIsUpLoadingFile(false);
+  };
+
+  const cancelUploadHandler = () => {
+    uploadController.current?.abort();
     setIsUpLoadingFile(false);
   };
 
@@ -111,13 +121,11 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
             }
             className="w-[128px] h-[128px] rounded-md object-cover object-center"
           />
-          {isUploadingFile.toString()}
+          {uploadProgress && <ProgressBar progress={uploadProgress} />}
           <div className="flex gap-1">
             <button
               data-filled
-              onClick={async () =>
-                await uploadFileHandler(abortController.current.signal)
-              }
+              onClick={() => uploadFileHandler()}
               disabled={Boolean(isUploadingFile)}
               className="flex gap-2 items-center"
             >
@@ -138,10 +146,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
             </button>
             <button
               data-filled
-              onClick={() => {
-                abortController.current.abort();
-                setIsUpLoadingFile(false);
-              }}
+              onClick={cancelUploadHandler}
               disabled={!isUploadingFile}
               className={isUploadingFile ? "" : "hidden"}
               title="Cancelar"

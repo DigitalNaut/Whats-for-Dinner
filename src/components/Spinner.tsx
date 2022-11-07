@@ -12,7 +12,7 @@ export default function Spinner({
 }: SpinnerProps) {
   return (
     <div className="flex gap-2 items-center">
-      <FontAwesomeIcon icon={faSpinner} className="fa-spin" />{" "}
+      <FontAwesomeIcon icon={faSpinner} className="fa-spin" />
       {size === "sm" ? "" : text}
     </div>
   );
