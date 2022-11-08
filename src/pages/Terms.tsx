@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 export default function Privacy() {
   return (
     <div className="p-6 prose bg-white rounded-md mx-auto">
-      <h2>
+      <h1>
         <strong>Terms and Conditions</strong>
-      </h2>
+      </h1>
 
       <p>Welcome to What&apos;s for Dinner?!</p>
 
