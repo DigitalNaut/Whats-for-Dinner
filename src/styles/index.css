@@ -4,6 +4,6 @@
 
 @layer components {
   button[data-filled] {
-    @apply w-fit bg-gray-100 text-purple-700 px-4 py-2 rounded-full hover:bg-white hover:text-purple-800 active:bg-gray-400 active:text-gray-700 disabled:bg-gray-500 disabled:text-gray-400 focus:ring;
+    @apply w-fit bg-white text-purple-500 px-4 py-2 rounded-full hover:bg-gray-200 hover:text-purple-900 active:bg-gray-400 active:text-gray-700 disabled:bg-gray-500 disabled:text-gray-400 focus:ring;
   }
 }
