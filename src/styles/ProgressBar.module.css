@@ -1,0 +1,24 @@
+.stripes {
+  --d: 25px;
+  --angle: 45deg;
+  --sinus: 0.707; /* = sinus(angle) */
+  --speed: 1s;
+  --color1: #334155;
+  --color2: #ee9b0f;
+
+  background-image: repeating-linear-gradient(
+    var(--angle),
+    var(--color1) calc(0 * var(--d)),
+    var(--color1) calc(0.5 * var(--d)),
+    var(--color2) calc(0.5 * var(--d)),
+    var(--color2) var(--d)
+  );
+  background-size: calc(var(--d) / var(--sinus)) 100%;
+  animation: AnimationName var(--speed) linear infinite reverse;
+}
+
+@keyframes AnimationName {
+  0% {
+    background-position: calc(var(--d) / var(--sinus)) 0;
+  }
+}

@@ -1,3 +1,5 @@
+import styles from "src/styles/ProgressBar.module.css";
+
 type LoadingBarProps = {
   progress: number;
 };
@@ -8,7 +10,7 @@ export default function ProgressBar({ progress }: LoadingBarProps) {
   return (
     <div className="w-full h-1 bg-white/20 rounded-sm">
       <div
-        className="h-full bg-white rounded-sm transition-all ease-out duration-300"
+        className={`${styles.stripes} h-full rounded-full transition-all ease-out duration-300`}
         style={{ width: `${percentage}%` }}
       />
     </div>
