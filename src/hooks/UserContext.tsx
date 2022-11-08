@@ -6,8 +6,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import jwtDecode from "jwt-decode";
 
-import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
-
 type UserContext = {
   user?: GoogleUserCredential | null;
   LoginButton(): JSX.Element | null;
@@ -86,25 +84,16 @@ export function UserProvider({ children }: PropsWithChildren) {
   function UserCard() {
     if (!user) return null;
 
-    const { userTokens } = useGoogleDrive();
-
     const { picture, name, email } = user;
-    const isTokenExpired =
-      userTokens === undefined || userTokens.tokenExpiration < new Date();
 
     return (
-      <div className="justify-end align-baseline flex w-full">
-        <div
-          className="group flex gap-2 align-middle hover:bg-white hover:text-black hover:rounded-md p-1 cursor-pointer -mt-10 -mr-10"
-          title={`${
-            isTokenExpired
-              ? "Token expired"
-              : `Token expires ${userTokens?.tokenExpiration.toLocaleTimeString()}`
-          }\nUser info: ${JSON.stringify(
-            user,
-            null,
-            2
-          )}\nTokens: ${JSON.stringify(userTokens, null, 2)}`}
+      <div className="group fixed flex hover:p-4 hover:gap-4 hover:bg-white hover:text-black hover:rounded-md cursor-pointer right-2 top-2">
+        <a
+          className="flex items-center group-hover:gap-2"
+          href="https://drive.google.com/drive/settings"
+          target="_blank"
+          rel="noreferrer"
+          title="Abrir preferencias de Google Drive"
         >
           <img
             src={picture}
@@ -113,20 +102,15 @@ export function UserProvider({ children }: PropsWithChildren) {
             height={32}
             className="w-8 h-8 rounded-full"
           />
-          <a
-            className="flex gap-2"
-            href="https://drive.google.com/drive/settings"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <div>
-              <div className="hidden sm:block text-sm">{name}</div>
-              <div className="hidden sm:block text-xs">{email}</div>
+          <div>
+            <div className="hidden group-hover:block text-sm font-medium">
+              {name}
             </div>
-          </a>
-          <div className="hidden group-hover:flex flex-col">
-            <LogoutButton />
+            <div className="hidden group-hover:block text-xs">{email}</div>
           </div>
+        </a>
+        <div className="hidden group-hover:flex flex-col">
+          <LogoutButton />
         </div>
       </div>
     );
