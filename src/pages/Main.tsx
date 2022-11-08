@@ -17,7 +17,7 @@ export default function Main() {
     );
 
   return (
-    <div className="flex pt-6">
+    <div className="flex">
       <div className="w-1/2 p-2">
         <h2 className="text-xl mb-4">Guardar imagen</h2>
         <ImageUpload onUpload={() => setRefreshDate(Date.now())} />

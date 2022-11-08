@@ -30,7 +30,7 @@ function App() {
       >
         <div
           className="text-white bg-gradient-to-br from-[#5B0B68] to-[#4C1D95] shadow-2xl
-          md:rounded-xl p-12 max-w-screen-md w-screen h-full relative
+          md:rounded-xl p-3 sm:p-4 md:p-5 lg:p-6 max-w-screen-md w-screen h-full relative
           before:bg-transparent-geometry before:inset-0 before:absolute before:bg-repeat before:bg-top before:rounded-[inherit] before:pointer-events-none"
         >
           <UserCard />
