@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        "transparent-geometry": "url('/src/assets/transparent-geometry.svg')",
+        "svg-abstract-shapes": "url('/src/assets/transparent-geometry.svg')",
       },
       colors: {
         primary: "var(--color-primary)",
