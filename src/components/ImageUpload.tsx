@@ -89,6 +89,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
 
   const cancelUploadHandler = () => {
     uploadController.current?.abort();
+    setUploadProgress(undefined);
     setIsUpLoadingFile(false);
   };
 
