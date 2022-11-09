@@ -250,6 +250,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         onClick={() => listFiles()}
         disabled={loadingDriveFiles}
         title="Actualizar lista"
+        className="w-fit"
       >
         {loadingDriveFiles ? (
           <Spinner size="sm" />
