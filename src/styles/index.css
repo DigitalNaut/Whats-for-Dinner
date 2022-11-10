@@ -3,9 +3,11 @@
 @tailwind utilities;
 
 @layer components {
-  button[data-filled] {
-    @apply bg-white text-purple-500 px-4 py-2 rounded-full hover:bg-gray-200 hover:text-purple-900 active:bg-gray-400 active:text-gray-700 disabled:bg-gray-500 disabled:text-gray-400 focus:ring;
+  button[data-filled],
+  input[type="file"] {
+    @apply bg-white text-purple-500 px-3 py-1 rounded-full hover:bg-gray-200 hover:text-purple-900 active:bg-gray-400 active:text-gray-700 disabled:bg-gray-500 disabled:text-gray-400 focus:ring;
   }
+
   input[type="text"] {
     @apply border-x-0 border-t-0 focus:border-x-0 focus:border-t-0 focus:ring-0;
   }
