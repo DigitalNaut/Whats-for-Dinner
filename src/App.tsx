@@ -41,7 +41,7 @@ function App() {
 
             {googleOAuthLoaded && (
               <Routes>
-                <Route path="/" element={<Login />} />
+                <Route path="/" element={<Login redirectTo="/main" />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
                 {/* TODO: Remove */}
@@ -53,7 +53,7 @@ function App() {
                     </GoogleDriveProvider>
                   }
                 >
-                  <Route path="/home" element={<Main />} />
+                  <Route path="/main" element={<Main />} />
                 </Route>
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
