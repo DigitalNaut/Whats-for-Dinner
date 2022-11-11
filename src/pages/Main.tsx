@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
-import Roulette from "src/components/Roulette";
+import SpinningWheel from "src/components/SpinningWheel";
 
 const history: { name: string; imageUrl: string }[] = [
   {
@@ -59,7 +59,7 @@ const history: { name: string; imageUrl: string }[] = [
 export default function Main() {
   return (
     <div className="flex flex-col w-full gap-8">
-      <Roulette />
+      <SpinningWheel />
 
       <div className="flex p-2 gap-4 min-w-full overflow-x-auto bg-slate-700 ">
         {history.map((dish) => (

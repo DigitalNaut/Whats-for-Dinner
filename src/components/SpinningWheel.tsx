@@ -16,7 +16,7 @@ const colors = [
   "#c026d3",
 ];
 
-class SpinnerWedge {
+class Wedge {
   private readonly textAngle: number;
   constructor(
     public readonly startAngle: number,
@@ -62,8 +62,8 @@ class SpinnerWedge {
   }
 }
 
-class SpinnerWheel {
-  private readonly wedges: SpinnerWedge[] = [];
+class Spinner {
+  private readonly wedges: Wedge[] = [];
   private spinAngle = 0;
   private angleOffset = 0.5 * Math.PI;
   private readonly context: CanvasRenderingContext2D;
@@ -78,7 +78,7 @@ class SpinnerWheel {
     this.wedges = [];
   }
 
-  addWedge(wedge: SpinnerWedge) {
+  addWedge(wedge: Wedge) {
     this.wedges.push(wedge);
   }
 
@@ -143,7 +143,7 @@ function createRouletteWheel(
   radius: number,
   origin: { x: number; y: number }
 ) {
-  const wheel = new SpinnerWheel(canvas, origin, radius, 4);
+  const wheel = new Spinner(canvas, origin, radius, 4);
 
   const wedgeCount = colors.length;
   const wedgeAngle = TAU / wedgeCount;
@@ -151,25 +151,26 @@ function createRouletteWheel(
   colors.forEach((color, index) => {
     const startAngle = index * wedgeAngle;
     const endAngle = startAngle + wedgeAngle;
-    const wedge = new SpinnerWedge(startAngle, endAngle, color, origin);
+    const wedge = new Wedge(startAngle, endAngle, color, origin);
     wheel.addWedge(wedge);
   });
 
   return wheel;
 }
 
-export default function Roulette() {
+export default function SpinningWheel() {
   const canvasRef = createRef<HTMLCanvasElement>();
-  const wheelRef = useRef<SpinnerWheel>();
+  const wheelRef = useRef<Spinner>();
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState("");
 
   useEffect(() => {
     if (!canvasRef.current) return;
 
+    const { width, height } = canvasRef.current;
     wheelRef.current = createRouletteWheel(canvasRef.current, 200, {
-      x: canvasRef.current?.width * 0.5,
-      y: canvasRef.current?.height * 0.5,
+      x: width * 0.5,
+      y: height * 0.5,
     });
     wheelRef.current.draw();
   }, []);
@@ -193,7 +194,7 @@ export default function Roulette() {
     <div className="w-full">
       <div className="relative w-96 aspect-square max-w-full rounded-full bg-white m-auto">
         <div className="absolute rounded-full flex justify-center items-center bg-slate-700 w-1/3 aspect-square inset-0 m-auto text-7xl">
-          {result || "No result"}
+          {result || "?"}
         </div>
         <Arrow className="absolute inset-x-1/2 -inset-y-4 -translate-x-1/2 -translate-y-4" />
         <canvas
