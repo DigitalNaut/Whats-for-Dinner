@@ -1,7 +1,10 @@
 import { createRef, useEffect, useRef, useState } from "react";
 import { ReactComponent as Arrow } from "src/assets/wedge.svg";
 
-// import history from "src/pages/Main";
+type SpinnerOption = {
+  label: string;
+  imageUrl: string;
+};
 
 const TAU = 2 * Math.PI;
 
@@ -17,15 +20,12 @@ const colors = [
 ];
 
 class Wedge {
-  private readonly textAngle: number;
   constructor(
     public readonly startAngle: number,
     public readonly endAngle: number,
     public readonly color: string,
     public readonly origin: { x: number; y: number }
-  ) {
-    this.textAngle = (startAngle + endAngle) * 0.5;
-  }
+  ) {}
 
   drawShape(context: CanvasRenderingContext2D, radius: number, angle: number) {
     context.save();
@@ -46,17 +46,21 @@ class Wedge {
   drawText(
     context: CanvasRenderingContext2D,
     text: string,
-    origin: { x: number; y: number },
-    angle: number
+    radius: number,
+    angle: number,
+    emphasis: boolean
   ) {
+    const x = this.origin.x + radius * Math.cos(angle);
+    const y = this.origin.y + radius * Math.sin(angle);
+
     context.save();
     context.fillStyle = "white";
-    context.font = "bold 20px sans-serif";
+    context.font = emphasis ? "900 16px Montserrat" : "300 14px Montserrat";
     context.textAlign = "center";
     context.textBaseline = "middle";
 
-    context.translate(origin.x, origin.y);
-    context.rotate(angle + this.textAngle);
+    context.translate(x, y);
+    context.rotate(angle + Math.PI * 0.5);
     context.fillText(text, 0, 0);
     context.restore();
   }
@@ -67,50 +71,88 @@ class Spinner {
   private spinAngle = 0;
   private angleOffset = 0.5 * Math.PI;
   private readonly context: CanvasRenderingContext2D;
+  private mutableChoices: SpinnerOption[];
+  private replaceIndex;
+  private maxChoices;
+  private prevResult = 0;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
     private readonly origin: { x: number; y: number },
     private readonly radius: number,
-    private readonly margin: number
+    private readonly margin: number,
+    private choices: SpinnerOption[]
   ) {
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
     this.wedges = [];
+    this.maxChoices = Math.min(this.choices.length, colors.length);
+    this.mutableChoices = this.choices.slice(0, this.maxChoices);
+    this.replaceIndex = this.maxChoices;
   }
 
   addWedge(wedge: Wedge) {
     this.wedges.push(wedge);
   }
 
-  draw() {
+  draw(currentChoice?: number) {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+    let angle = this.spinAngle + this.angleOffset;
+
     this.wedges.forEach((wedge) =>
-      wedge.drawShape(
-        this.context,
-        this.radius - this.margin,
-        this.spinAngle + this.angleOffset
-      )
+      wedge.drawShape(this.context, this.radius - this.margin, angle)
     );
 
-    const offset = this.spinAngle + this.angleOffset + Math.PI / colors.length;
+    // Offset by half a wedge width
+    angle += Math.PI / this.maxChoices;
 
     this.wedges.forEach((wedge, index) => {
-      const text = (index + 1).toString();
-      const theta = wedge.startAngle + offset;
-      const x = this.origin.x + this.radius * 0.8 * Math.cos(theta);
-      const y = this.origin.y + this.radius * 0.8 * Math.sin(theta);
-      wedge.drawText(this.context, text, { x, y }, this.spinAngle);
+      const { label } = this.mutableChoices[index];
+      wedge.drawText(
+        this.context,
+        label,
+        this.radius * 0.75,
+        angle + wedge.startAngle,
+        index === currentChoice
+      );
     });
+  }
+
+  juggleChoices(insertIndex: number) {
+    const newChoice = this.choices.slice(
+      this.replaceIndex,
+      this.replaceIndex + 1
+    )[0];
+    this.mutableChoices.splice(insertIndex, 1, newChoice);
+    this.replaceIndex = (this.replaceIndex + 1) % this.choices.length;
+  }
+
+  update() {
+    const result = Math.floor(
+      (((Math.PI * 3 - this.spinAngle) % TAU) / TAU) * this.maxChoices
+    );
+
+    if (result !== this.prevResult) {
+      // Calculate the choice at the opposite end of the wheel
+      const insertIndex =
+        (result + Math.floor(this.maxChoices * 0.5)) % this.maxChoices;
+      this.juggleChoices(insertIndex);
+    }
+    this.prevResult = result;
+
+    return result;
   }
 
   spin(
     velocity: number,
-    onUpdate?: (result: string) => void,
+    onUpdate?: (result: SpinnerOption) => void,
     onSpinEnd?: () => void
   ) {
     this.spinAngle = (this.spinAngle + velocity) % TAU;
-    this.draw();
+
+    const result = this.update();
+    onUpdate?.(this.mutableChoices[result]);
+    this.draw(result);
 
     velocity = velocity < 0.005 ? 0 : velocity * 0.99;
 
@@ -120,17 +162,9 @@ class Spinner {
       // + half a wedge width,
       // all % adjusted for 360 degrees, divided by 360 degrees
 
-      if (onUpdate) {
-        const result =
-          Math.floor(
-            (((Math.PI * 3 - this.spinAngle) % TAU) / TAU) * colors.length
-          ) + 1;
-
-        onUpdate(result.toString());
-      }
-
-      if (velocity > 0) this.spin(velocity, onUpdate, onSpinEnd);
-      else {
+      if (velocity > 0) {
+        this.spin(velocity, onUpdate, onSpinEnd);
+      } else {
         cancelAnimationFrame(animation);
         onSpinEnd?.();
       }
@@ -141,9 +175,10 @@ class Spinner {
 function createRouletteWheel(
   canvas: HTMLCanvasElement,
   radius: number,
-  origin: { x: number; y: number }
+  origin: { x: number; y: number },
+  choices: SpinnerOption[]
 ) {
-  const wheel = new Spinner(canvas, origin, radius, 4);
+  const wheel = new Spinner(canvas, origin, radius, 3, choices);
 
   const wedgeCount = colors.length;
   const wedgeAngle = TAU / wedgeCount;
@@ -158,20 +193,29 @@ function createRouletteWheel(
   return wheel;
 }
 
-export default function SpinningWheel() {
+type SpinningWheelProps = {
+  choices: SpinnerOption[];
+};
+
+export default function SpinningWheel({ choices }: SpinningWheelProps) {
   const canvasRef = createRef<HTMLCanvasElement>();
   const wheelRef = useRef<Spinner>();
   const [isSpinning, setIsSpinning] = useState(false);
-  const [result, setResult] = useState("");
+  const [result, setResult] = useState<SpinnerOption>();
 
   useEffect(() => {
     if (!canvasRef.current) return;
 
     const { width, height } = canvasRef.current;
-    wheelRef.current = createRouletteWheel(canvasRef.current, 200, {
-      x: width * 0.5,
-      y: height * 0.5,
-    });
+    wheelRef.current = createRouletteWheel(
+      canvasRef.current,
+      200,
+      {
+        x: width * 0.5,
+        y: height * 0.5,
+      },
+      choices
+    );
     wheelRef.current.draw();
   }, []);
 
@@ -193,8 +237,18 @@ export default function SpinningWheel() {
   return (
     <div className="w-full">
       <div className="relative w-96 aspect-square max-w-full rounded-full bg-white m-auto">
-        <div className="absolute rounded-full flex justify-center items-center bg-slate-700 w-1/3 aspect-square inset-0 m-auto text-7xl">
-          {result || "?"}
+        <div className="absolute w-full h-full inset-0 m-auto bg-gradient-radial-overlay" />
+        <div className="absolute w-1/2 aspect-square flex justify-center items-center inset-0 m-auto bg-white p-1 rounded-full overflow-hidden">
+          {result ? (
+            <img
+              className="aspect-square object-cover rounded-full"
+              src={result.imageUrl}
+            />
+          ) : (
+            <div className="grid items-center text-center bg-slate-700 text-white aspect-square w-full h-full rounded-full">
+              ?
+            </div>
+          )}
         </div>
         <Arrow className="absolute inset-x-1/2 -inset-y-4 -translate-x-1/2 -translate-y-4" />
         <canvas
