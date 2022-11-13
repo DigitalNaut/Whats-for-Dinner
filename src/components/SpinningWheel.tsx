@@ -134,6 +134,30 @@ class Spinner {
     this.context.fillStyle = this.radialGradientOverlay;
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.restore();
+
+    const radiusPlusOne = this.radius + 1; // Plus one to hide the border artifacts
+    this.context.save();
+    this.context.fillStyle = "#1f2937";
+    this.context.translate(this.origin.x, this.origin.y);
+    this.context.beginPath();
+    this.context.moveTo(0, 0);
+    // To get point on perimeter, use radius and angle
+    // Angle is t(θ)=o/a, so o/a = r/r = 1
+    // θ = atan(1) = π/4
+    // sin(π/4) = 0.707106 and cos(π/4) = 0.707106
+    this.context.lineTo(radiusPlusOne * -0.707106, radiusPlusOne * 0.707106);
+    this.context.arcTo(
+      0,
+      // To get the pivot point, use Pythagoras theorem
+      // c = √(a² + b²) = √(r² + r²) = √(2r²) = √(2) * r
+      // √(2) = 1.414213
+      radiusPlusOne * 1.414213,
+      radiusPlusOne * 0.707106,
+      radiusPlusOne * 0.707106,
+      this.radius
+    );
+    this.context.fill();
+    this.context.restore();
   }
 
   juggleChoices(insertIndex: number) {
