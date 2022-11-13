@@ -76,6 +76,8 @@ class Spinner {
   private maxChoices;
   private prevResult = 0;
 
+  private radialGradientOverlay;
+
   constructor(
     private readonly canvas: HTMLCanvasElement,
     private readonly origin: { x: number; y: number },
@@ -88,6 +90,17 @@ class Spinner {
     this.maxChoices = Math.min(this.choices.length, colors.length);
     this.mutableChoices = this.choices.slice(0, this.maxChoices);
     this.replaceIndex = this.maxChoices;
+
+    this.radialGradientOverlay = this.context.createRadialGradient(
+      this.origin.x,
+      this.origin.y,
+      0,
+      this.origin.x,
+      this.origin.y,
+      this.radius
+    );
+    this.radialGradientOverlay.addColorStop(0, "rgba(255, 255, 255, 0.5)");
+    this.radialGradientOverlay.addColorStop(1, "rgba(255, 255, 255, 0)");
   }
 
   addWedge(wedge: Wedge) {
@@ -116,6 +129,11 @@ class Spinner {
         index === currentChoice
       );
     });
+
+    this.context.save();
+    this.context.fillStyle = this.radialGradientOverlay;
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.restore();
   }
 
   juggleChoices(insertIndex: number) {
@@ -237,7 +255,6 @@ export default function SpinningWheel({ choices }: SpinningWheelProps) {
   return (
     <div className="w-full">
       <div className="relative w-96 aspect-square max-w-full rounded-full bg-white m-auto">
-        <div className="absolute w-full h-full inset-0 m-auto bg-gradient-radial-overlay" />
         <div className="absolute w-1/2 aspect-square flex justify-center items-center inset-0 m-auto bg-white p-1 rounded-full overflow-hidden">
           {result ? (
             <img
@@ -245,7 +262,7 @@ export default function SpinningWheel({ choices }: SpinningWheelProps) {
               src={result.imageUrl}
             />
           ) : (
-            <div className="grid items-center text-center bg-slate-700 text-white aspect-square w-full h-full rounded-full">
+            <div className="grid items-center text-center bg-slate-700 text-white aspect-square w-full h-full rounded-full text-8xl font-bangers">
               ?
             </div>
           )}
@@ -257,10 +274,14 @@ export default function SpinningWheel({ choices }: SpinningWheelProps) {
           width="400"
           height="400"
         />
+        <button
+          className="absolute inset-x-1/2 bottom-2 h-fit -translate-x-1/2 -translate-y-1/2 font-bangers text-2xl cursor-pointer bg-red-700 px-4 py-2 rounded-full hover:bg-red-600 disabled:bg-gray-500 disabled:text-gray-400 disabled:cursor-not-allowed "
+          disabled={isSpinning}
+          onClick={spinTheWheel}
+        >
+          !Sorpréndeme!
+        </button>
       </div>
-      <button data-filled disabled={isSpinning} onClick={spinTheWheel}>
-        {isSpinning ? "Girando" : "Girar"}
-      </button>
     </div>
   );
 }
