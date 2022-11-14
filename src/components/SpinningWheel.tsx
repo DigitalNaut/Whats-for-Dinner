@@ -27,7 +27,7 @@ class Wedge {
     public readonly origin: { x: number; y: number }
   ) {}
 
-  drawShape(context: CanvasRenderingContext2D, radius: number, angle: number) {
+  drawShape(context: CanvasRenderingContext2D, radius: number) {
     context.save();
     context.fillStyle = this.color;
     context.beginPath();
@@ -36,8 +36,8 @@ class Wedge {
       this.origin.x,
       this.origin.y,
       radius,
-      this.startAngle + angle,
-      this.endAngle + angle
+      this.startAngle,
+      this.endAngle
     );
     context.fill();
     context.restore();
@@ -50,8 +50,27 @@ class Wedge {
     angle: number,
     emphasis: boolean
   ) {
-    const x = this.origin.x + radius * Math.cos(angle);
-    const y = this.origin.y + radius * Math.sin(angle);
+    const theta = angle + this.startAngle;
+    const x = this.origin.x + radius * Math.cos(theta);
+    const y = this.origin.y + radius * Math.sin(theta);
+
+    // TODO: Optimize this to not run on every frame
+    const lines: string[] = [];
+    if (text.length > 10) {
+      const words = text.split(" ");
+      let currentLine = words[0];
+
+      for (let i = 1; i < words.length; i++) {
+        const word = words[i];
+        const line = currentLine + " " + word;
+        if (line.length < 10) currentLine += " " + word;
+        else {
+          lines.push(currentLine);
+          currentLine = word;
+        }
+      }
+      lines.push(currentLine);
+    } else lines.push(text);
 
     context.save();
     context.fillStyle = "white";
@@ -60,8 +79,10 @@ class Wedge {
     context.textBaseline = "middle";
 
     context.translate(x, y);
-    context.rotate(angle + Math.PI * 0.5);
-    context.fillText(text, 0, 0);
+    context.rotate(theta + Math.PI * 0.5);
+    lines.forEach((line, i) => {
+      context.fillText(line, 0, i * 20 - 10 * (lines.length - 1));
+    });
     context.restore();
   }
 }
@@ -179,13 +200,14 @@ class Spinner {
 
     angle += Math.PI / this.maxChoices; // Offset text by half a wedge width
 
+    // TODO: Optimize this to update only when choices change and blit instead of redrawing
     this.wedges.forEach((wedge, index) => {
       const { label } = this.mutableChoices[index];
       wedge.drawText(
         this.context,
         label,
         this.radius * 0.75,
-        angle + wedge.startAngle,
+        angle,
         index === currentChoice
       );
     });
