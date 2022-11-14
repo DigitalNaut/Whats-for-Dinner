@@ -76,7 +76,7 @@ class Spinner {
   private maxChoices;
   private prevResult = 0;
 
-  private radialGradientOverlay;
+  private decorationsCanvas = document.createElement("canvas");
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -91,7 +91,18 @@ class Spinner {
     this.mutableChoices = this.choices.slice(0, this.maxChoices);
     this.replaceIndex = this.maxChoices;
 
-    this.radialGradientOverlay = this.context.createRadialGradient(
+    this.decorationsCanvas.width = this.canvas.width;
+    this.decorationsCanvas.height = this.canvas.height;
+
+    this.createDecorations();
+  }
+
+  createDecorations() {
+    const offscreenContext = this.decorationsCanvas.getContext(
+      "2d"
+    ) as CanvasRenderingContext2D;
+
+    const radialGradientOverlay = this.context.createRadialGradient(
       this.origin.x,
       this.origin.y,
       0,
@@ -99,8 +110,35 @@ class Spinner {
       this.origin.y,
       this.radius
     );
-    this.radialGradientOverlay.addColorStop(0, "rgba(255, 255, 255, 0.5)");
-    this.radialGradientOverlay.addColorStop(1, "rgba(255, 255, 255, 0)");
+    radialGradientOverlay.addColorStop(0, "rgba(255, 255, 255, 0.5)");
+    radialGradientOverlay.addColorStop(1, "rgba(255, 255, 255, 0)");
+    offscreenContext.fillStyle = radialGradientOverlay;
+    offscreenContext.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    const radiusPlusOne = this.radius + 1; // Plus one to hide the border artifacts
+    offscreenContext.fillStyle = "#1f2937";
+    offscreenContext.beginPath();
+    offscreenContext.translate(this.origin.x, this.origin.y);
+    offscreenContext.moveTo(0, 0);
+    // To get point on perimeter, use radius and angle
+    // Angle is t(θ)=o/a, so o/a = r/r = 1
+    // θ = atan(1) = π/4
+    // sin(π/4) = 0.707106 and cos(π/4) = 0.707106
+    offscreenContext.lineTo(
+      radiusPlusOne * -0.707106,
+      radiusPlusOne * 0.707106
+    );
+    offscreenContext.arcTo(
+      0,
+      // To get the pivot point, use Pythagoras theorem
+      // c = √(a² + b²) = √(r² + r²) = √(2r²) = √(2) * r
+      // √(2) = 1.414213
+      radiusPlusOne * 1.414213,
+      radiusPlusOne * 0.707106,
+      radiusPlusOne * 0.707106,
+      this.radius
+    );
+    offscreenContext.fill();
   }
 
   addWedge(wedge: Wedge) {
@@ -130,34 +168,7 @@ class Spinner {
       );
     });
 
-    this.context.save();
-    this.context.fillStyle = this.radialGradientOverlay;
-    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    this.context.restore();
-
-    const radiusPlusOne = this.radius + 1; // Plus one to hide the border artifacts
-    this.context.save();
-    this.context.fillStyle = "#1f2937";
-    this.context.translate(this.origin.x, this.origin.y);
-    this.context.beginPath();
-    this.context.moveTo(0, 0);
-    // To get point on perimeter, use radius and angle
-    // Angle is t(θ)=o/a, so o/a = r/r = 1
-    // θ = atan(1) = π/4
-    // sin(π/4) = 0.707106 and cos(π/4) = 0.707106
-    this.context.lineTo(radiusPlusOne * -0.707106, radiusPlusOne * 0.707106);
-    this.context.arcTo(
-      0,
-      // To get the pivot point, use Pythagoras theorem
-      // c = √(a² + b²) = √(r² + r²) = √(2r²) = √(2) * r
-      // √(2) = 1.414213
-      radiusPlusOne * 1.414213,
-      radiusPlusOne * 0.707106,
-      radiusPlusOne * 0.707106,
-      this.radius
-    );
-    this.context.fill();
-    this.context.restore();
+    this.context.drawImage(this.decorationsCanvas, 0, 0);
   }
 
   juggleChoices(insertIndex: number) {
