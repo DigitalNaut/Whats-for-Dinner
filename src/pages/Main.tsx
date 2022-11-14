@@ -102,7 +102,12 @@ export default function Main() {
         }}
       />
 
-      <div className="flex p-2 gap-4 min-w-full overflow-x-auto bg-slate-700 shadow-xl rounded-md">
+      <div className="flex p-2 gap-4 min-w-full h-16 md:h-24 lg:h-28 overflow-x-auto bg-slate-700 shadow-xl rounded-md">
+        {resultHistory.length === 0 && (
+          <div className="grid place-items-center w-full text-gray-400">
+            Sin historial
+          </div>
+        )}
         {resultHistory.map((dish) => (
           <Dish key={dish.timestamp} {...dish} />
         ))}
