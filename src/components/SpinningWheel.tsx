@@ -187,8 +187,10 @@ class Spinner {
     offscreenContext.fill();
   }
 
-  draw(currentChoice?: number) {
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  draw(currentChoice?: number, velocity = 0) {
+    if (velocity < 0.1)
+      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    else this.context.globalAlpha = 1 / (1 + velocity * 5);
 
     let angle = this.spinAngle + this.angleOffset;
 
@@ -212,6 +214,7 @@ class Spinner {
       );
     });
 
+    this.context.globalAlpha = 1;
     this.context.drawImage(this.decorationsCanvas, 0, 0);
   }
 
@@ -225,19 +228,19 @@ class Spinner {
   }
 
   update() {
-    const result = Math.floor(
+    const currentOption = Math.floor(
       (((Math.PI * 3 - this.spinAngle) % TAU) / TAU) * this.maxChoices
     );
 
-    if (result !== this.prevResult) {
+    if (currentOption !== this.prevResult) {
       // Calculate the choice at the opposite end of the wheel
       const insertIndex =
-        (result + Math.floor(this.maxChoices * 0.5)) % this.maxChoices;
+        (currentOption + Math.floor(this.maxChoices * 0.5)) % this.maxChoices;
       this.juggleChoices(insertIndex);
     }
-    this.prevResult = result;
+    this.prevResult = currentOption;
 
-    return result;
+    return currentOption;
   }
 
   spin(
@@ -247,23 +250,18 @@ class Spinner {
   ) {
     this.spinAngle = (this.spinAngle + velocity) % TAU;
 
-    const result = this.update();
-    onUpdate?.(this.mutableChoices[result]);
-    this.draw(result);
+    const currentOption = this.update();
+    if (velocity < 0.1) onUpdate?.(this.mutableChoices[currentOption]);
+    this.draw(currentOption, velocity);
 
     velocity = velocity < 0.005 ? 0 : velocity * 0.99;
 
     const animation = requestAnimationFrame(() => {
-      // (Circle unit + 180 degrees for the top wedge)
-      // - the offset to reverse the numbers
-      // + half a wedge width,
-      // all % adjusted for 360 degrees, divided by 360 degrees
-
       if (velocity > 0) {
         this.spin(velocity, onUpdate, onSpinEnd);
       } else {
         cancelAnimationFrame(animation);
-        onSpinEnd?.(this.mutableChoices[result]);
+        onSpinEnd?.(this.mutableChoices[currentOption]);
       }
     });
   }
@@ -309,8 +307,9 @@ export default function SpinningWheel({
     if (isSpinning) return;
 
     setIsSpinning(true);
+    setResult(undefined);
 
-    const velocity = randomVelocity(25, 10);
+    const velocity = randomVelocity(100, 10);
     wheelRef.current?.spin(velocity, setResult, (result) => {
       setIsSpinning(false);
       onSpinEnd?.(result);
