@@ -76,6 +76,7 @@ class Spinner {
   private maxChoices;
   private prevResult = 0;
 
+  private wheelCanvas = document.createElement("canvas");
   private decorationsCanvas = document.createElement("canvas");
 
   constructor(
@@ -91,13 +92,37 @@ class Spinner {
     this.mutableChoices = this.choices.slice(0, this.maxChoices);
     this.replaceIndex = this.maxChoices;
 
-    this.decorationsCanvas.width = this.canvas.width;
-    this.decorationsCanvas.height = this.canvas.height;
-
+    this.createWheel();
     this.createDecorations();
   }
 
+  createWheel() {
+    const wedgeCount = colors.length;
+    const wedgeAngle = TAU / wedgeCount;
+
+    colors.forEach((color, index) => {
+      const startAngle = index * wedgeAngle;
+      const endAngle = startAngle + wedgeAngle;
+      const wedge = new Wedge(startAngle, endAngle, color, this.origin);
+      this.wedges.push(wedge);
+    });
+
+    this.wheelCanvas.width = this.canvas.width;
+    this.wheelCanvas.height = this.canvas.height;
+
+    const offscreenContext = this.wheelCanvas.getContext(
+      "2d"
+    ) as CanvasRenderingContext2D;
+
+    this.wedges.forEach((wedge) =>
+      wedge.drawShape(offscreenContext, this.radius - this.margin)
+    );
+  }
+
   createDecorations() {
+    this.decorationsCanvas.width = this.canvas.width;
+    this.decorationsCanvas.height = this.canvas.height;
+
     const offscreenContext = this.decorationsCanvas.getContext(
       "2d"
     ) as CanvasRenderingContext2D;
@@ -141,21 +166,18 @@ class Spinner {
     offscreenContext.fill();
   }
 
-  addWedge(wedge: Wedge) {
-    this.wedges.push(wedge);
-  }
-
   draw(currentChoice?: number) {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     let angle = this.spinAngle + this.angleOffset;
 
-    this.wedges.forEach((wedge) =>
-      wedge.drawShape(this.context, this.radius - this.margin, angle)
-    );
+    this.context.save();
+    this.context.translate(this.origin.x, this.origin.y);
+    this.context.rotate(angle);
+    this.context.drawImage(this.wheelCanvas, -this.origin.x, -this.origin.y);
+    this.context.restore();
 
-    // Offset by half a wedge width
-    angle += Math.PI / this.maxChoices;
+    angle += Math.PI / this.maxChoices; // Offset text by half a wedge width
 
     this.wedges.forEach((wedge, index) => {
       const { label } = this.mutableChoices[index];
@@ -225,27 +247,6 @@ class Spinner {
   }
 }
 
-function createRouletteWheel(
-  canvas: HTMLCanvasElement,
-  radius: number,
-  origin: { x: number; y: number },
-  choices: SpinnerOption[]
-) {
-  const wheel = new Spinner(canvas, origin, radius, 3, choices);
-
-  const wedgeCount = colors.length;
-  const wedgeAngle = TAU / wedgeCount;
-
-  colors.forEach((color, index) => {
-    const startAngle = index * wedgeAngle;
-    const endAngle = startAngle + wedgeAngle;
-    const wedge = new Wedge(startAngle, endAngle, color, origin);
-    wheel.addWedge(wedge);
-  });
-
-  return wheel;
-}
-
 type SpinningWheelProps = {
   choices: SpinnerOption[];
 };
@@ -260,15 +261,17 @@ export default function SpinningWheel({ choices }: SpinningWheelProps) {
     if (!canvasRef.current) return;
 
     const { width, height } = canvasRef.current;
-    wheelRef.current = createRouletteWheel(
+    wheelRef.current = new Spinner(
       canvasRef.current,
-      200,
       {
         x: width * 0.5,
         y: height * 0.5,
       },
+      200,
+      3,
       choices
     );
+
     wheelRef.current.draw();
   }, []);
 
