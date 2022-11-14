@@ -243,7 +243,7 @@ class Spinner {
   spin(
     velocity: number,
     onUpdate?: (result: SpinnerOption) => void,
-    onSpinEnd?: () => void
+    onSpinEnd?: (result: SpinnerOption) => void
   ) {
     this.spinAngle = (this.spinAngle + velocity) % TAU;
 
@@ -263,7 +263,7 @@ class Spinner {
         this.spin(velocity, onUpdate, onSpinEnd);
       } else {
         cancelAnimationFrame(animation);
-        onSpinEnd?.();
+        onSpinEnd?.(this.mutableChoices[result]);
       }
     });
   }
@@ -271,9 +271,13 @@ class Spinner {
 
 type SpinningWheelProps = {
   choices: SpinnerOption[];
+  onSpinEnd?: (result: SpinnerOption) => void;
 };
 
-export default function SpinningWheel({ choices }: SpinningWheelProps) {
+export default function SpinningWheel({
+  choices,
+  onSpinEnd,
+}: SpinningWheelProps) {
   const canvasRef = createRef<HTMLCanvasElement>();
   const wheelRef = useRef<Spinner>();
   const [isSpinning, setIsSpinning] = useState(false);
@@ -306,15 +310,16 @@ export default function SpinningWheel({ choices }: SpinningWheelProps) {
 
     setIsSpinning(true);
 
-    const velocity = randomVelocity(10, 10);
-    wheelRef.current?.spin(velocity, setResult, () => {
+    const velocity = randomVelocity(25, 10);
+    wheelRef.current?.spin(velocity, setResult, (result) => {
       setIsSpinning(false);
+      onSpinEnd?.(result);
     });
   };
 
   return (
     <div className="w-full">
-      <div className="relative w-96 aspect-square max-w-full rounded-full bg-white m-auto">
+      <div className="relative w-96 aspect-square max-w-full rounded-full bg-white m-auto shadow-xl">
         <div className="absolute w-1/2 aspect-square flex justify-center items-center inset-0 m-auto bg-white p-1 rounded-full overflow-hidden">
           {result ? (
             <img

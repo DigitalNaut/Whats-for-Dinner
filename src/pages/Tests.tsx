@@ -1,5 +1,5 @@
 import SpinningWheel from "src/components/SpinningWheel";
-import { history as dishes } from "src/pages/Main";
+import { choices } from "src/pages/Main";
 
 function Tests() {
   // const { isLoaded } = useGoogleDrive();
@@ -13,7 +13,7 @@ function Tests() {
   //   );
 
   return (
-    <SpinningWheel choices={dishes} />
+    <SpinningWheel choices={choices} />
     // <form
     //   className="flex flex-col gap-8"
     //   onSubmit={(event) => event.preventDefault()}
