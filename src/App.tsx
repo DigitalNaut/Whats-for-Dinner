@@ -8,6 +8,7 @@ import Login from "src/pages/Login";
 import Main from "src/pages/Main";
 import Privacy from "src/pages/Privacy";
 import Terms from "src/pages/Terms";
+import NotFound from "src/pages/NotFound";
 import ErrorFallback from "src/components/ErrorFallback";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
 import { useUser } from "src/hooks/UserContext";
@@ -46,6 +47,7 @@ function App() {
                 <Route path="/terms" element={<Terms />} />
                 {/* TODO: Remove */}
                 <Route path="/tests" element={<Tests />} />
+                  <Route path="*" element={<NotFound />} />
                 <Route
                   element={
                     <GoogleDriveProvider>
@@ -55,7 +57,7 @@ function App() {
                 >
                   <Route path="/main" element={<Main />} />
                 </Route>
-                <Route path="*" element={<Navigate to="/" />} />
+                </Route>
               </Routes>
             )}
           </div>
