@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
@@ -54,10 +55,12 @@ export default function Main() {
       </div>
 
       <div className="fixed left-1/2 -translate-x-1/2 bottom-16 flex items-center w-fit">
-        <button data-filled>
-          <FontAwesomeIcon icon={faEdit} />
-          <span>Editar menú</span>
-        </button>
+        <Link to="/menu">
+          <button data-filled>
+            <FontAwesomeIcon icon={faEdit} />
+            <span>Editar menú</span>
+          </button>
+        </Link>
       </div>
     </div>
   );

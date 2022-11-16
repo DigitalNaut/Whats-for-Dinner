@@ -1,5 +1,8 @@
-import { Outlet } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft, faEllipsis } from "@fortawesome/free-solid-svg-icons";
+
 import { ReactComponent as Chopsticks } from "src/assets/chopsticks.svg";
+import { useNavigate } from "react-router-dom";
 
 export function TitleHeader({ children }: { children?: string }) {
   return (
@@ -13,11 +16,22 @@ export function TitleHeader({ children }: { children?: string }) {
   );
 }
 
-export function WithHeader() {
+type MenuHeaderProps = {
+  title?: string;
+};
+
+export function MenuHeader({ title }: MenuHeaderProps) {
+  const navigate = useNavigate();
+
   return (
-    <>
-      <Header>¿Qué para comer?</Header>
-      <Outlet />
-    </>
+    <div className="flex w-full gap-2 bg-purple-800 px-4 py-2 md:rounded-t-xl justify-between">
+      <button onClick={() => navigate(-1)}>
+        <FontAwesomeIcon icon={faChevronLeft} />
+      </button>
+      <span>{title}</span>
+      <button>
+        <FontAwesomeIcon icon={faEllipsis} />
+      </button>
+    </div>
   );
 }
