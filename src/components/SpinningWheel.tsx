@@ -347,11 +347,11 @@ export default function SpinningWheel({
         />
         {choices.length > 0 && (
           <button
-            className="absolute inset-x-1/2 bottom-2 h-fit -translate-x-1/2 -translate-y-1/2 font-bangers text-2xl cursor-pointer bg-red-700 px-4 py-2 rounded-full hover:bg-red-600 disabled:bg-gray-500 disabled:text-gray-400 disabled:cursor-not-allowed "
+            className="absolute inset-x-1/2 bottom-2 h-fit whitespace-nowrap -translate-x-1/2 -translate-y-1/2 font-bangers text-2xl cursor-pointer bg-red-700 px-4 py-2 rounded-full hover:bg-red-600 disabled:bg-gray-500 disabled:text-gray-400 disabled:cursor-not-allowed"
             disabled={cannotSpin}
             onClick={spinTheWheel}
           >
-            ¡Sorpréndeme!
+            ¡Decide por mí!
           </button>
         )}
       </div>
