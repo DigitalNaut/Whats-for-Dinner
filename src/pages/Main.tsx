@@ -1,73 +1,11 @@
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 import SpinningWheel from "src/components/SpinningWheel";
-import { useState } from "react";
+import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
 
 const maxHistory = 20;
-
-export const choices: { label: string; imageUrl: string }[] = [
-  {
-    label: "Tacos al pastor",
-    imageUrl:
-      "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Pozole", // c-spell-checker:disable-line
-    imageUrl:
-      "https://images.unsplash.com/photo-1649532245300-c3ed0565ffa4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Ensalada de atún",
-    imageUrl:
-      "https://images.unsplash.com/photo-1612949060306-4c298ad7f34c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Sopa de pollo",
-    imageUrl:
-      "https://images.unsplash.com/photo-1569058242276-0bc3e078cf86?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Ensalada verde",
-    imageUrl:
-      "https://images.unsplash.com/photo-1608032077018-c9aad9565d29?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Carne asada",
-    imageUrl:
-      "https://images.unsplash.com/photo-1612871689353-cccf581d667b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Pizza",
-    imageUrl:
-      "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Hamburguesa",
-    imageUrl:
-      "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Pollo empanizado", // c-spell-checker:disable-line
-    imageUrl:
-      "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Arroz con pollo",
-    imageUrl:
-      "https://images.unsplash.com/photo-1569058242252-623df46b5025?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Sushi",
-    imageUrl:
-      "https://images.unsplash.com/photo-1553621042-f6e147245754?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Spaghetti",
-    imageUrl:
-      "https://images.unsplash.com/photo-1635264685671-739e75e73e0f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-];
 
 function Dish({ label, imageUrl }: { label: string; imageUrl: string }) {
   return (
@@ -87,9 +25,11 @@ function Dish({ label, imageUrl }: { label: string; imageUrl: string }) {
 }
 
 export default function Main() {
+  const choices = useSpinnerMenuContext();
   const [resultHistory, setResultHistory] = useState<
     (typeof choices[number] & { timestamp: string })[]
   >([]);
+
   return (
     <div className="flex flex-col w-full gap-8">
       <SpinningWheel

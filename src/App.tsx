@@ -13,7 +13,7 @@ import ProtectedRoutes from "src/components/ProtectedRoutes";
 import { useUser } from "src/hooks/UserContext";
 import { MainLayout, MenuLayout } from "src/components/Layouts";
 import { GoogleDriveProvider } from "src/hooks/GoogleDriveContext";
-import { WithHeader } from "src/components/Header";
+import { SpinnerMenuContextProvider } from "src/hooks/SpinnerMenuContext";
 
 // TODO: Remove
 import Tests from "src/pages/Tests";
@@ -48,6 +48,7 @@ export default function App() {
             <Route
               element={
                 <GoogleDriveProvider>
+                  <SpinnerMenuContextProvider />
                   <ProtectedRoutes />
                 </GoogleDriveProvider>
               }

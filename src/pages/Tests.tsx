@@ -1,7 +1,8 @@
 import SpinningWheel from "src/components/SpinningWheel";
-import { choices } from "src/pages/Main";
+import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
 
 function Tests() {
+  const choices = useSpinnerMenuContext();
   // const { isLoaded } = useGoogleDrive();
   // const [refreshDate, setRefreshDate] = useState(Date.now());
 
