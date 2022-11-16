@@ -220,7 +220,7 @@ class Spinner {
     this.context.drawImage(this.decorationsCanvas, 0, 0);
   }
 
-  cycleChoicesStrategy(insertIndex: number) {
+  cycleChoices(insertIndex: number) {
     const newChoice = this.choices.slice(
       this.cyclingIndex,
       this.cyclingIndex + 1
@@ -241,7 +241,7 @@ class Spinner {
       this.prevResult = currentOption;
       const insertIndex =
         (currentOption + Math.floor(this.maxChoices * 0.5)) % this.maxChoices;
-      this.cycleChoicesStrategy(insertIndex);
+      this.cycleChoices(insertIndex);
     }
 
     return currentOption;
