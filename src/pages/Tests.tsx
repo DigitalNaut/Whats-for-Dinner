@@ -2,7 +2,7 @@ import SpinningWheel from "src/components/SpinningWheel";
 import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
 
 function Tests() {
-  const choices = useSpinnerMenuContext();
+  const { enabledMenuItems } = useSpinnerMenuContext();
   // const { isLoaded } = useGoogleDrive();
   // const [refreshDate, setRefreshDate] = useState(Date.now());
 
@@ -14,7 +14,7 @@ function Tests() {
   //   );
 
   return (
-    <SpinningWheel choices={choices} />
+    <SpinningWheel choices={enabledMenuItems} />
     // <form
     //   className="flex flex-col gap-8"
     //   onSubmit={(event) => event.preventDefault()}

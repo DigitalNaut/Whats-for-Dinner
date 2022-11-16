@@ -1,10 +1,9 @@
 import type { PropsWithChildren } from "react";
-import { useContext } from "react";
-import { createContext } from "react";
+import { useState, useContext, createContext } from "react";
 
 import type { SpinnerOption } from "src/components/SpinningWheel";
 
-const choices: SpinnerOption[] = [
+const allMenuItems: SpinnerOption[] = [
   {
     label: "Tacos al pastor",
     enabled: true,
@@ -79,11 +78,36 @@ const choices: SpinnerOption[] = [
   },
 ];
 
-const spinnerMenuContext = createContext<SpinnerOption[]>(choices);
+const spinnerMenuContext = createContext<{
+  allMenuItems: SpinnerOption[];
+  enabledMenuItems: SpinnerOption[];
+  toggleMenuItem: (index: number, value?: boolean) => void;
+}>({
+  allMenuItems,
+  enabledMenuItems: allMenuItems,
+  toggleMenuItem: () => {
+    throw new Error("SpinnerMenuContext not initialized");
+  },
+});
 
 export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
+  const [enabledMenuItems, setSpinnerMenuItems] =
+    useState<SpinnerOption[]>(allMenuItems);
+
+  function toggleMenuItem(index: number, value?: boolean) {
+    allMenuItems[index].enabled = value ?? !enabledMenuItems[index].enabled;
+    const newSpinnerMenu = allMenuItems.filter((item) => item.enabled === true);
+    setSpinnerMenuItems(newSpinnerMenu);
+  }
+
   return (
-    <spinnerMenuContext.Provider value={choices}>
+    <spinnerMenuContext.Provider
+      value={{
+        enabledMenuItems,
+        allMenuItems,
+        toggleMenuItem,
+      }}
+    >
       {children}
     </spinnerMenuContext.Provider>
   );

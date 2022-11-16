@@ -49,8 +49,9 @@ export default function App() {
             <Route
               element={
                 <GoogleDriveProvider>
-                  <SpinnerMenuContextProvider />
-                  <ProtectedRoutes />
+                  <SpinnerMenuContextProvider>
+                    <ProtectedRoutes />
+                  </SpinnerMenuContextProvider>
                 </GoogleDriveProvider>
               }
             >

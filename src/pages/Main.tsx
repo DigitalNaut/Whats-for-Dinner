@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
+import type { SpinnerOption } from "src/components/SpinningWheel";
 import SpinningWheel from "src/components/SpinningWheel";
 import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
 
@@ -26,15 +27,15 @@ function Dish({ label, imageUrl }: { label: string; imageUrl: string }) {
 }
 
 export default function Main() {
-  const choices = useSpinnerMenuContext();
+  const { enabledMenuItems } = useSpinnerMenuContext();
   const [resultHistory, setResultHistory] = useState<
-    (typeof choices[number] & { timestamp: string })[]
+    (SpinnerOption & { timestamp: string })[]
   >([]);
 
   return (
     <div className="flex flex-col w-full gap-8">
       <SpinningWheel
-        choices={choices}
+        choices={enabledMenuItems}
         onSpinEnd={(result) => {
           setResultHistory((currentHistory) => [
             { ...result, timestamp: Date() },
