@@ -1,11 +1,11 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 
-import { Header } from "src/components/Header";
+import { TitleHeader } from "src/components/Header";
 
 test("renders a header", () => {
   const text = "Header title";
-  render(<Header>{text}</Header>);
+  render(<TitleHeader>{text}</TitleHeader>);
   const element = screen.getByText(text);
   expect(element).toBeInTheDocument();
 });
