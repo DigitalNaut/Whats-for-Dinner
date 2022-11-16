@@ -351,7 +351,7 @@ export default function SpinningWheel({
             disabled={cannotSpin}
             onClick={spinTheWheel}
           >
-            ¡Decide por mí!
+            ¡Decide!
           </button>
         )}
       </div>
