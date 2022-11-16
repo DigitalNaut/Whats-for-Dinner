@@ -1,8 +1,9 @@
-import { createRef, useEffect, useRef, useState } from "react";
+import { createRef, useCallback, useEffect, useRef, useState } from "react";
 import { ReactComponent as Arrow } from "src/assets/wedge.svg";
 
-type SpinnerOption = {
+export type SpinnerOption = {
   label: string;
+  enabled: boolean;
   imageUrl: string;
 };
 
@@ -92,8 +93,8 @@ class Spinner {
   private spinAngle = 0;
   private angleOffset = 0.5 * Math.PI;
   private readonly context: CanvasRenderingContext2D;
-  private mutableChoices: SpinnerOption[];
-  private replaceIndex;
+  private cyclingChoices: SpinnerOption[];
+  private cyclingIndex;
   private maxChoices;
   private prevResult = 0;
 
@@ -110,23 +111,24 @@ class Spinner {
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
     this.wedges = [];
     this.maxChoices = Math.min(this.choices.length, colors.length);
-    this.mutableChoices = this.choices.slice(0, this.maxChoices);
-    this.replaceIndex = this.maxChoices;
+    this.cyclingChoices = this.choices.slice(0, this.maxChoices);
+    this.cyclingIndex = this.maxChoices;
 
     this.createWheel();
     this.createDecorations();
   }
 
   createWheel() {
-    const wedgeCount = colors.length;
+    const wedgeCount = Math.min(colors.length, this.choices.length);
     const wedgeAngle = TAU / wedgeCount;
 
-    colors.forEach((color, index) => {
-      const startAngle = index * wedgeAngle;
+    for (let i = 0; i < this.maxChoices; i++) {
+      const wedgeColor = colors[i];
+      const startAngle = i * wedgeAngle;
       const endAngle = startAngle + wedgeAngle;
-      const wedge = new Wedge(startAngle, endAngle, color, this.origin);
+      const wedge = new Wedge(startAngle, endAngle, wedgeColor, this.origin);
       this.wedges.push(wedge);
-    });
+    }
 
     this.wheelCanvas.width = this.canvas.width;
     this.wheelCanvas.height = this.canvas.height;
@@ -204,7 +206,7 @@ class Spinner {
 
     // TODO: Optimize this to update only when choices change and blit instead of redrawing
     this.wedges.forEach((wedge, index) => {
-      const { label } = this.mutableChoices[index];
+      const { label } = this.cyclingChoices[index];
       wedge.drawText(
         this.context,
         label,
@@ -218,27 +220,29 @@ class Spinner {
     this.context.drawImage(this.decorationsCanvas, 0, 0);
   }
 
-  juggleChoices(insertIndex: number) {
+  cycleChoicesStrategy(insertIndex: number) {
     const newChoice = this.choices.slice(
-      this.replaceIndex,
-      this.replaceIndex + 1
+      this.cyclingIndex,
+      this.cyclingIndex + 1
     )[0];
-    this.mutableChoices.splice(insertIndex, 1, newChoice);
-    this.replaceIndex = (this.replaceIndex + 1) % this.choices.length;
+    this.cyclingChoices.splice(insertIndex, 1, newChoice);
+    this.cyclingIndex = (this.cyclingIndex + 1) % this.choices.length;
   }
 
   update() {
     const currentOption = Math.floor(
       (((Math.PI * 3 - this.spinAngle) % TAU) / TAU) * this.maxChoices
     );
-
-    if (currentOption !== this.prevResult) {
+    if (
+      this.choices.length > this.wedges.length &&
+      currentOption !== this.prevResult
+    ) {
       // Calculate the choice at the opposite end of the wheel
+      this.prevResult = currentOption;
       const insertIndex =
         (currentOption + Math.floor(this.maxChoices * 0.5)) % this.maxChoices;
-      this.juggleChoices(insertIndex);
+      this.cycleChoicesStrategy(insertIndex);
     }
-    this.prevResult = currentOption;
 
     return currentOption;
   }
@@ -251,7 +255,7 @@ class Spinner {
     this.spinAngle = (this.spinAngle + velocity) % TAU;
 
     const currentOption = this.update();
-    if (velocity < 0.1) onUpdate?.(this.mutableChoices[currentOption]);
+    if (velocity < 0.1) onUpdate?.(this.cyclingChoices[currentOption]);
     this.draw(currentOption, velocity);
 
     velocity = velocity < 0.005 ? 0 : velocity * 0.99;
@@ -261,7 +265,7 @@ class Spinner {
         this.spin(velocity, onUpdate, onSpinEnd);
       } else {
         cancelAnimationFrame(animation);
-        onSpinEnd?.(this.mutableChoices[currentOption]);
+        onSpinEnd?.(this.cyclingChoices[currentOption]);
       }
     });
   }
@@ -280,8 +284,9 @@ export default function SpinningWheel({
   const wheelRef = useRef<Spinner>();
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState<SpinnerOption>();
+  const cannotSpin = isSpinning || choices.length <= 0;
 
-  useEffect(() => {
+  const setupSpinner = useCallback(() => {
     if (!canvasRef.current) return;
 
     const { width, height } = canvasRef.current;
@@ -297,14 +302,14 @@ export default function SpinningWheel({
     );
 
     wheelRef.current.draw();
-  }, []);
+  }, [canvasRef, choices]);
 
   function randomVelocity(base: number, range: number) {
     return ((Math.random() * range + base) * Math.PI) / 180;
   }
 
   const spinTheWheel = () => {
-    if (isSpinning) return;
+    if (cannotSpin) return;
 
     setIsSpinning(true);
     setResult(undefined);
@@ -315,6 +320,8 @@ export default function SpinningWheel({
       onSpinEnd?.(result);
     });
   };
+
+  useEffect(setupSpinner, [choices]);
 
   return (
     <div className="w-full">
@@ -338,13 +345,15 @@ export default function SpinningWheel({
           width="400"
           height="400"
         />
-        <button
-          className="absolute inset-x-1/2 bottom-2 h-fit -translate-x-1/2 -translate-y-1/2 font-bangers text-2xl cursor-pointer bg-red-700 px-4 py-2 rounded-full hover:bg-red-600 disabled:bg-gray-500 disabled:text-gray-400 disabled:cursor-not-allowed "
-          disabled={isSpinning}
-          onClick={spinTheWheel}
-        >
-          !Sorpréndeme!
-        </button>
+        {choices.length > 0 && (
+          <button
+            className="absolute inset-x-1/2 bottom-2 h-fit -translate-x-1/2 -translate-y-1/2 font-bangers text-2xl cursor-pointer bg-red-700 px-4 py-2 rounded-full hover:bg-red-600 disabled:bg-gray-500 disabled:text-gray-400 disabled:cursor-not-allowed "
+            disabled={cannotSpin}
+            onClick={spinTheWheel}
+          >
+            ¡Sorpréndeme!
+          </button>
+        )}
       </div>
     </div>
   );
