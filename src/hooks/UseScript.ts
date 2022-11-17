@@ -17,7 +17,7 @@ export function useScript({
     return () => {
       document.body.removeChild(script);
     };
-  }, []);
+  }, [onLoad, src]);
 
   return null;
 }

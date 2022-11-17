@@ -29,6 +29,7 @@ specifiers:
   eslint-config-prettier: ^8.5.0
   eslint-plugin-no-relative-import-paths: ^1.4.0
   eslint-plugin-react: ^7.31.10
+  eslint-plugin-react-hooks: ^4.6.0
   eslint-plugin-tailwindcss: ^3.6.2
   jwt-decode: ^3.1.2
   npm-run-all: ^4.1.5
@@ -84,6 +85,7 @@ devDependencies:
   eslint-config-prettier: 8.5.0_eslint@8.27.0
   eslint-plugin-no-relative-import-paths: 1.4.0
   eslint-plugin-react: 7.31.10_eslint@8.27.0
+  eslint-plugin-react-hooks: 4.6.0_eslint@8.27.0
   eslint-plugin-tailwindcss: 3.6.2
   npm-run-all: 4.1.5
   postcss: 8.4.18
@@ -2045,8 +2047,8 @@ packages:
       '@types/gapi.client.discovery': 1.0.8
     dev: true
 
-  /@maxim_mazurok/gapi.client.drive-v3/0.0.20221030:
-    resolution: {integrity: sha512-uXKDASnEVxwsBkWLFvpuqJGCCTHDhTNT0dSUYGjXNWjIEEibrz0k/ABhVyO2CKBpmoEEbgmQpRKboZvch2G+3w==}
+  /@maxim_mazurok/gapi.client.drive-v3/0.0.20221106:
+    resolution: {integrity: sha512-+Htw5XIJ2seAji10rWB4k6rojoWAh5FpKSGmBUJIw3MhyWsGUtEruKwZdgZ1qE4mhcC0xQPYhghXZ6KYKXiPRA==}
     dependencies:
       '@types/gapi.client': 1.0.5
       '@types/gapi.client.discovery': 1.0.8
@@ -2530,7 +2532,7 @@ packages:
   /@types/gapi.client.drive/3.0.14:
     resolution: {integrity: sha512-q16KCwZsxYsPz43lhFYoFwjwELj+BmIS2HVs8upwlXhiLMEVnC957hYT7rKCYi8YyarKLoLBHshsMIpC//CT7Q==}
     dependencies:
-      '@maxim_mazurok/gapi.client.drive-v3': 0.0.20221030
+      '@maxim_mazurok/gapi.client.drive-v3': 0.0.20221106
     dev: true
 
   /@types/gapi.client/1.0.5:
@@ -4764,7 +4766,6 @@ packages:
       eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0
     dependencies:
       eslint: 8.27.0
-    dev: false
 
   /eslint-plugin-react/7.31.10_eslint@8.27.0:
     resolution: {integrity: sha512-e4N/nc6AAlg4UKW/mXeYWd3R++qUano5/o+t+wnWxIf+bLsOaH3a4q74kX3nDjYym3VBN4HyO9nEn1GcAqgQOA==}

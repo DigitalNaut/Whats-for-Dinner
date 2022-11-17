@@ -321,7 +321,7 @@ export default function SpinningWheel({
     });
   };
 
-  useEffect(setupSpinner, [choices]);
+  useEffect(setupSpinner, [choices, setupSpinner]);
 
   return (
     <div className="w-full">

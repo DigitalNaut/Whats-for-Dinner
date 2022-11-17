@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { faCloudArrowUp, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -39,7 +39,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
     setImageFileToUpload(file);
   };
 
-  const uploadFileHandler = async () => {
+  const uploadFileHandler = useCallback(async () => {
     setError(undefined);
     setIsUpLoadingFile(true);
 
@@ -85,7 +85,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
       }
     }
     setIsUpLoadingFile(false);
-  };
+  }, [imageFileToUpload, onUpload, uploadFile]);
 
   const cancelUploadHandler = () => {
     uploadController.current?.abort();
@@ -96,7 +96,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
   useEffect(() => {
     if (isUploadingFile !== "Authorizing") return;
     if (hasScope) uploadFileHandler();
-  }, [isUploadingFile, hasScope]);
+  }, [isUploadingFile, hasScope, uploadFileHandler]);
 
   return (
     <div className="flex flex-col gap-2 w-full overflow-hidden">
