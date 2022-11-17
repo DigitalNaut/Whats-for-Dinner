@@ -6,6 +6,7 @@ import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import type { SpinnerOption } from "src/components/SpinningWheel";
 import SpinningWheel from "src/components/SpinningWheel";
 import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
+import Floating from "src/components/Floating";
 
 const maxHistory = 20;
 
@@ -55,14 +56,14 @@ export default function Main() {
         ))}
       </div>
 
-      <div className="fixed left-1/2 -translate-x-1/2 bottom-16 flex items-center w-fit">
+      <Floating>
         <Link to="/menu">
-          <button data-filled>
+          <button data-filled className="flex items-center gap-1">
             <FontAwesomeIcon icon={faEdit} />
             <span>Editar menú</span>
           </button>
         </Link>
-      </div>
+      </Floating>
     </div>
   );
 }
