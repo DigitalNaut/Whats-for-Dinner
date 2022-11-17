@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   faDownload,
   faSync,
@@ -116,30 +116,33 @@ export default function ImageList({ refreshDate }: ImageListProps) {
 
   const [loadingDriveFiles, setLoadingDriveFiles] = useState(true);
 
-  async function listFiles(signal?: AbortSignal) {
-    setLoadingDriveFiles(true);
+  const listFiles = useCallback(
+    async function (signal?: AbortSignal) {
+      setLoadingDriveFiles(true);
 
-    try {
-      const { data } = await fetchList({ signal });
-      if (data.files?.length) setDriveFiles(data.files);
-      else {
-        setDriveFiles(undefined);
-        if (data.error) setError(`${data.error.code}: ${data.error.message}`);
+      try {
+        const { data } = await fetchList({ signal });
+        if (data.files?.length) setDriveFiles(data.files);
+        else {
+          setDriveFiles(undefined);
+          if (data.error) setError(`${data.error.code}: ${data.error.message}`);
+        }
+      } catch (error) {
+        if (error === "Authorizing") return;
+
+        if (error instanceof Error) {
+          if (error.name === "CanceledError") return;
+          setError(`${error.name}: ${error.message}`);
+        } else {
+          setError("An unknown error ocurred");
+          console.error(error);
+        }
       }
-    } catch (error) {
-      if (error === "Authorizing") return;
 
-      if (error instanceof Error) {
-        if (error.name === "CanceledError") return;
-        setError(`${error.name}: ${error.message}`);
-      } else {
-        setError("An unknown error ocurred");
-        console.error(error);
-      }
-    }
-
-    setLoadingDriveFiles(false);
-  }
+      setLoadingDriveFiles(false);
+    },
+    [fetchList]
+  );
 
   async function downloadFile(fileInfo: gapi.client.drive.File) {
     downloadController.current?.abort();
@@ -161,7 +164,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
             type: fileInfo.mimeType || "application/octet-stream",
           }),
         });
-      else if (data.error)
+      else if ("error" in data)
         setError(
           `Error ${data.error.code || "unknown"}: ${
             data.error.message || "No message"
@@ -216,7 +219,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     listFiles(signal);
 
     return () => controller.abort();
-  }, [hasScope, refreshDate]);
+  }, [hasScope, listFiles, refreshDate]);
 
   if (!hasScope)
     return (

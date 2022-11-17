@@ -1,113 +1,123 @@
 import type { PropsWithChildren } from "react";
-import { useState, useContext, createContext } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  useContext,
+  createContext,
+} from "react";
 
 import type { SpinnerOption } from "src/components/SpinningWheel";
-
-const allMenuItems: SpinnerOption[] = [
-  {
-    label: "Tacos al pastor",
-    enabled: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Pozole", // c-spell-checker:disable-line
-    enabled: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1649532245300-c3ed0565ffa4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Ensalada de atún",
-    enabled: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1612949060306-4c298ad7f34c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Sopa de pollo",
-    enabled: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1569058242276-0bc3e078cf86?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Ensalada verde",
-    enabled: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1608032077018-c9aad9565d29?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Carne asada",
-    enabled: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1612871689353-cccf581d667b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Pizza",
-    enabled: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Hamburguesa",
-    enabled: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Pollo empanizado", // c-spell-checker:disable-line
-    enabled: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Arroz con pollo",
-    enabled: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1569058242252-623df46b5025?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Sushi",
-    enabled: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1553621042-f6e147245754?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-  {
-    label: "Spaghetti",
-    enabled: true,
-    imageUrl:
-      "https://images.unsplash.com/photo-1635264685671-739e75e73e0f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&q=80",
-  },
-];
+import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
 
 const spinnerMenuContext = createContext<{
-  allMenuItems: SpinnerOption[];
-  enabledMenuItems: SpinnerOption[];
+  allMenuItems?: SpinnerOption[];
+  enabledMenuItems?: SpinnerOption[];
+  isLoaded: boolean;
   toggleMenuItem: (index: number, value?: boolean) => void;
 }>({
-  allMenuItems,
-  enabledMenuItems: allMenuItems,
+  isLoaded: false,
   toggleMenuItem: () => {
     throw new Error("SpinnerMenuContext not initialized");
   },
 });
 
 export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
-  const [enabledMenuItems, setSpinnerMenuItems] =
-    useState<SpinnerOption[]>(allMenuItems);
+  const [error, setError] = useState<string>();
+  const [isLoaded, setIsLoaded] = useState(false);
+  const {
+    fetchFile,
+    fetchList,
+    uploadFile,
+    isLoaded: isDriveLoaded,
+  } = useGoogleDrive();
+  const [allMenuItems, setAllMenuItems] = useState<SpinnerOption[]>();
+  const [enabledMenuItems, setSpinnerMenuItems] = useState<SpinnerOption[]>();
+
+  const getConfig = useCallback(
+    async (signal: AbortSignal) => {
+      try {
+        const { data } = await fetchList({
+          signal,
+          params: { q: "name = 'config.json'" },
+        });
+
+        // List the files
+        if (data.files && data.files.length) {
+          const { data: config } = await fetchFile(data.files[0], {
+            signal,
+            responseType: "json",
+          });
+
+          // Set the menu items
+          if (config && Array.isArray(config)) {
+            setAllMenuItems(config);
+            setSpinnerMenuItems(config);
+          }
+        } else {
+          // Create the config file
+          await uploadFile(
+            {
+              file: new File([JSON.stringify([])], "config.json"),
+              metadata: {
+                name: "config.json",
+                mimeType: "application/json",
+              },
+            },
+            { signal }
+          );
+        }
+
+        setIsLoaded(true);
+      } catch (error) {
+        if (error === "Authorizing") return;
+
+        if (error instanceof Error) {
+          if (error.name === "CanceledError") return;
+          setError(`${error.name}: ${error.message}`);
+          console.error(error);
+        } else {
+          setError("An unknown error ocurred");
+          console.error(error);
+        }
+      }
+    },
+    [fetchFile, fetchList, uploadFile]
+  );
 
   function toggleMenuItem(index: number, value?: boolean) {
+    if (!allMenuItems || !enabledMenuItems) return;
+
     allMenuItems[index].enabled = value ?? !enabledMenuItems[index].enabled;
     const newSpinnerMenu = allMenuItems.filter((item) => item.enabled === true);
     setSpinnerMenuItems(newSpinnerMenu);
   }
 
+  useEffect(() => {
+    if (!isDriveLoaded) return;
+
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    getConfig(signal);
+
+    return () => controller.abort();
+  }, [getConfig, isDriveLoaded]);
+
   return (
     <spinnerMenuContext.Provider
       value={{
+        isLoaded,
         enabledMenuItems,
         allMenuItems,
         toggleMenuItem,
       }}
     >
+      {error && (
+        <div className="p-2 rounded-sm w-full bg-red-500 text-white">
+          {error}
+        </div>
+      )}
       {children}
     </spinnerMenuContext.Provider>
   );

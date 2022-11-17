@@ -31,7 +31,7 @@ type TokenInfo = {
 };
 
 type FileUploadJSONResponse = (FileUploadSuccess & GoogleDriveError) | false;
-type FileDownloadJSONResponse = ArrayBuffer | GoogleDriveError | false;
+type FileDownloadJSONResponse = ArrayBuffer | GoogleDriveError | JSON | false;
 type FileDeletedJSONResponse = GoogleDriveError | "";
 type FilesListJSONResponse = {
   files?: gapi.client.drive.File[];
@@ -83,7 +83,6 @@ const DISCOVERY_DOC =
 
 export function GoogleDriveProvider({ children }: PropsWithChildren) {
   const { user } = useUser();
-
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasScope, setHasScope] = useState(false);
   const [userTokens, setUserTokens] = useState<
@@ -180,7 +179,10 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     return request;
   };
 
-  const fetchList: GoogleDriveContextType["fetchList"] = async (config) => {
+  const fetchList: GoogleDriveContextType["fetchList"] = async ({
+    params,
+    ...config
+  }: AxiosRequestConfig = {}) => {
     const authStatus = authGuard();
     if (authStatus !== "OK") return Promise.reject(authStatus);
 
@@ -191,6 +193,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
           "files(id, name, mimeType, hasThumbnail, thumbnailLink, iconLink, size)",
         spaces,
         oauth_token: userTokens?.access_token,
+        ...params,
       },
       ...config,
     });
@@ -200,7 +203,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
 
   const fetchFile: GoogleDriveContextType["fetchFile"] = async (
     file,
-    config
+    { params, ...config }: AxiosRequestConfig = {}
   ) => {
     const authStatus = authGuard();
     if (authStatus !== "OK") return Promise.reject(authStatus);
@@ -208,7 +211,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     const request = axios.get(
       `https://www.googleapis.com/drive/v3/files/${file.id}`,
       {
-        params: { alt: "media" },
+        params: { alt: "media", ...params },
         responseType: "arraybuffer",
         headers: {
           authorization: `Bearer ${userTokens?.access_token}`,
@@ -243,7 +246,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (!isLoaded || !userTokens) return;
     setHasScope(hasGrantedAnyScopeGoogle(userTokens, scope));
-  }, [userTokens]);
+  }, [isLoaded, userTokens]);
 
   return (
     <googleDriveContext.Provider

@@ -1,4 +1,8 @@
 import { createRef, useCallback, useEffect, useRef, useState } from "react";
+
+import SpinnerIcon from "src/components/Spinner";
+import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
+
 import { ReactComponent as Arrow } from "src/assets/wedge.svg";
 
 export type SpinnerOption = {
@@ -272,7 +276,7 @@ class Spinner {
 }
 
 type SpinningWheelProps = {
-  choices: SpinnerOption[];
+  choices?: SpinnerOption[];
   onSpinEnd?: (result: SpinnerOption) => void;
 };
 
@@ -280,11 +284,12 @@ export default function SpinningWheel({
   choices,
   onSpinEnd,
 }: SpinningWheelProps) {
+  const { isLoaded } = useSpinnerMenuContext();
   const canvasRef = createRef<HTMLCanvasElement>();
   const wheelRef = useRef<Spinner>();
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState<SpinnerOption>();
-  const cannotSpin = isSpinning || choices.length <= 0;
+  const cannotSpin = isSpinning || (choices && choices.length <= 0);
 
   const setupSpinner = useCallback(() => {
     if (!canvasRef.current) return;
@@ -298,7 +303,7 @@ export default function SpinningWheel({
       },
       200,
       3,
-      choices
+      choices || []
     );
 
     wheelRef.current.draw();
@@ -334,7 +339,7 @@ export default function SpinningWheel({
             />
           ) : (
             <div className="grid items-center text-center bg-slate-700 text-white aspect-square w-full h-full rounded-full text-8xl font-bangers">
-              ?
+              {isLoaded ? "?" : <SpinnerIcon text="" />}
             </div>
           )}
         </div>
@@ -345,15 +350,13 @@ export default function SpinningWheel({
           width="400"
           height="400"
         />
-        {choices.length > 0 && (
-          <button
-            className="absolute inset-x-1/2 bottom-2 h-fit whitespace-nowrap -translate-x-1/2 -translate-y-1/2 font-bangers text-2xl cursor-pointer bg-red-700 px-4 py-2 rounded-full hover:bg-red-600 disabled:bg-gray-500 disabled:text-gray-400 disabled:cursor-not-allowed"
-            disabled={cannotSpin}
-            onClick={spinTheWheel}
-          >
-            ¡Decide!
-          </button>
-        )}
+        <button
+          className="absolute inset-x-1/2 bottom-2 h-fit whitespace-nowrap -translate-x-1/2 -translate-y-1/2 font-bangers text-2xl cursor-pointer bg-red-700 px-4 py-2 rounded-full hover:bg-red-600 disabled:bg-gray-500 disabled:text-gray-400 disabled:cursor-not-allowed"
+          disabled={cannotSpin}
+          onClick={spinTheWheel}
+        >
+          ¡Decide!
+        </button>
       </div>
     </div>
   );
