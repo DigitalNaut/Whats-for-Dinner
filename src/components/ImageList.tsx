@@ -266,7 +266,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
       {downloadProgress && (
         <>
           <ProgressBar progress={downloadProgress} />{" "}
-          <button data-filled onClick={() => cancelDownload()}>
+          <button data-filled onClick={cancelDownload}>
             Cancelar
           </button>
         </>

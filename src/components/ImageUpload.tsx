@@ -126,7 +126,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
           <div className="flex gap-1">
             <button
               data-filled
-              onClick={() => uploadFileHandler()}
+              onClick={uploadFileHandler}
               disabled={Boolean(isUploadingFile)}
               className="flex gap-2 items-center"
             >
