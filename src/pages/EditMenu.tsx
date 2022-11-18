@@ -1,19 +1,31 @@
+import type { PropsWithChildren } from "react";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 
 import Floating from "src/components/Floating";
 import Toggle from "src/components/Toggle";
-import { useNavigationContext } from "src/hooks/NavigationContext";
+import { useDynamicHeader } from "src/hooks/NavigationContext";
 import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
+
+function PopupMenu({ children }: PropsWithChildren) {
+  return (
+    <div
+      className="absolute top-0 right-0 bg-white text-gray-900"
+      tabIndex={-1}
+    >
+      {children}
+    </div>
+  );
+}
 
 export default function EditMenu() {
   const { allMenuItems, toggleMenuItem } = useSpinnerMenuContext();
-  const { useDynamicHeader } = useNavigationContext();
 
   useDynamicHeader({
     title: "Editar",
     backTo: "/main",
+    menu: <PopupMenu />,
   });
 
   return (

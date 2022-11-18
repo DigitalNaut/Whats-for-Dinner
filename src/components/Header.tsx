@@ -1,4 +1,5 @@
-import type { PropsWithChildren } from "react";
+import type { MouseEventHandler, PropsWithChildren } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faEllipsis } from "@fortawesome/free-solid-svg-icons";
@@ -21,10 +22,19 @@ export function TitleHeader({ children }: PropsWithChildren) {
 
 export function MenuHeader() {
   const navigate = useNavigate();
-  const { backTo, title } = useNavigationContext();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { backTo, title, menu } = useNavigationContext();
+
+  const handleMenuClick: MouseEventHandler<HTMLButtonElement> = () => {
+    setIsMenuOpen(true);
+
+    window.addEventListener("click", () => {
+      setIsMenuOpen(false);
+    });
+  };
 
   return (
-    <div className="flex w-full justify-between gap-4 bg-purple-800 px-4 py-2 md:rounded-t-xl">
+    <div className="relative flex w-full justify-between gap-4 bg-purple-800 px-4 py-2 md:rounded-t-xl">
       <button
         onClick={() => {
           backTo ? navigate(backTo) : navigate(-1);
@@ -33,9 +43,22 @@ export function MenuHeader() {
         <FontAwesomeIcon icon={faChevronLeft} />
       </button>
       <span className="flex-1">{title}</span>
-      <button>
-        <FontAwesomeIcon icon={faEllipsis} />
-      </button>
+      {menu && (
+        <div
+          className="relative"
+          onClick={(event) => {
+            !isMenuOpen && event.stopPropagation();
+          }}
+        >
+          {isMenuOpen ? (
+            menu
+          ) : (
+            <button type="button" onClick={handleMenuClick}>
+              <FontAwesomeIcon icon={faEllipsis} />
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
