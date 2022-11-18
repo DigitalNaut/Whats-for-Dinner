@@ -15,9 +15,13 @@ const spinnerMenuContext = createContext<{
   enabledMenuItems?: SpinnerOption[];
   isLoaded: boolean;
   toggleMenuItem: (index: number, value?: boolean) => void;
+  addMenuItem: (item: SpinnerOption) => void;
 }>({
   isLoaded: false,
   toggleMenuItem: () => {
+    throw new Error("SpinnerMenuContext not initialized");
+  },
+  addMenuItem: () => {
     throw new Error("SpinnerMenuContext not initialized");
   },
 });
@@ -85,12 +89,24 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     [fetchFile, fetchList, uploadFile]
   );
 
+  function updateMenuItems() {
+    if (!allMenuItems) return;
+    setSpinnerMenuItems(allMenuItems.filter(({ enabled }) => enabled));
+  }
+
   function toggleMenuItem(index: number, value?: boolean) {
     if (!allMenuItems || !enabledMenuItems) return;
 
     allMenuItems[index].enabled = value ?? !enabledMenuItems[index].enabled;
-    const newSpinnerMenu = allMenuItems.filter((item) => item.enabled === true);
-    setSpinnerMenuItems(newSpinnerMenu);
+    updateMenuItems();
+  }
+
+  function addMenuItem(item: SpinnerOption) {
+    if (!allMenuItems) return;
+
+    allMenuItems.push(item);
+    setAllMenuItems(allMenuItems);
+    updateMenuItems();
   }
 
   useEffect(() => {
@@ -111,6 +127,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         enabledMenuItems,
         allMenuItems,
         toggleMenuItem,
+        addMenuItem,
       }}
     >
       {error && (
