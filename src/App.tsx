@@ -17,6 +17,7 @@ import { useUser } from "src/hooks/UserContext";
 import { MainLayout, MenuLayout } from "src/components/Layouts";
 import { GoogleDriveProvider } from "src/hooks/GoogleDriveContext";
 import { SpinnerMenuContextProvider } from "src/hooks/SpinnerMenuContext";
+import { MenuHeader, TitleHeader } from "src/components/Header";
 
 // TODO: Remove
 import Tests from "src/pages/Tests";
@@ -41,10 +42,22 @@ const router = createBrowserRouter(
           </GoogleDriveProvider>
         }
       >
-        <Route element={<MainLayout />}>
+        <Route
+          element={
+            <MainLayout>
+              <TitleHeader>¿Qué para comer?</TitleHeader>
+            </MainLayout>
+          }
+        >
           <Route path="/main" element={<Main />} />
         </Route>
-        <Route element={<MenuLayout />}>
+        <Route
+          element={
+            <MenuLayout>
+              <MenuHeader />
+            </MenuLayout>
+          }
+        >
           <Route path="/menu" element={<EditMenu />} />
           <Route path="/addItem" element={<AddItem />} />
         </Route>

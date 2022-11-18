@@ -9,6 +9,7 @@ import InputText from "src/components/InputText";
 import Switcher from "src/components/Switcher";
 import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
 import { useNavigate } from "react-router-dom";
+import { useNavigationContext } from "src/hooks/NavigationContext";
 
 enum FormFields {
   DishName = "dishName",
@@ -78,13 +79,19 @@ const errorReducer: Reducer<
 };
 
 export default function AddItem() {
+  const navigate = useNavigate();
+  const { addMenuItem } = useSpinnerMenuContext();
+  const { useDynamicHeader } = useNavigationContext();
+
   const [formState, formDispatch] = useReducer(stateReducer, initialFormState);
   const [errorState, errorDispatch] = useReducer(
     errorReducer,
     initialErrorState
   );
-  const navigate = useNavigate();
-  const { addMenuItem } = useSpinnerMenuContext();
+
+  useDynamicHeader({
+    title: "Nuevo",
+  });
 
   // const resetForm = (form: HTMLFormElement) => {
   //   formDispatch({ type: ActionType.Reset, payload: "" });

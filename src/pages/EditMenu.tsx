@@ -4,10 +4,17 @@ import { Link } from "react-router-dom";
 
 import Floating from "src/components/Floating";
 import Toggle from "src/components/Toggle";
+import { useNavigationContext } from "src/hooks/NavigationContext";
 import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
 
 export default function EditMenu() {
   const { allMenuItems, toggleMenuItem } = useSpinnerMenuContext();
+  const { useDynamicHeader } = useNavigationContext();
+
+  useDynamicHeader({
+    title: "Editar",
+    backTo: "/main",
+  });
 
   return (
     <>
