@@ -1,5 +1,5 @@
-import type { ChangeEventHandler } from "react";
-import { useState, useEffect } from "react";
+import type { ChangeEventHandler, InputHTMLAttributes } from "react";
+import { useState } from "react";
 import {
   faCloudUpload,
   faImage,
@@ -7,14 +7,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-type InputFileProps = {
-  name: string;
-  label?: string;
-  hint?: string;
-  error?: string;
-} & React.InputHTMLAttributes<HTMLInputElement>;
+type InputFileProps = Pick<
+  InputHTMLAttributes<HTMLInputElement>,
+  "required" | "name"
+>;
 
-function InputFile({ name }: InputFileProps) {
+function InputFile({ name, ...props }: InputFileProps) {
   const [file, setFile] = useState<File>();
   const [fileUrl, setFileUrl] = useState<string>();
 
@@ -30,12 +28,6 @@ function InputFile({ name }: InputFileProps) {
     setFile(undefined);
     setFileUrl(undefined);
   };
-
-  useEffect(() => {
-    return () => {
-      if (fileUrl) URL.revokeObjectURL(fileUrl);
-    };
-  }, [fileUrl]);
 
   return (
     <div>
@@ -96,12 +88,14 @@ function InputFile({ name }: InputFileProps) {
         )}
       </div>
       <input
+        hidden
         data-filled
         id={name + "-id"}
+        name={name}
         type="file"
-        className="hidden"
         onChange={onChangeHandler}
         accept="image/png, image/jpeg, image/webp"
+        {...props}
       />
     </div>
   );
