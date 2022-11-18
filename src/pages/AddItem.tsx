@@ -58,10 +58,16 @@ export default function AddItem() {
           name="dish-name"
           label="Nombre del platillo"
           value={formState.imageName}
-          onChange={({ target }) => {
+          onChange={({ target: { value: payload } }) => {
             formDispatch({
               type: ActionType.SetName,
-              payload: target.value,
+              payload,
+            });
+          }}
+          onClear={() => {
+            formDispatch({
+              type: ActionType.SetName,
+              payload: "",
             });
           }}
         />
@@ -79,10 +85,16 @@ export default function AddItem() {
                   name="dish-url"
                   label="URL de la imagen"
                   value={formState.imageUrl}
-                  onChange={({ target }) => {
+                  onChange={({ target: { value: payload } }) => {
                     formDispatch({
                       type: ActionType.SetURL,
-                      payload: target.value,
+                      payload,
+                    });
+                  }}
+                  onClear={() => {
+                    formDispatch({
+                      type: ActionType.SetURL,
+                      payload: "",
                     });
                   }}
                 />
