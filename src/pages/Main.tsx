@@ -1,32 +1,69 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
-import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
-import Spinner from "src/components/Spinner";
-import ImageUpload from "src/components/ImageUpload";
-import ImageList from "src/components/ImageList";
+import type { SpinnerOption } from "src/components/SpinningWheel";
+import SpinningWheel from "src/components/SpinningWheel";
+import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
+import Floating from "src/components/Floating";
+
+const maxHistory = 20;
+
+function Dish({ label, imageUrl }: { label: string; imageUrl: string }) {
+  return (
+    <div className="group">
+      <div className="relative aspect-square w-16 overflow-hidden rounded-lg bg-gray-700 md:w-24 lg:w-28">
+        <span className="pointer-events-none absolute hidden h-full w-full place-items-center bg-black/50 text-center text-sm group-hover:grid">
+          {label}
+        </span>
+        <img
+          className="h-full w-full object-cover"
+          src={imageUrl}
+          alt={label}
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function Main() {
-  const { isLoaded } = useGoogleDrive();
-  const [refreshDate, setRefreshDate] = useState(Date.now());
-
-  if (!isLoaded)
-    return (
-      <div className="absolute inset-0 grid place-items-center">
-        <Spinner />
-      </div>
-    );
+  const { enabledMenuItems } = useSpinnerMenuContext();
+  const [resultHistory, setResultHistory] = useState<
+    (SpinnerOption & { timestamp: string })[]
+  >([]);
 
   return (
-    <div className="flex pt-6">
-      <div className="w-1/2 p-2">
-        <h2 className="text-xl mb-4">Guardar imagen</h2>
-        <ImageUpload onUpload={() => setRefreshDate(Date.now())} />
+    <div className="flex w-full flex-col gap-8">
+      <SpinningWheel
+        choices={enabledMenuItems}
+        onSpinEnd={(result) => {
+          setResultHistory((currentHistory) => [
+            { ...result, timestamp: Date() },
+            ...currentHistory.slice(0, maxHistory - 1),
+          ]);
+        }}
+      />
+
+      <div className="flex min-w-full gap-4 overflow-x-auto rounded-md bg-slate-700 p-2 shadow-xl">
+        {resultHistory.length === 0 && (
+          <div className="grid aspect-square h-16 w-full place-items-center text-gray-400 md:h-24 lg:h-28">
+            Sin historial
+          </div>
+        )}
+        {resultHistory.map((dish) => (
+          <Dish key={dish.timestamp} {...dish} />
+        ))}
       </div>
 
-      <div className="w-1/2 p-2 flex flex-col gap-4">
-        <h2 className="text-xl mb-4">Imágenes guardadas</h2>
-        <ImageList refreshDate={refreshDate} />
-      </div>
+      <Floating>
+        <Link to="/menu">
+          <button data-filled className="flex items-center gap-1">
+            <FontAwesomeIcon icon={faEdit} />
+            <span>Editar menú</span>
+          </button>
+        </Link>
+      </Floating>
     </div>
   );
 }

@@ -1,13 +1,37 @@
-import { ReactComponent as Chopsticks } from "src/assets/chopsticks.svg";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft, faEllipsis } from "@fortawesome/free-solid-svg-icons";
 
-export default function Header({ children }: { children?: string }) {
+import { ReactComponent as Chopsticks } from "src/assets/chopsticks.svg";
+import { useNavigate } from "react-router-dom";
+
+export function TitleHeader({ children }: { children?: string }) {
   return (
-    <header className="flex flex-col">
-      <h1 className="font-bangers text-center text-4xl sm:text-5xl md:text-6xl [text-shadow:1px_2px_0px_rgba(245,158,11,1)]">
+    <header className="flex flex-col pb-6">
+      <h1 className="text-center font-bangers text-4xl [text-shadow:1px_2px_0px_rgba(245,158,11,1)] sm:text-5xl md:text-6xl">
         {children}
       </h1>
 
       <Chopsticks className="w-full" />
     </header>
+  );
+}
+
+type MenuHeaderProps = {
+  title?: string;
+};
+
+export function MenuHeader({ title }: MenuHeaderProps) {
+  const navigate = useNavigate();
+
+  return (
+    <div className="flex w-full justify-between gap-2 bg-purple-800 px-4 py-2 md:rounded-t-xl">
+      <button onClick={() => navigate(-1)}>
+        <FontAwesomeIcon icon={faChevronLeft} />
+      </button>
+      <span>{title}</span>
+      <button>
+        <FontAwesomeIcon icon={faEllipsis} />
+      </button>
+    </div>
   );
 }

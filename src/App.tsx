@@ -1,62 +1,65 @@
-import { useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import { ErrorBoundary } from "react-error-boundary";
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+} from "react-router-dom";
 
-import Header from "src/components/Header";
 import Login from "src/pages/Login";
 import Main from "src/pages/Main";
 import Privacy from "src/pages/Privacy";
 import Terms from "src/pages/Terms";
-import ErrorFallback from "src/components/ErrorFallback";
+import NotFound from "src/pages/NotFound";
+import EditMenu from "src/pages/EditMenu";
+import AddItem from "src/pages/AddItem";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
 import { useUser } from "src/hooks/UserContext";
+import { MainLayout, MenuLayout } from "src/components/Layouts";
 import { GoogleDriveProvider } from "src/hooks/GoogleDriveContext";
+import { SpinnerMenuContextProvider } from "src/hooks/SpinnerMenuContext";
 
-function App() {
-  const [googleOAuthLoaded, setGoogleOAuthLoaded] = useState(false);
+// TODO: Remove
+import Tests from "src/pages/Tests";
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <>
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<Login redirectTo="/main" />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        {/* TODO: Remove */}
+        <Route path="/tests" element={<Tests />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
+      <Route
+        element={
+          <GoogleDriveProvider>
+            <SpinnerMenuContextProvider>
+              <ProtectedRoutes />
+            </SpinnerMenuContextProvider>
+          </GoogleDriveProvider>
+        }
+      >
+        <Route element={<MainLayout />}>
+          <Route path="/main" element={<Main />} />
+        </Route>
+        <Route element={<MenuLayout />}>
+          <Route path="/menu" element={<EditMenu />} />
+          <Route path="/addItem" element={<AddItem />} />
+        </Route>
+      </Route>
+    </>
+  )
+);
+
+export default function App() {
   const { UserCard } = useUser();
 
   return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <GoogleOAuthProvider
-        clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID || ""}
-        onScriptLoadError={() => {
-          throw new Error("Google OAuth script failed to load");
-        }}
-        onScriptLoadSuccess={() => {
-          setGoogleOAuthLoaded(true);
-        }}
-      >
-        <div
-          className="text-white bg-gradient-to-br from-[#5B0B68] to-[#4C1D95] shadow-2xl
-          md:rounded-xl p-12 max-w-screen-md w-screen h-full relative
-          before:bg-transparent-geometry before:inset-0 before:absolute before:bg-repeat before:bg-top before:rounded-[inherit] before:pointer-events-none"
-        >
-          <UserCard />
-          <Header>¿Qué para comer?</Header>
-
-          {googleOAuthLoaded && (
-            <Routes>
-              <Route path="/" element={<Login />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route
-                element={
-                  <GoogleDriveProvider>
-                    <ProtectedRoutes />
-                  </GoogleDriveProvider>
-                }
-              >
-                <Route path="/home" element={<Main />} />
-              </Route>
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-          )}
-        </div>
-      </GoogleOAuthProvider>
-    </ErrorBoundary>
+    <>
+      <UserCard />
+      <RouterProvider router={router} />
+    </>
   );
 }
-
-export default App;

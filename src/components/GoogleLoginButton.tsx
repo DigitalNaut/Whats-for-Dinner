@@ -7,10 +7,10 @@ export default function GoogleLoginButton({
 }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
-      className={`h-10 font-roboto py-0 pl-3 pr-4 bg-white rounded-full text-[#3c4043] text-sm font-medium ${className}`}
+      className={`h-10 rounded-full bg-white py-0 pl-3 pr-4 font-roboto text-sm font-medium text-[#3c4043] ${className}`}
       {...props}
     >
-      <div className="flex gap-2 justify-center items-start tracking-wide">
+      <div className="flex items-start justify-center gap-2 tracking-wide">
         <GoogleLogo />
         <span>Acceder con Google</span>
       </div>

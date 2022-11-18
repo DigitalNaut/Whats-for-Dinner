@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   faDownload,
   faSync,
@@ -29,7 +29,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
 
   if (!file.id)
     return (
-      <div className="flex gap-2 items-center">
+      <div className="flex items-center gap-2">
         <FontAwesomeIcon icon={faTimes} />
         <i>File unavailable</i>
       </div>
@@ -38,21 +38,21 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
   return (
     <div
       key={file.id}
-      className={`group w-full flex gap-2 hover:bg-white/20 rounded-sm items-center p-2 ${
-        isDeleting ? "opacity-50 line-through grayscale" : ""
+      className={`group flex w-full items-center gap-2 rounded-sm p-2 hover:bg-white/20 ${
+        isDeleting ? "line-through opacity-50 grayscale" : ""
       }`}
     >
       {file.iconLink && (
         <img
           title={`MIME Type: "${file.mimeType}"`}
           src={file.iconLink}
-          className={`w-[20px] h-[20px] ${isDeleting ? "grayscale" : ""}`}
+          className={`h-[20px] w-[20px] ${isDeleting ? "grayscale" : ""}`}
           alt="File icon"
         />
       )}
       <span
         title={file.name}
-        className="flex-1 text-ellipsis overflow-hidden whitespace-nowrap"
+        className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
       >
         {file.name?.split(".")[0]}
       </span>
@@ -110,36 +110,40 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     fileInfo: gapi.client.drive.File;
     data: ArrayBuffer;
     file: File;
+    url: string;
   }>();
   const [downloadProgress, setDownloadProgress] = useState<number>();
   const downloadController = useRef<AbortController>();
 
   const [loadingDriveFiles, setLoadingDriveFiles] = useState(true);
 
-  async function listFiles(signal?: AbortSignal) {
-    setLoadingDriveFiles(true);
+  const listFiles = useCallback(
+    async function (signal?: AbortSignal) {
+      setLoadingDriveFiles(true);
 
-    try {
-      const { data } = await fetchList({ signal });
-      if (data.files?.length) setDriveFiles(data.files);
-      else {
-        setDriveFiles(undefined);
-        if (data.error) setError(`${data.error.code}: ${data.error.message}`);
+      try {
+        const { data } = await fetchList({ signal });
+        if (data.files?.length) setDriveFiles(data.files);
+        else {
+          setDriveFiles(undefined);
+          if (data.error) setError(`${data.error.code}: ${data.error.message}`);
+        }
+      } catch (error) {
+        if (error === "Authorizing") return;
+
+        if (error instanceof Error) {
+          if (error.name === "CanceledError") return;
+          setError(`${error.name}: ${error.message}`);
+        } else {
+          setError("An unknown error ocurred");
+          console.error(error);
+        }
       }
-    } catch (error) {
-      if (error === "Authorizing") return;
 
-      if (error instanceof Error) {
-        if (error.name === "CanceledError") return;
-        setError(`${error.name}: ${error.message}`);
-      } else {
-        setError("An unknown error ocurred");
-        console.error(error);
-      }
-    }
-
-    setLoadingDriveFiles(false);
-  }
+      setLoadingDriveFiles(false);
+    },
+    [fetchList]
+  );
 
   async function downloadFile(fileInfo: gapi.client.drive.File) {
     downloadController.current?.abort();
@@ -153,15 +157,19 @@ export default function ImageList({ refreshDate }: ImageListProps) {
       setTimeout(() => setDownloadProgress(undefined), 250);
 
       if (data === false) setError("File download failed");
-      else if (data instanceof ArrayBuffer)
+      else if (data instanceof ArrayBuffer) {
+        driveFilePreview?.url && URL.revokeObjectURL(driveFilePreview.url);
+        const file = new File([data], fileInfo.name || "Unknown file", {
+          type: fileInfo.mimeType || "application/octet-stream",
+        });
+
         setDriveFilePreview({
           fileInfo,
           data,
-          file: new File([data], fileInfo.name || "Unknown file", {
-            type: fileInfo.mimeType || "application/octet-stream",
-          }),
+          file,
+          url: URL.createObjectURL(file),
         });
-      else if (data.error)
+      } else if ("error" in data)
         setError(
           `Error ${data.error.code || "unknown"}: ${
             data.error.message || "No message"
@@ -216,7 +224,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     listFiles(signal);
 
     return () => controller.abort();
-  }, [hasScope, refreshDate]);
+  }, [hasScope, listFiles, refreshDate]);
 
   if (!hasScope)
     return (
@@ -230,7 +238,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
   return (
     <>
       {error && (
-        <div className="p-2 rounded-sm w-full bg-red-500 text-white">
+        <div className="w-full rounded-sm bg-red-500 p-2 text-white">
           {error}
         </div>
       )}
@@ -250,6 +258,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         onClick={() => listFiles()}
         disabled={loadingDriveFiles}
         title="Actualizar lista"
+        className="w-fit"
       >
         {loadingDriveFiles ? (
           <Spinner size="sm" />
@@ -262,13 +271,13 @@ export default function ImageList({ refreshDate }: ImageListProps) {
       {downloadProgress && (
         <>
           <ProgressBar progress={downloadProgress} />{" "}
-          <button data-filled onClick={() => cancelDownload()}>
+          <button data-filled onClick={cancelDownload}>
             Cancelar
           </button>
         </>
       )}
       <ImagePreview
-        file={driveFilePreview?.file}
+        src={driveFilePreview && driveFilePreview.url}
         fileName={driveFilePreview?.fileInfo.name}
         onClick={() => setDriveFilePreview(undefined)}
       />

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { faCloudArrowUp, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -9,7 +9,10 @@ import ProgressBar from "src/components/ProgressBar";
 export default function ImageUpload({ onUpload }: { onUpload(): void }) {
   const { uploadFile, hasScope } = useGoogleDrive();
 
-  const [imageFileToUpload, setImageFileToUpload] = useState<File>();
+  const [imageFileToUpload, setImageFileToUpload] = useState<{
+    file: File;
+    url: string;
+  }>();
   const [isUploadingFile, setIsUpLoadingFile] = useState<
     "Authorizing" | boolean
   >(false);
@@ -36,10 +39,12 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
     }
 
     setUploadProgress(undefined);
-    setImageFileToUpload(file);
+
+    imageFileToUpload?.url && URL.revokeObjectURL(imageFileToUpload.url);
+    setImageFileToUpload({ file, url: URL.createObjectURL(file) });
   };
 
-  const uploadFileHandler = async () => {
+  const uploadFileHandler = useCallback(async () => {
     setError(undefined);
     setIsUpLoadingFile(true);
 
@@ -50,10 +55,10 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
     try {
       const { data } = await uploadFile(
         {
-          file: imageFileToUpload,
+          file: imageFileToUpload.file,
           metadata: {
-            name: imageFileToUpload.name,
-            mimeType: imageFileToUpload.type,
+            name: imageFileToUpload.file.name,
+            mimeType: imageFileToUpload.file.type,
           },
         },
         {
@@ -85,22 +90,23 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
       }
     }
     setIsUpLoadingFile(false);
-  };
+  }, [imageFileToUpload, onUpload, uploadFile]);
 
   const cancelUploadHandler = () => {
     uploadController.current?.abort();
+    setUploadProgress(undefined);
     setIsUpLoadingFile(false);
   };
 
   useEffect(() => {
     if (isUploadingFile !== "Authorizing") return;
     if (hasScope) uploadFileHandler();
-  }, [isUploadingFile, hasScope]);
+  }, [isUploadingFile, hasScope, uploadFileHandler]);
 
   return (
-    <div className="flex flex-col gap-2 w-full overflow-hidden">
+    <div className="flex w-full flex-col gap-2 overflow-hidden">
       {error && (
-        <div className="p-2 rounded-sm w-full bg-red-500 text-white">
+        <div className="w-full rounded-sm bg-red-500 p-2 text-white">
           {error}
         </div>
       )}
@@ -109,25 +115,21 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
         size={1_000_000}
         onChange={handleImageInputChange}
         accept="image/png, image/jpeg, image/webp"
-        className="text-ellipsis w-full"
+        className="w-full text-ellipsis"
       />
       {imageFileToUpload && (
         <>
           <img
-            src={
-              imageFileToUpload
-                ? URL.createObjectURL(imageFileToUpload)
-                : "https://via.placeholder.com/128"
-            }
-            className="w-[128px] h-[128px] rounded-md object-cover object-center"
+            src={imageFileToUpload.url || "https://via.placeholder.com/128"}
+            className="h-[128px] w-[128px] rounded-md object-cover object-center"
           />
           {uploadProgress && <ProgressBar progress={uploadProgress} />}
           <div className="flex gap-1">
             <button
               data-filled
-              onClick={() => uploadFileHandler()}
+              onClick={uploadFileHandler}
               disabled={Boolean(isUploadingFile)}
-              className="flex gap-2 items-center"
+              className="flex items-center gap-2"
             >
               {isUploadingFile ? (
                 <Spinner

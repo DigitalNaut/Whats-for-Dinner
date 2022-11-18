@@ -4,7 +4,9 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        "transparent-geometry": "url('/src/assets/transparent-geometry.svg')",
+        "svg-abstract-shapes": "url('/src/assets/transparent-geometry.svg')",
+        "gradient-radial-overlay":
+          "radial-gradient(50% 50% at 50% 50%, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 100%);",
       },
       colors: {
         primary: "var(--color-primary)",

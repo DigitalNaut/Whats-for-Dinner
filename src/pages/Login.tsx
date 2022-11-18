@@ -2,10 +2,14 @@ import { Navigate } from "react-router-dom";
 
 import { useUser } from "src/hooks/UserContext";
 
-export default function Landing() {
+type LoginProps = {
+  redirectTo: string;
+};
+
+export default function Login({ redirectTo }: LoginProps) {
   const { user, LoginButton } = useUser();
 
-  if (user) return <Navigate to="/home" />;
+  if (user) return <Navigate to={redirectTo} />;
 
   return (
     <div className="flex w-full grow justify-center pt-[10vh]">
