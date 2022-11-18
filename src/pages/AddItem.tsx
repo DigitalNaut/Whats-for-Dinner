@@ -99,7 +99,6 @@ export default function AddItem() {
                   }}
                 />
                 <ImagePreview src={formState.imageUrl} />
-                <span>{}</span>
               </>
             ),
           }}

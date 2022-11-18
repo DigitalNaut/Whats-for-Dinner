@@ -17,15 +17,17 @@ export default function Switcher({
   renders: { firstOption, secondOption },
 }: SwitcherProps) {
   const [state, setState] = useState(initialState);
+
   const largestLabel = Math.max(...labels.map((label) => label.length));
+  const [firstLabel, secondLabel] = labels;
 
   return (
     <>
       <div className="m-auto w-fit cursor-pointer select-none rounded-full bg-slate-500">
         <button
           type="button"
-          className={`box-content inline-block px-2 py-1 text-center ${
-            state ? "rounded-full bg-slate-400" : ""
+          className={`box-content inline-block rounded-full px-2 py-1 text-center ${
+            state ? "bg-slate-400" : ""
           }`}
           style={{ width: largestLabel + "ch" }}
           onClick={() => {
@@ -33,12 +35,12 @@ export default function Switcher({
             onChange(true);
           }}
         >
-          {labels[0]}
+          {firstLabel}
         </button>
         <button
           type="button"
-          className={`box-content inline-block px-2 py-1 text-center ${
-            state ? "" : "rounded-full bg-slate-400"
+          className={`box-content inline-block rounded-full px-2 py-1 text-center ${
+            state ? "" : "bg-slate-400"
           }`}
           style={{ width: largestLabel + "ch" }}
           onClick={() => {
@@ -46,7 +48,7 @@ export default function Switcher({
             onChange(false);
           }}
         >
-          {labels[1]}
+          {secondLabel}
         </button>
       </div>
       {state ? firstOption : secondOption}
