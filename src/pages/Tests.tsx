@@ -2,8 +2,6 @@ import { useState } from "react";
 
 import ImageList from "src/components/ImageList";
 import ImageUpload from "src/components/ImageUpload";
-import InputFile from "src/components/InputFile";
-import InputText from "src/components/InputText";
 import Spinner from "src/components/Spinner";
 import SpinningWheel from "src/components/SpinningWheel";
 import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
@@ -40,8 +38,8 @@ function Tests() {
           </div>
         </div>
 
-        <InputText name="dish-name" label="Nombre del platillo" />
-        <InputFile name="dish-image" label="Imagen del platillo" />
+        {/* <InputText name="dish-name" label="Nombre del platillo" />
+        <InputFile name="dish-image" label="Imagen del platillo" /> */}
         <button data-filled className="w-full">
           Añadir
         </button>
