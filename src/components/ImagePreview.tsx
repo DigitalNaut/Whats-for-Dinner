@@ -1,4 +1,8 @@
-import type { DetailedHTMLProps, ImgHTMLAttributes } from "react";
+import type {
+  DetailedHTMLProps,
+  ImgHTMLAttributes,
+  ReactEventHandler,
+} from "react";
 import { useState } from "react";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,11 +17,22 @@ type ImagePreviewProps = {
 export default function ImagePreview({
   src,
   onError,
+  onLoad,
   ...props
 }: ImagePreviewProps) {
   const [error, setError] = useState<string>();
   const isInteractive = src && props.onClick;
   const fileUrl = src ? src : "https://via.placeholder.com/128";
+
+  const handleLoaded: ReactEventHandler<HTMLImageElement> = (event) => {
+    setError("");
+    onLoad?.(event);
+  };
+
+  const handleError: ReactEventHandler<HTMLImageElement> = (event) => {
+    setError("No disponible");
+    onError?.(event);
+  };
 
   return (
     <div className="group relative m-auto w-fit overflow-hidden rounded-md">
@@ -29,11 +44,8 @@ export default function ImagePreview({
         }`}
         width="128"
         height="128"
-        onLoad={() => setError(undefined)}
-        onError={(event) => {
-          setError("No disponible");
-          onError?.(event);
-        }}
+        onLoad={handleLoaded}
+        onError={handleError}
         {...props}
       />
       {error && (
