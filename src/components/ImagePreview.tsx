@@ -7,10 +7,14 @@ type ImagePreviewProps = {
   fileName?: string;
 } & Pick<
   DetailedHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>,
-  "src" | "onClick" | "title"
+  "src" | "onClick" | "title" | "onError" | "onLoad"
 >;
 
-export default function ImagePreview({ src, ...props }: ImagePreviewProps) {
+export default function ImagePreview({
+  src,
+  onError,
+  ...props
+}: ImagePreviewProps) {
   const [error, setError] = useState<string>();
   const isInteractive = src && props.onClick;
   const fileUrl = src ? src : "https://via.placeholder.com/128";
@@ -26,8 +30,9 @@ export default function ImagePreview({ src, ...props }: ImagePreviewProps) {
         width="128"
         height="128"
         onLoad={() => setError(undefined)}
-        onError={() => {
-          setError("Imagen no válida");
+        onError={(event) => {
+          setError("No disponible");
+          onError?.(event);
         }}
         {...props}
       />

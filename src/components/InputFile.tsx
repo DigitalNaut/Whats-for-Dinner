@@ -31,12 +31,25 @@ function InputFile({ name, ...props }: InputFileProps) {
   };
 
   return (
-    <div>
+    <>
       <div className="flex flex-col items-center gap-2">
+        <input
+          data-filled
+          id={name}
+          name={name}
+          type="file"
+          onChange={onChangeHandler}
+          accept="image/png, image/jpeg, image/webp"
+          className="peer pointer-events-none absolute inset-1/2 h-0 w-0 overflow-hidden opacity-0"
+          style={{ padding: 0 }}
+          {...props}
+        />
         <div
           id={name + "-label"}
           ref={labelRef}
-          className="group relative h-32 w-32 cursor-pointer overflow-hidden rounded-full border border-gray-400 bg-gray-700 focus-within:ring-2 focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-blue-600 hover:bg-gray-800"
+          className="group relative h-32 w-32 cursor-pointer overflow-hidden rounded-full border border-gray-400 bg-gray-700 hover:bg-gray-800 
+            peer-invalid:ring-2 peer-invalid:ring-red-300 peer-invalid:ring-offset-2 peer-invalid:ring-offset-gray-700 
+            peer-focus:ring-2 peer-focus:ring-white peer-focus:ring-offset-2 peer-focus:ring-offset-blue-600"
         >
           {fileUrl ? (
             <div className="group">
@@ -72,17 +85,6 @@ function InputFile({ name, ...props }: InputFileProps) {
               <span className="text-sm">Seleccionar</span>
             </label>
           )}
-          <input
-            data-filled
-            id={name}
-            name={name}
-            type="file"
-            onChange={onChangeHandler}
-            accept="image/png, image/jpeg, image/webp"
-            className="pointer-events-none absolute inset-1/2 h-0 w-0 overflow-hidden opacity-0"
-            style={{ padding: 0 }}
-            {...props}
-          />
         </div>
         {file ? (
           <div className="flex max-w-[70%] items-center gap-4 overflow-hidden text-ellipsis p-2">
@@ -105,7 +107,7 @@ function InputFile({ name, ...props }: InputFileProps) {
           </span>
         )}
       </div>
-    </div>
+    </>
   );
 }
 

@@ -1,5 +1,5 @@
 import type { FormEventHandler, Reducer } from "react";
-import { useState, useReducer } from "react";
+import { useReducer } from "react";
 import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -15,13 +15,18 @@ enum FormFields {
   DishURL = "dishURL",
   DishImage = "dishImage",
 }
-enum ActionType {
+enum StateActionType {
   SetName,
   SetURL,
   Reset,
 }
+enum ErrorActionType {
+  FormError,
+  InvalidImageURL,
+  Reset,
+}
 
-type Action = {
+type Action<ActionType> = {
   type: ActionType;
   payload: string;
 };
@@ -30,17 +35,43 @@ const initialFormState = {
   imageName: "",
   imageUrl: "",
 };
-const stateReducer: Reducer<typeof initialFormState, Action> = (
-  prevState,
-  action
-) => {
+const stateReducer: Reducer<
+  typeof initialFormState,
+  Action<StateActionType>
+> = (prevState, action) => {
   switch (action.type) {
-    case ActionType.Reset:
+    case StateActionType.Reset:
       return initialFormState;
-    case ActionType.SetName:
+
+    case StateActionType.SetName:
       return { ...prevState, imageName: action.payload };
-    case ActionType.SetURL:
+
+    case StateActionType.SetURL:
       return { ...prevState, imageUrl: action.payload };
+
+    default:
+      throw new Error("Invalid action type" + action.type);
+  }
+};
+
+const initialErrorState = {
+  formError: "",
+  invalidImageURL: "",
+};
+const errorReducer: Reducer<
+  typeof initialErrorState,
+  Action<ErrorActionType>
+> = (prevState, action) => {
+  switch (action.type) {
+    case ErrorActionType.Reset:
+      return initialErrorState;
+
+    case ErrorActionType.FormError:
+      return { ...prevState, formError: action.payload };
+
+    case ErrorActionType.InvalidImageURL:
+      return { ...prevState, invalidImageURL: action.payload };
+
     default:
       throw new Error("Invalid action type" + action.type);
   }
@@ -48,18 +79,33 @@ const stateReducer: Reducer<typeof initialFormState, Action> = (
 
 export default function AddItem() {
   const [formState, formDispatch] = useReducer(stateReducer, initialFormState);
+  const [errorState, errorDispatch] = useReducer(
+    errorReducer,
+    initialErrorState
+  );
   const navigate = useNavigate();
   const { addMenuItem } = useSpinnerMenuContext();
-  const [error, setError] = useState<string>();
+
+  // const resetForm = (form: HTMLFormElement) => {
+  //   formDispatch({ type: ActionType.Reset, payload: "" });
+  //   form.reset();
+  // };
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
 
-    setError(undefined);
     const formData = new FormData(event.currentTarget);
 
     const label = formData.get(FormFields.DishName)?.toString().trim();
     const imageUrl = formData.get(FormFields.DishURL)?.toString().trim();
+
+    if (errorState.invalidImageURL !== "") {
+      errorDispatch({
+        type: ErrorActionType.FormError,
+        payload: errorState.invalidImageURL,
+      });
+      return;
+    }
 
     if (label && imageUrl) {
       addMenuItem({
@@ -68,17 +114,21 @@ export default function AddItem() {
         enabled: true,
       });
       navigate("/menu");
-    } else setError("Por favor llena todos los campos");
+    } else
+      errorDispatch({
+        type: ErrorActionType.FormError,
+        payload: "Por favor llena todos los campos: Nombre del platillo y URL",
+      });
   };
 
   return (
     <div className="flex flex-col gap-4 p-6">
       <h2 className="text-center text-2xl">Nuevo platillo</h2>
       <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-        {error && (
+        {errorState.formError && (
           <div className="flex w-full items-center gap-1 rounded-sm bg-amber-600 p-2 text-white">
             <FontAwesomeIcon icon={faWarning} />
-            {error}
+            {errorState.formError}
           </div>
         )}
         <InputText
@@ -88,13 +138,13 @@ export default function AddItem() {
           value={formState.imageName}
           onChange={({ target: { value: payload } }) => {
             formDispatch({
-              type: ActionType.SetName,
+              type: StateActionType.SetName,
               payload,
             });
           }}
           onClear={() => {
             formDispatch({
-              type: ActionType.SetName,
+              type: StateActionType.SetName,
               payload: "",
             });
           }}
@@ -102,7 +152,9 @@ export default function AddItem() {
 
         <Switcher
           initialState={true}
-          onChange={() => null}
+          onChange={() =>
+            errorDispatch({ type: ErrorActionType.Reset, payload: "" })
+          }
           labels={["Imagen", "URL"]}
           renders={{
             firstOption: <InputFile required name={FormFields.DishImage} />,
@@ -113,20 +165,35 @@ export default function AddItem() {
                   name={FormFields.DishURL}
                   label="URL de la imagen"
                   value={formState.imageUrl}
+                  error={errorState.invalidImageURL}
                   onChange={({ target: { value: payload } }) => {
                     formDispatch({
-                      type: ActionType.SetURL,
+                      type: StateActionType.SetURL,
                       payload,
                     });
                   }}
                   onClear={() => {
                     formDispatch({
-                      type: ActionType.SetURL,
+                      type: StateActionType.SetURL,
                       payload: "",
                     });
                   }}
                 />
-                <ImagePreview src={formState.imageUrl} />
+                <ImagePreview
+                  src={formState.imageUrl}
+                  onLoad={() => {
+                    errorDispatch({
+                      type: ErrorActionType.InvalidImageURL,
+                      payload: "",
+                    });
+                  }}
+                  onError={() =>
+                    errorDispatch({
+                      type: ErrorActionType.InvalidImageURL,
+                      payload: "URL de imagen no válida",
+                    })
+                  }
+                />
               </>
             ),
           }}

@@ -50,8 +50,8 @@ export default function InputText({
           type="text"
           aria-describedby={name + "-hint"}
           defaultValue={value}
-          className={`w-full rounded-sm border-b-2 bg-black/5 pt-6 pb-2 hover:bg-black/10 focus:border-b-white focus:bg-black/[15%]
-            ${error ? "border-b-red-300" : "border-b-gray-400"}
+          className={`w-full rounded-sm border-b-2 border-b-gray-400 bg-black/5 pt-6 pb-2 invalid:border-b-red-300 hover:bg-black/10 focus:border-b-white focus:bg-black/[15%] 
+            ${error ? "border-b-red-300" : ""}
             ${onClear ? "pl-4 pr-7" : "px-4"}`}
           onFocus={onFocus}
           onBlur={onBlur}
