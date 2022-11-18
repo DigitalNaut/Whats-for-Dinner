@@ -14,6 +14,7 @@ type MetadataType = {
   parents?: string[];
 };
 type FileParams = {
+  id: string;
   file: File;
   metadata: MetadataType;
 };
@@ -39,6 +40,10 @@ type FilesListJSONResponse = {
 type GoogleDriveContextType = {
   hasScope: boolean;
   uploadFile(
+    { file, metadata }: Omit<FileParams, "id">,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<FileUploadJSONResponse, unknown>>;
+  updateFile(
     { file, metadata }: FileParams,
     config?: AxiosRequestConfig
   ): Promise<AxiosResponse<FileUploadJSONResponse, unknown>>;
@@ -60,6 +65,9 @@ type GoogleDriveContextType = {
 const googleDriveContext = createContext<GoogleDriveContextType>({
   hasScope: false,
   uploadFile: () => {
+    throw new Error("Google Drive context is uninitialized");
+  },
+  updateFile: () => {
     throw new Error("Google Drive context is uninitialized");
   },
   fetchList: () => {
@@ -178,6 +186,35 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     return request;
   };
 
+  const updateFile: GoogleDriveContextType["updateFile"] = async (
+    { id, file, metadata },
+    config
+  ) => {
+    const authStatus = authGuard();
+    if (authStatus !== "OK") return Promise.reject(authStatus);
+
+    const body = new FormData();
+    body.append(
+      "metadata",
+      new Blob([JSON.stringify(metadata)], { type: "application/json" })
+    );
+    body.append("file", file);
+
+    const request = axios.patch<FileUploadJSONResponse>(
+      `https://www.googleapis.com/upload/drive/v3/files/${id}`,
+      body,
+      {
+        params: { uploadType: "multipart" },
+        headers: {
+          Authorization: `Bearer ${userTokens?.access_token}`,
+        },
+        ...config,
+      }
+    );
+
+    return request;
+  };
+
   const fetchList: GoogleDriveContextType["fetchList"] = async ({
     params,
     ...config
@@ -252,6 +289,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
       value={{
         hasScope,
         uploadFile,
+        updateFile,
         fetchList,
         fetchFile,
         deleteFile,
