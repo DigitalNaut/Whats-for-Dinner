@@ -1,5 +1,5 @@
 import type { ChangeEventHandler, InputHTMLAttributes } from "react";
-import { useState } from "react";
+import { createRef, useState } from "react";
 import {
   faCloudUpload,
   faImage,
@@ -15,6 +15,7 @@ type InputFileProps = Pick<
 function InputFile({ name, ...props }: InputFileProps) {
   const [file, setFile] = useState<File>();
   const [fileUrl, setFileUrl] = useState<string>();
+  const labelRef = createRef<HTMLDivElement>();
 
   const onChangeHandler: ChangeEventHandler<HTMLInputElement> = (event) => {
     const [file] = event.target.files || [];
@@ -32,7 +33,11 @@ function InputFile({ name, ...props }: InputFileProps) {
   return (
     <div>
       <div className="flex flex-col items-center gap-2">
-        <div className="group relative h-32 w-32 cursor-pointer overflow-hidden rounded-full border border-gray-400 bg-gray-700 hover:bg-gray-800">
+        <div
+          id={name + "-label"}
+          ref={labelRef}
+          className="group relative h-32 w-32 cursor-pointer overflow-hidden rounded-full border border-gray-400 bg-gray-700 focus-within:ring-2 focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-blue-600 hover:bg-gray-800"
+        >
           {fileUrl ? (
             <div className="group">
               <div className="absolute h-full w-full">
@@ -53,7 +58,7 @@ function InputFile({ name, ...props }: InputFileProps) {
             </div>
           ) : (
             <label
-              htmlFor={name + "-id"}
+              htmlFor={name}
               className="flex h-full w-full cursor-pointer flex-col items-center justify-center gap-2"
             >
               <FontAwesomeIcon
@@ -67,6 +72,17 @@ function InputFile({ name, ...props }: InputFileProps) {
               <span className="text-sm">Seleccionar</span>
             </label>
           )}
+          <input
+            data-filled
+            id={name}
+            name={name}
+            type="file"
+            onChange={onChangeHandler}
+            accept="image/png, image/jpeg, image/webp"
+            className="pointer-events-none absolute inset-1/2 h-0 w-0 overflow-hidden opacity-0"
+            style={{ padding: 0 }}
+            {...props}
+          />
         </div>
         {file ? (
           <div className="flex max-w-[70%] items-center gap-4 overflow-hidden text-ellipsis p-2">
@@ -84,19 +100,11 @@ function InputFile({ name, ...props }: InputFileProps) {
             </button>
           </div>
         ) : (
-          <span className="p-2">Ningún archivo seleccionado</span>
+          <span id="hint" className="p-2">
+            Ningún archivo seleccionado
+          </span>
         )}
       </div>
-      <input
-        hidden
-        data-filled
-        id={name + "-id"}
-        name={name}
-        type="file"
-        onChange={onChangeHandler}
-        accept="image/png, image/jpeg, image/webp"
-        {...props}
-      />
     </div>
   );
 }
