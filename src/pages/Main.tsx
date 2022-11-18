@@ -13,12 +13,12 @@ const maxHistory = 20;
 function Dish({ label, imageUrl }: { label: string; imageUrl: string }) {
   return (
     <div className="group">
-      <div className="relative w-16 md:w-24 lg:w-28 aspect-square rounded-lg bg-gray-700 overflow-hidden">
-        <span className="absolute place-items-center text-center text-sm w-full h-full hidden group-hover:grid bg-black/50 pointer-events-none">
+      <div className="relative aspect-square w-16 overflow-hidden rounded-lg bg-gray-700 md:w-24 lg:w-28">
+        <span className="pointer-events-none absolute hidden h-full w-full place-items-center bg-black/50 text-center text-sm group-hover:grid">
           {label}
         </span>
         <img
-          className="w-full h-full object-cover"
+          className="h-full w-full object-cover"
           src={imageUrl}
           alt={label}
         />
@@ -34,7 +34,7 @@ export default function Main() {
   >([]);
 
   return (
-    <div className="flex flex-col w-full gap-8">
+    <div className="flex w-full flex-col gap-8">
       <SpinningWheel
         choices={enabledMenuItems}
         onSpinEnd={(result) => {
@@ -45,9 +45,9 @@ export default function Main() {
         }}
       />
 
-      <div className="flex p-2 gap-4 min-w-full overflow-x-auto bg-slate-700 shadow-xl rounded-md">
+      <div className="flex min-w-full gap-4 overflow-x-auto rounded-md bg-slate-700 p-2 shadow-xl">
         {resultHistory.length === 0 && (
-          <div className="grid place-items-center w-full h-16 md:h-24 lg:h-28 aspect-square text-gray-400">
+          <div className="grid aspect-square h-16 w-full place-items-center text-gray-400 md:h-24 lg:h-28">
             Sin historial
           </div>
         )}

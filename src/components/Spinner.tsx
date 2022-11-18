@@ -11,7 +11,7 @@ export default function Spinner({
   size = "md",
 }: SpinnerProps) {
   return (
-    <div className="flex gap-2 items-center justify-center">
+    <div className="flex items-center justify-center gap-2">
       <FontAwesomeIcon icon={faSpinner} className="fa-spin" />
       {size === "sm" ? "" : text}
     </div>

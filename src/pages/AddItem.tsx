@@ -51,7 +51,7 @@ export default function AddItem() {
 
   return (
     <div className="flex flex-col gap-4 p-6">
-      <h2 className="text-2xl text-center">Nuevo platillo</h2>
+      <h2 className="text-center text-2xl">Nuevo platillo</h2>
       <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
         <InputText
           required

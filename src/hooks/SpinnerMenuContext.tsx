@@ -114,7 +114,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
       }}
     >
       {error && (
-        <div className="p-2 rounded-sm w-full bg-red-500 text-white">
+        <div className="w-full rounded-sm bg-red-500 p-2 text-white">
           {error}
         </div>
       )}

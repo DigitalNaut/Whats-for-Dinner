@@ -28,12 +28,12 @@ function Tests() {
       >
         <div className="flex">
           <div className="w-1/2 p-2">
-            <h2 className="text-xl mb-4">Guardar imagen</h2>
+            <h2 className="mb-4 text-xl">Guardar imagen</h2>
             <ImageUpload onUpload={() => setRefreshDate(Date.now())} />
           </div>
 
-          <div className="w-1/2 p-2 flex flex-col gap-4">
-            <h2 className="text-xl mb-4">Imágenes guardadas</h2>
+          <div className="flex w-1/2 flex-col gap-4 p-2">
+            <h2 className="mb-4 text-xl">Imágenes guardadas</h2>
             <ImageList refreshDate={refreshDate} />
           </div>
         </div>

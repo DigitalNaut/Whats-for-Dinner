@@ -99,9 +99,9 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
   }, [isUploadingFile, hasScope, uploadFileHandler]);
 
   return (
-    <div className="flex flex-col gap-2 w-full overflow-hidden">
+    <div className="flex w-full flex-col gap-2 overflow-hidden">
       {error && (
-        <div className="p-2 rounded-sm w-full bg-red-500 text-white">
+        <div className="w-full rounded-sm bg-red-500 p-2 text-white">
           {error}
         </div>
       )}
@@ -110,7 +110,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
         size={1_000_000}
         onChange={handleImageInputChange}
         accept="image/png, image/jpeg, image/webp"
-        className="text-ellipsis w-full"
+        className="w-full text-ellipsis"
       />
       {imageFileToUpload && (
         <>
@@ -120,7 +120,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
                 ? URL.createObjectURL(imageFileToUpload)
                 : "https://via.placeholder.com/128"
             }
-            className="w-[128px] h-[128px] rounded-md object-cover object-center"
+            className="h-[128px] w-[128px] rounded-md object-cover object-center"
           />
           {uploadProgress && <ProgressBar progress={uploadProgress} />}
           <div className="flex gap-1">
@@ -128,7 +128,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
               data-filled
               onClick={uploadFileHandler}
               disabled={Boolean(isUploadingFile)}
-              className="flex gap-2 items-center"
+              className="flex items-center gap-2"
             >
               {isUploadingFile ? (
                 <Spinner

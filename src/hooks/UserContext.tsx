@@ -87,7 +87,7 @@ export function UserProvider({ children }: PropsWithChildren) {
     const { picture, name, email } = user;
 
     return (
-      <div className="group fixed flex hover:p-4 hover:gap-4 hover:bg-white hover:text-black hover:rounded-md cursor-pointer right-2 top-2">
+      <div className="group fixed right-2 top-2 flex cursor-pointer hover:gap-4 hover:rounded-md hover:bg-white hover:p-4 hover:text-black">
         <a
           className="flex items-center group-hover:gap-2"
           href="https://drive.google.com/drive/settings"
@@ -100,16 +100,16 @@ export function UserProvider({ children }: PropsWithChildren) {
             alt="User avatar"
             width={32}
             height={32}
-            className="w-8 h-8 rounded-full"
+            className="h-8 w-8 rounded-full"
           />
           <div>
-            <div className="hidden group-hover:block text-sm font-medium">
+            <div className="hidden text-sm font-medium group-hover:block">
               {name}
             </div>
-            <div className="hidden group-hover:block text-xs">{email}</div>
+            <div className="hidden text-xs group-hover:block">{email}</div>
           </div>
         </a>
-        <div className="hidden group-hover:flex flex-col">
+        <div className="hidden flex-col group-hover:flex">
           <LogoutButton />
         </div>
       </div>
@@ -128,9 +128,9 @@ export function UserProvider({ children }: PropsWithChildren) {
     >
       {children}
       {notification && (
-        <div className="fixed flex gap-2 top-0 left-0 w-full bg-blue-400 text-white justify-center shadow-xl p-1 sm:p-2 md:p-4">
-          <div className="flex w-full sm:max-w-sm md:max-w-md lg:max-w-lg justify-between px-4 sm:px-0">
-            <div className="flex gap-2 items-center">
+        <div className="fixed top-0 left-0 flex w-full justify-center gap-2 bg-blue-400 p-1 text-white shadow-xl sm:p-2 md:p-4">
+          <div className="flex w-full justify-between px-4 sm:max-w-sm sm:px-0 md:max-w-md lg:max-w-lg">
+            <div className="flex items-center gap-2">
               <FontAwesomeIcon icon={faInfoCircle} />
               <span>{notification}</span>
             </div>

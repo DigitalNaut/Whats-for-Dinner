@@ -11,13 +11,13 @@ export default function EditMenu() {
 
   return (
     <>
-      <h2 className="font-bangers text-center text-4xl">Menu</h2>
+      <h2 className="text-center font-bangers text-4xl">Menu</h2>
       <div className="flex flex-col gap-4">
         {allMenuItems &&
           allMenuItems.map((item, index) => (
             <div key={item.label} className="flex items-center gap-2">
               <img
-                className="w-10 h-10 rounded-lg object-cover"
+                className="h-10 w-10 rounded-lg object-cover"
                 src={item.imageUrl}
                 alt={item.label}
               />

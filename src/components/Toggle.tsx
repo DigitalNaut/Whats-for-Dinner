@@ -19,7 +19,7 @@ export default function Toggle({ initial = false, onChange }: ToggleProps) {
       }}
     >
       <div
-        className={`inset-0 absolute h-4 aspect-square bg-gray-200 hover:bg-white rounded-full transition-transform ${
+        className={`absolute inset-0 aspect-square h-4 rounded-full bg-gray-200 transition-transform hover:bg-white ${
           checked ? "translate-x-full" : "translate-x-0"
         }`}
       />

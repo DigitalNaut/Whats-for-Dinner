@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function Privacy() {
   return (
-    <div className="p-6 prose bg-white rounded-md mx-auto">
+    <div className="prose mx-auto rounded-md bg-white p-6">
       <h1>
         <strong>Terms and Conditions</strong>
       </h1>

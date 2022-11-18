@@ -29,7 +29,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
 
   if (!file.id)
     return (
-      <div className="flex gap-2 items-center">
+      <div className="flex items-center gap-2">
         <FontAwesomeIcon icon={faTimes} />
         <i>File unavailable</i>
       </div>
@@ -38,21 +38,21 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
   return (
     <div
       key={file.id}
-      className={`group w-full flex gap-2 hover:bg-white/20 rounded-sm items-center p-2 ${
-        isDeleting ? "opacity-50 line-through grayscale" : ""
+      className={`group flex w-full items-center gap-2 rounded-sm p-2 hover:bg-white/20 ${
+        isDeleting ? "line-through opacity-50 grayscale" : ""
       }`}
     >
       {file.iconLink && (
         <img
           title={`MIME Type: "${file.mimeType}"`}
           src={file.iconLink}
-          className={`w-[20px] h-[20px] ${isDeleting ? "grayscale" : ""}`}
+          className={`h-[20px] w-[20px] ${isDeleting ? "grayscale" : ""}`}
           alt="File icon"
         />
       )}
       <span
         title={file.name}
-        className="flex-1 text-ellipsis overflow-hidden whitespace-nowrap"
+        className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
       >
         {file.name?.split(".")[0]}
       </span>
@@ -233,7 +233,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
   return (
     <>
       {error && (
-        <div className="p-2 rounded-sm w-full bg-red-500 text-white">
+        <div className="w-full rounded-sm bg-red-500 p-2 text-white">
           {error}
         </div>
       )}

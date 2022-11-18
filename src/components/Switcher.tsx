@@ -21,10 +21,10 @@ export default function Switcher({
 
   return (
     <>
-      <div className="m-auto w-fit bg-slate-500 rounded-full cursor-pointer select-none">
+      <div className="m-auto w-fit cursor-pointer select-none rounded-full bg-slate-500">
         <button
           type="button"
-          className={`inline-block px-2 py-1 box-content text-center ${
+          className={`box-content inline-block px-2 py-1 text-center ${
             state ? "rounded-full bg-slate-400" : ""
           }`}
           style={{ width: largestLabel + "ch" }}
@@ -37,7 +37,7 @@ export default function Switcher({
         </button>
         <button
           type="button"
-          className={`inline-block px-2 py-1 box-content text-center ${
+          className={`box-content inline-block px-2 py-1 text-center ${
             state ? "" : "rounded-full bg-slate-400"
           }`}
           style={{ width: largestLabel + "ch" }}

@@ -31,53 +31,53 @@ function InputFile({ name, ...props }: InputFileProps) {
 
   return (
     <div>
-      <div className="flex flex-col gap-2 items-center">
-        <div className="group relative w-32 h-32 rounded-full bg-gray-700 hover:bg-gray-800 border border-gray-400 cursor-pointer overflow-hidden">
+      <div className="flex flex-col items-center gap-2">
+        <div className="group relative h-32 w-32 cursor-pointer overflow-hidden rounded-full border border-gray-400 bg-gray-700 hover:bg-gray-800">
           {fileUrl ? (
             <div className="group">
-              <div className="absolute w-full h-full">
+              <div className="absolute h-full w-full">
                 <img
                   src={file ? fileUrl : ""}
                   alt={file?.name}
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                 />
               </div>
               <button
                 role="button"
-                className="absolute flex-col gap-2 items-center justify-center w-full h-full hidden group-hover:flex bg-black/50"
+                className="absolute hidden h-full w-full flex-col items-center justify-center gap-2 bg-black/50 group-hover:flex"
                 onClick={removeFileHandler}
               >
-                <FontAwesomeIcon icon={faTimes} className="w-6 h-6" />
+                <FontAwesomeIcon icon={faTimes} className="h-6 w-6" />
                 <span className="text-sm">Remover</span>
               </button>
             </div>
           ) : (
             <label
               htmlFor={name + "-id"}
-              className="flex flex-col gap-2 items-center justify-center w-full h-full cursor-pointer"
+              className="flex h-full w-full cursor-pointer flex-col items-center justify-center gap-2"
             >
               <FontAwesomeIcon
                 icon={faImage}
-                className="w-6 h-6 group-hover:hidden"
+                className="h-6 w-6 group-hover:hidden"
               />
               <FontAwesomeIcon
                 icon={faCloudUpload}
-                className="w-6 h-6 hidden group-hover:block"
+                className="hidden h-6 w-6 group-hover:block"
               />
               <span className="text-sm">Seleccionar</span>
             </label>
           )}
         </div>
         {file ? (
-          <div className="flex gap-4 p-2 items-center max-w-[70%] overflow-hidden text-ellipsis">
-            <div className="flex flex-col gap-0.5 max-w-full min-w-0 flex-nowrap">
+          <div className="flex max-w-[70%] items-center gap-4 overflow-hidden text-ellipsis p-2">
+            <div className="flex min-w-0 max-w-full flex-col flex-nowrap gap-0.5">
               <span className="w-full truncate">{file.name}</span>
               <span className="text-xs">{file.size * 0.001} kb</span>
             </div>
             <button
               data-filled
               role="button"
-              className="max-w-xs w-fit"
+              className="w-fit max-w-xs"
               onClick={removeFileHandler}
             >
               <FontAwesomeIcon icon={faTimes} />

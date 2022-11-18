@@ -7,10 +7,10 @@ export default function ErrorFallback({
   return (
     <div
       role="alert"
-      className="flex flex-col gap-2 bg-gradient-to-br from-red-500 to-red-700 text-white p-6 rounded-lg"
+      className="flex flex-col gap-2 rounded-lg bg-gradient-to-br from-red-500 to-red-700 p-6 text-white"
     >
       <h2 className="font-bold">Something went wrong:</h2>
-      <pre className="bg-white text-black rounded-md p-4 mb-2">
+      <pre className="mb-2 rounded-md bg-white p-4 text-black">
         {error.message}
       </pre>
       <button data-filled onClick={resetErrorBoundary}>

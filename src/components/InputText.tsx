@@ -36,7 +36,7 @@ export default function InputText({
     <label htmlFor={name}>
       <div className="relative">
         <div
-          className={`absolute left-4 leading-6 transition-all text-gray-400 px-0.5 -ml-0.5 h-fit -translate-y-1/2 ${
+          className={`absolute left-4 -ml-0.5 h-fit -translate-y-1/2 px-0.5 leading-6 text-gray-400 transition-all ${
             isFocused || value
               ? "top-0 translate-y-0 text-xs leading-6"
               : "inset-y-1/2"
@@ -50,7 +50,7 @@ export default function InputText({
           type="text"
           aria-describedby={name + "-hint"}
           defaultValue={value}
-          className={`w-full  pt-6 pb-2 border-b-2 focus:border-b-white bg-black/5 hover:bg-black/10 focus:bg-black/[15%] rounded-sm
+          className={`w-full rounded-sm border-b-2 bg-black/5 pt-6 pb-2 hover:bg-black/10 focus:border-b-white focus:bg-black/[15%]
             ${error ? "border-b-red-300" : "border-b-gray-400"}
             ${onClear ? "pl-4 pr-7" : "px-4"}`}
           onFocus={onFocus}

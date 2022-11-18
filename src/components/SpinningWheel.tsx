@@ -330,28 +330,28 @@ export default function SpinningWheel({
 
   return (
     <div className="w-full">
-      <div className="relative w-96 aspect-square max-w-full rounded-full bg-white m-auto shadow-xl">
-        <div className="absolute w-1/2 aspect-square flex justify-center items-center inset-0 m-auto bg-white p-1 rounded-full overflow-hidden">
+      <div className="relative m-auto aspect-square w-96 max-w-full rounded-full bg-white shadow-xl">
+        <div className="absolute inset-0 m-auto flex aspect-square w-1/2 items-center justify-center overflow-hidden rounded-full bg-white p-1">
           {result ? (
             <img
-              className="aspect-square object-cover rounded-full"
+              className="aspect-square rounded-full object-cover"
               src={result.imageUrl}
             />
           ) : (
-            <div className="grid items-center text-center bg-slate-700 text-white aspect-square w-full h-full rounded-full text-8xl font-bangers">
+            <div className="grid aspect-square h-full w-full items-center rounded-full bg-slate-700 text-center font-bangers text-8xl text-white">
               {isLoaded ? "?" : <SpinnerIcon text="" />}
             </div>
           )}
         </div>
         <Arrow className="absolute inset-x-1/2 -inset-y-4 -translate-x-1/2 -translate-y-4" />
         <canvas
-          className="w-full h-full aspect-square"
+          className="aspect-square h-full w-full"
           ref={canvasRef}
           width="400"
           height="400"
         />
         <button
-          className="absolute inset-x-1/2 bottom-2 h-fit whitespace-nowrap -translate-x-1/2 -translate-y-1/2 font-bangers text-2xl cursor-pointer bg-red-700 px-4 py-2 rounded-full hover:bg-red-600 disabled:bg-gray-500 disabled:text-gray-400 disabled:cursor-not-allowed"
+          className="absolute inset-x-1/2 bottom-2 h-fit -translate-x-1/2 -translate-y-1/2 cursor-pointer whitespace-nowrap rounded-full bg-red-700 px-4 py-2 font-bangers text-2xl hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-400"
           disabled={cannotSpin}
           onClick={spinTheWheel}
         >

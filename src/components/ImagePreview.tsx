@@ -23,11 +23,11 @@ export default function ImagePreview({
       : "https://via.placeholder.com/128";
 
   return (
-    <div className="group m-auto relative w-fit rounded-md overflow-hidden">
+    <div className="group relative m-auto w-fit overflow-hidden rounded-md">
       <img
         src={fileUrl}
         alt="Prevista"
-        className={`w-[128px] h-[128px] object-cover object-center rounded-md ${
+        className={`h-[128px] w-[128px] rounded-md object-cover object-center ${
           isInteractive ? "cursor-pointer bg-black" : ""
         }`}
         title={fileName}
@@ -40,13 +40,13 @@ export default function ImagePreview({
         }}
       />
       {error && (
-        <div className="absolute top-0 left-0 w-full h-full flex items-center text-center justify-center bg-black/50">
+        <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-black/50 text-center">
           <span className="text-white">{error}</span>
         </div>
       )}
       {isInteractive && (
-        <div className="absolute group-hover:bg-black/50 z-10 w-full h-full inset-0 pointer-events-none grid place-items-center">
-          <span className="invisible group-hover:visible inset-x-full inset-y-0">
+        <div className="pointer-events-none absolute inset-0 z-10 grid h-full w-full place-items-center group-hover:bg-black/50">
+          <span className="invisible inset-x-full inset-y-0 group-hover:visible">
             <FontAwesomeIcon icon={faTimes} />
           </span>
         </div>
