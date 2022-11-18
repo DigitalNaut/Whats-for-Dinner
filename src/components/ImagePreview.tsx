@@ -1,26 +1,19 @@
+import type { DetailedHTMLProps, ImgHTMLAttributes } from "react";
+import { useState } from "react";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
 
 type ImagePreviewProps = {
   fileName?: string;
-  src?: File | string;
-  onClick?: () => void;
-};
+} & Pick<
+  DetailedHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>,
+  "src" | "onClick" | "title"
+>;
 
-export default function ImagePreview({
-  src,
-  fileName,
-  onClick,
-}: ImagePreviewProps) {
+export default function ImagePreview({ src, ...props }: ImagePreviewProps) {
   const [error, setError] = useState<string>();
-  const isInteractive = src && onClick;
-  const fileUrl =
-    src instanceof File
-      ? URL.createObjectURL(src)
-      : typeof src === "string" && src
-      ? src
-      : "https://via.placeholder.com/128";
+  const isInteractive = src && props.onClick;
+  const fileUrl = src ? src : "https://via.placeholder.com/128";
 
   return (
     <div className="group relative m-auto w-fit overflow-hidden rounded-md">
@@ -30,14 +23,13 @@ export default function ImagePreview({
         className={`h-[128px] w-[128px] rounded-md object-cover object-center ${
           isInteractive ? "cursor-pointer bg-black" : ""
         }`}
-        title={fileName}
         width="128"
         height="128"
-        onClick={onClick}
         onLoad={() => setError(undefined)}
         onError={() => {
           setError("Imagen no válida");
         }}
+        {...props}
       />
       {error && (
         <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-black/50 text-center">

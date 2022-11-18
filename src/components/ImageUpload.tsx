@@ -9,7 +9,10 @@ import ProgressBar from "src/components/ProgressBar";
 export default function ImageUpload({ onUpload }: { onUpload(): void }) {
   const { uploadFile, hasScope } = useGoogleDrive();
 
-  const [imageFileToUpload, setImageFileToUpload] = useState<File>();
+  const [imageFileToUpload, setImageFileToUpload] = useState<{
+    file: File;
+    url: string;
+  }>();
   const [isUploadingFile, setIsUpLoadingFile] = useState<
     "Authorizing" | boolean
   >(false);
@@ -36,7 +39,9 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
     }
 
     setUploadProgress(undefined);
-    setImageFileToUpload(file);
+
+    imageFileToUpload?.url && URL.revokeObjectURL(imageFileToUpload.url);
+    setImageFileToUpload({ file, url: URL.createObjectURL(file) });
   };
 
   const uploadFileHandler = useCallback(async () => {
@@ -50,10 +55,10 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
     try {
       const { data } = await uploadFile(
         {
-          file: imageFileToUpload,
+          file: imageFileToUpload.file,
           metadata: {
-            name: imageFileToUpload.name,
-            mimeType: imageFileToUpload.type,
+            name: imageFileToUpload.file.name,
+            mimeType: imageFileToUpload.file.type,
           },
         },
         {
@@ -115,11 +120,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
       {imageFileToUpload && (
         <>
           <img
-            src={
-              imageFileToUpload
-                ? URL.createObjectURL(imageFileToUpload)
-                : "https://via.placeholder.com/128"
-            }
+            src={imageFileToUpload.url || "https://via.placeholder.com/128"}
             className="h-[128px] w-[128px] rounded-md object-cover object-center"
           />
           {uploadProgress && <ProgressBar progress={uploadProgress} />}

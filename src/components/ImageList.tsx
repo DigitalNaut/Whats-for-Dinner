@@ -110,6 +110,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     fileInfo: gapi.client.drive.File;
     data: ArrayBuffer;
     file: File;
+    url: string;
   }>();
   const [downloadProgress, setDownloadProgress] = useState<number>();
   const downloadController = useRef<AbortController>();
@@ -156,15 +157,19 @@ export default function ImageList({ refreshDate }: ImageListProps) {
       setTimeout(() => setDownloadProgress(undefined), 250);
 
       if (data === false) setError("File download failed");
-      else if (data instanceof ArrayBuffer)
+      else if (data instanceof ArrayBuffer) {
+        driveFilePreview?.url && URL.revokeObjectURL(driveFilePreview.url);
+        const file = new File([data], fileInfo.name || "Unknown file", {
+          type: fileInfo.mimeType || "application/octet-stream",
+        });
+
         setDriveFilePreview({
           fileInfo,
           data,
-          file: new File([data], fileInfo.name || "Unknown file", {
-            type: fileInfo.mimeType || "application/octet-stream",
-          }),
+          file,
+          url: URL.createObjectURL(file),
         });
-      else if ("error" in data)
+      } else if ("error" in data)
         setError(
           `Error ${data.error.code || "unknown"}: ${
             data.error.message || "No message"
@@ -272,7 +277,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         </>
       )}
       <ImagePreview
-        src={driveFilePreview?.file}
+        src={driveFilePreview && driveFilePreview.url}
         fileName={driveFilePreview?.fileInfo.name}
         onClick={() => setDriveFilePreview(undefined)}
       />
