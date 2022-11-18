@@ -10,6 +10,7 @@ import Terms from "src/pages/Terms";
 import NotFound from "src/pages/NotFound";
 import ErrorFallback from "src/components/ErrorFallback";
 import EditMenu from "src/pages/EditMenu";
+import AddItem from "src/pages/AddItem";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
 import { useUser } from "src/hooks/UserContext";
 import { MainLayout, MenuLayout } from "src/components/Layouts";
@@ -60,6 +61,7 @@ export default function App() {
               </Route>
               <Route element={<MenuLayout />}>
                 <Route path="/menu" element={<EditMenu />} />
+                <Route path="/addItem" element={<AddItem />} />
               </Route>
             </Route>
           </Routes>
