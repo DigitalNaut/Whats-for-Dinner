@@ -1,3 +1,8 @@
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link } from "react-router-dom";
+
+import Floating from "src/components/Floating";
 import Toggle from "src/components/Toggle";
 import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
 
@@ -5,7 +10,7 @@ export default function EditMenu() {
   const { allMenuItems, toggleMenuItem } = useSpinnerMenuContext();
 
   return (
-    <div>
+    <>
       <h2 className="font-bangers text-center text-4xl">Menu</h2>
       <div className="flex flex-col gap-4">
         {allMenuItems &&
@@ -24,6 +29,14 @@ export default function EditMenu() {
             </div>
           ))}
       </div>
-    </div>
+      <Floating>
+        <Link to="/addItem">
+          <button data-filled className="flex items-center gap-1">
+            <FontAwesomeIcon icon={faPlus} />
+            <span>Añadir</span>
+          </button>
+        </Link>
+      </Floating>
+    </>
   );
 }
