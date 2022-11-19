@@ -1,31 +1,150 @@
-import type { PropsWithChildren } from "react";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Checkbox } from "ariakit";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCheck,
+  faCheckDouble,
+  faCircleMinus,
+  faCirclePlus,
+  faPlus,
+  faTimes,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 
 import Floating from "src/components/Floating";
 import Toggle from "src/components/Toggle";
-import { useDynamicHeader } from "src/hooks/NavigationContext";
+import { useHeader, useNavigationContext } from "src/hooks/NavigationContext";
 import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
 
-function PopupMenu({ children }: PropsWithChildren) {
-  return (
-    <div
-      className="absolute top-0 right-0 bg-white text-gray-900"
-      tabIndex={-1}
-    >
-      {children}
-    </div>
-  );
+enum Modes {
+  Toggle,
+  Select,
 }
 
-export default function EditMenu() {
-  const { allMenuItems, toggleMenuItem } = useSpinnerMenuContext();
+type MenuItemsProps = {
+  selectOptions?: true;
+};
 
-  useDynamicHeader({
+export default function EditMenu() {
+  const { setTitle, setAltBackButton, Item, setMenuContent, setAltColor } =
+    useNavigationContext();
+  const { allMenuItems, toggleMenuItems } = useSpinnerMenuContext();
+  const [mode, setMode] = useState<Modes>(Modes.Toggle);
+  const [selected, setSelected] = useState<Map<string, boolean>>(
+    new Map(allMenuItems?.map((item) => [item.label, false]) ?? [])
+  );
+
+  const MenuItems = ({ selectOptions }: MenuItemsProps) => (
+    <>
+      {selectOptions || (
+        <Item
+          onClick={() => {
+            changeMode(Modes.Select, false);
+          }}
+        >
+          <FontAwesomeIcon icon={faCheck} />
+          <span>Seleccionar</span>
+        </Item>
+      )}
+
+      <Item
+        onClick={() => {
+          changeMode(Modes.Select, true);
+        }}
+      >
+        <FontAwesomeIcon icon={faCheckDouble} />
+        <span>Seleccionar todo</span>
+      </Item>
+
+      {selectOptions && (
+        <>
+          <Item
+            onClick={() => {
+              changeMode(Modes.Select, false);
+            }}
+          >
+            <FontAwesomeIcon icon={faTimes} />
+            <span>Seleccionar nada</span>
+          </Item>
+          <Item onClick={() => null}>
+            <FontAwesomeIcon icon={faTrash} />
+            <span>Eliminar</span>
+          </Item>
+        </>
+      )}
+
+      {selectOptions || (
+        <>
+          <Item
+            onClick={() => {
+              allMenuItems &&
+                toggleMenuItems(
+                  allMenuItems.map((_, index) => index),
+                  true
+                );
+            }}
+          >
+            <FontAwesomeIcon icon={faCirclePlus} />
+            <span>Activar todos</span>
+          </Item>
+          <Item
+            onClick={() => {
+              allMenuItems &&
+                toggleMenuItems(
+                  allMenuItems.map((_, index) => index),
+                  false
+                );
+            }}
+          >
+            <FontAwesomeIcon icon={faCircleMinus} />
+            <span>Desactivar todos</span>
+          </Item>
+        </>
+      )}
+    </>
+  );
+
+  const setAllSelections = (value = true) => {
+    const newSelected = new Map(selected);
+    allMenuItems?.forEach((item) => newSelected.set(item.label, value));
+    setSelected(newSelected);
+  };
+
+  const altBackButton = (
+    <button
+      onClick={() => {
+        changeMode(Modes.Toggle, false);
+      }}
+    >
+      <FontAwesomeIcon icon={faTimes} />
+    </button>
+  );
+
+  const changeMode = (mode: Modes, setAll?: boolean) => {
+    switch (mode) {
+      case Modes.Toggle:
+        setTitle("Editar");
+        setAltBackButton(undefined);
+        setAllSelections(false);
+        setMenuContent(<MenuItems />);
+        setAltColor(false);
+        break;
+      case Modes.Select:
+        setAltBackButton(altBackButton);
+        setTitle("Seleccionar");
+        setMenuContent(<MenuItems selectOptions />);
+        setAltColor(true);
+        setAll !== undefined && setAllSelections(setAll);
+        break;
+    }
+    setMode(mode);
+  };
+
+  useHeader({
     title: "Editar",
     backTo: "/main",
-    menu: <PopupMenu />,
+    menuItems: <MenuItems />,
   });
 
   return (
@@ -41,10 +160,25 @@ export default function EditMenu() {
                 alt={item.label}
               />
               <p className="flex-1">{item.label}</p>
-              <Toggle
-                initial={item.enabled}
-                onChange={(value) => toggleMenuItem(index, value)}
-              />
+              {mode === Modes.Toggle ? (
+                <Toggle
+                  checked={item.enabled}
+                  onChange={(value) => toggleMenuItems([index], value)}
+                />
+              ) : (
+                <Checkbox
+                  className="h-6 w-6 rounded-sm border-2 border-purple-400 checked:border-none checked:bg-purple-400 focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-700"
+                  checked={selected.get(item.label) ?? false}
+                  onChange={() => {
+                    setSelected((prevSelected) => {
+                      const newSelected = new Map(prevSelected);
+                      const newValue = !newSelected.get(item.label);
+                      newSelected.set(item.label, newValue);
+                      return newSelected;
+                    });
+                  }}
+                />
+              )}
             </div>
           ))}
       </div>

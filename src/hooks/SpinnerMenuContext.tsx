@@ -18,11 +18,11 @@ const spinnerMenuContext = createContext<{
   allMenuItems?: SpinnerOption[];
   enabledMenuItems?: SpinnerOption[];
   isLoaded: boolean;
-  toggleMenuItem: (index: number, value?: boolean) => void;
+  toggleMenuItems: (index: number[], value?: boolean) => void;
   addMenuItem: (item: SpinnerOption) => void;
 }>({
   isLoaded: false,
-  toggleMenuItem: () => {
+  toggleMenuItems: () => {
     throw new Error("SpinnerMenuContext not initialized");
   },
   addMenuItem: () => {
@@ -159,17 +159,24 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     setUploadTimeout(timeoutId);
   }
 
-  function toggleMenuItem(index: number, value?: boolean) {
-    if (!allMenuItems || !enabledMenuItems) return Promise.resolve(false);
+  function toggleMenuItems(indexes: number[], value?: boolean) {
+    if (!allMenuItems || !enabledMenuItems) return;
 
-    allMenuItems[index].enabled = value ?? !enabledMenuItems[index].enabled;
-    setMenuItems(allMenuItems);
+    const newAllMenuItems = [...allMenuItems];
+    newAllMenuItems.forEach((item, index) => {
+      if (!indexes.includes(index)) return;
+
+      if (value !== undefined) item.enabled = value;
+      else item.enabled = !item.enabled;
+    });
+
+    setMenuItems(newAllMenuItems);
 
     triggerDelayedUpload();
   }
 
   function addMenuItem(item: SpinnerOption) {
-    if (!allMenuItems) return Promise.resolve(false);
+    if (!allMenuItems) return;
 
     allMenuItems.push(item);
     setMenuItems(allMenuItems);
@@ -210,10 +217,11 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         isLoaded,
         enabledMenuItems,
         allMenuItems,
-        toggleMenuItem,
+        toggleMenuItems,
         addMenuItem,
       }}
     >
+      {children}
       {isUploading && (
         <div className="fixed inset-x-1/2 top-2 w-fit -translate-x-1/2 rounded-lg bg-emerald-700 p-2 text-white">
           <Spinner text="Guardando..." />
@@ -224,7 +232,6 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
           {error}
         </div>
       )}
-      {children}
     </spinnerMenuContext.Provider>
   );
 }
