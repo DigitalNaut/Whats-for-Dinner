@@ -178,14 +178,16 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   }
 
   useEffect(() => {
-    if (!isDriveLoaded) return;
+    if (!isDriveLoaded) return undefined;
 
     const controller = new AbortController();
     const signal = controller.signal;
 
     getConfigOrCreate(signal);
 
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+    };
   }, [getConfigOrCreate, isDriveLoaded]);
 
   useEffect(() => {

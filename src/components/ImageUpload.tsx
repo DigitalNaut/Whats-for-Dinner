@@ -78,11 +78,11 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
     } catch (error) {
       if (error === "Authorizing") {
         setIsUpLoadingFile("Authorizing");
-        return;
+        return Promise.reject(error);
       }
 
       if (error instanceof Error) {
-        if (error.name === "CanceledError") return;
+        if (error.name === "CanceledError") return Promise.reject(error);
         setError(error.message);
       } else {
         setError("An unknown error ocurred");
@@ -90,6 +90,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
       }
     }
     setIsUpLoadingFile(false);
+    return Promise.resolve();
   }, [imageFileToUpload, onUpload, uploadFile]);
 
   const cancelUploadHandler = () => {
