@@ -21,7 +21,7 @@ export function TitleHeader({ children }: PropsWithChildren) {
 
 export function MenuHeader() {
   const navigate = useNavigate();
-  const { headerProperties, menu } = useHeaderContext();
+  const { headerProperties, menuButton } = useHeaderContext();
   const { backTo, title, altBackButton, altColor } = headerProperties;
 
   return (
@@ -40,7 +40,7 @@ export function MenuHeader() {
         </button>
       )}
       <span className="flex-1">{title}</span>
-      {menu}
+      {menuButton}
     </div>
   );
 }

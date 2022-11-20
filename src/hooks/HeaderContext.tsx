@@ -3,10 +3,9 @@ import type {
   PropsWithChildren,
   SetStateAction,
   MutableRefObject,
-  RefObject,
 } from "react";
 import type { To } from "react-router-dom";
-import type { MenuItemProps } from "ariakit/menu";
+import type { MenuItemProps, MenuProps } from "ariakit/menu";
 import {
   createRef,
   useEffect,
@@ -27,9 +26,11 @@ export type HeaderProps = {
 type HeaderContext = {
   headerProperties: HeaderProps;
   setHeaderProperties: Dispatch<SetStateAction<HeaderProps>>;
-  menu: JSX.Element;
-  menuRef: MutableRefObject<HTMLElement | null>;
-  Item: typeof Item;
+  menuButton: JSX.Element;
+  createMenu: (items: (MenuItem: typeof Item) => JSX.Element) => {
+    menu: JSX.Element;
+    menuRef: MutableRefObject<HTMLElement | null>;
+  };
 };
 
 const headerContext = createContext<HeaderContext>({
@@ -37,15 +38,18 @@ const headerContext = createContext<HeaderContext>({
     title: "",
     backTo: "/",
   },
-  menu: <></>,
-  menuRef: { current: null },
+  menuButton: <></>,
   setHeaderProperties: () => null,
-  Item: () => <></>,
+  createMenu: () => ({ menu: <></>, menuRef: { current: null } }),
 });
 
-function PopupMenu({ forwardRef }: { forwardRef: RefObject<HTMLDivElement> }) {
-  const menuState = useMenuState({ gutter: 8 });
-
+function PopupMenu({
+  menuState,
+  forwardRef,
+}: {
+  forwardRef: MenuProps["ref"];
+  menuState: MenuProps["state"];
+}) {
   return (
     <div className="relative z-10">
       <MenuButton
@@ -54,11 +58,7 @@ function PopupMenu({ forwardRef }: { forwardRef: RefObject<HTMLDivElement> }) {
       >
         <FontAwesomeIcon icon={faEllipsis} />
       </MenuButton>
-      <Menu
-        ref={forwardRef}
-        state={menuState}
-        className="absolute w-max overflow-hidden rounded-md bg-white shadow-lg outline-none"
-      />
+      <div ref={forwardRef} />
     </div>
   );
 }
@@ -81,17 +81,31 @@ export function HeaderProvider({ children }: PropsWithChildren) {
     altBackButton: undefined,
     altColor: false,
   });
+  const menuState = useMenuState({ gutter: 8 });
   const menuRef = createRef<HTMLDivElement>();
-  const menu = <PopupMenu forwardRef={menuRef} />;
+  const menuButton = <PopupMenu menuState={menuState} forwardRef={menuRef} />;
+
+  const createMenu = (items: (MenuItem: typeof Item) => JSX.Element) => {
+    return {
+      menu: (
+        <Menu
+          state={menuState}
+          className="absolute w-max overflow-hidden rounded-md bg-white shadow-lg outline-none"
+        >
+          {items(Item)}
+        </Menu>
+      ),
+      menuRef,
+    };
+  };
 
   return (
     <headerContext.Provider
       value={{
         headerProperties,
         setHeaderProperties,
-        menu,
-        menuRef,
-        Item,
+        menuButton,
+        createMenu,
       }}
     >
       {children}

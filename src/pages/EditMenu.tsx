@@ -26,14 +26,14 @@ enum Modes {
 }
 
 export default function EditMenu() {
-  const { setHeaderProperties, Item, menuRef } = useHeaderContext();
+  const { setHeaderProperties, createMenu } = useHeaderContext();
   const { allMenuItems, toggleMenuItems, isLoaded } = useSpinnerMenuContext();
   const [mode, setMode] = useState<Modes>(Modes.Toggle);
   const [selected, setSelected] = useState<
     Map<string, { isSelected: boolean; index: number }>
   >(new Map());
   const [showSelectionOptions, setShowSelectionOptions] = useState(false);
-  const [menuContent, setMenuContent] = useState<ReactPortal>();
+  const [menuPortal, setMenuPortal] = useState<ReactPortal>();
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -118,85 +118,86 @@ export default function EditMenu() {
     [altBackButton, setAllSelections, setHeaderProperties]
   );
 
-  useHeader({
-    title: "Editar menú",
-    backTo: "/main",
-  });
+  const { menu, menuRef } = useMemo(
+    () =>
+      createMenu((MenuItem) => (
+        <>
+          {showSelectionOptions || (
+            <MenuItem
+              onClick={() => {
+                changeMode(Modes.Select, false);
+              }}
+            >
+              <FontAwesomeIcon icon={faCheck} />
+              <span>Seleccionar</span>
+            </MenuItem>
+          )}
 
-  const menuItems = useMemo(
-    () => (
-      <>
-        {showSelectionOptions || (
-          <Item
+          <MenuItem
             onClick={() => {
-              changeMode(Modes.Select, false);
+              changeMode(Modes.Select, true);
             }}
           >
-            <FontAwesomeIcon icon={faCheck} />
-            <span>Seleccionar</span>
-          </Item>
-        )}
+            <FontAwesomeIcon icon={faCheckDouble} />
+            <span>Seleccionar todo</span>
+          </MenuItem>
 
-        <Item
-          onClick={() => {
-            changeMode(Modes.Select, true);
-          }}
-        >
-          <FontAwesomeIcon icon={faCheckDouble} />
-          <span>Seleccionar todo</span>
-        </Item>
+          {showSelectionOptions && (
+            <MenuItem onClick={deleteSelections}>
+              <FontAwesomeIcon icon={faTrash} />
+              <span>Eliminar</span>
+            </MenuItem>
+          )}
 
-        {showSelectionOptions && (
-          <Item onClick={deleteSelections}>
-            <FontAwesomeIcon icon={faTrash} />
-            <span>Eliminar</span>
-          </Item>
-        )}
-
-        {showSelectionOptions || (
-          <>
-            <Item
-              onClick={() => {
-                allMenuItems &&
-                  toggleMenuItems(
-                    allMenuItems.map((_, index) => index),
-                    true
-                  );
-              }}
-            >
-              <FontAwesomeIcon icon={faCirclePlus} />
-              <span>Activar todos</span>
-            </Item>
-            <Item
-              onClick={() => {
-                allMenuItems &&
-                  toggleMenuItems(
-                    allMenuItems.map((_, index) => index),
-                    false
-                  );
-              }}
-            >
-              <FontAwesomeIcon icon={faCircleMinus} />
-              <span>Desactivar todos</span>
-            </Item>
-          </>
-        )}
-      </>
-    ),
+          {showSelectionOptions || (
+            <>
+              <MenuItem
+                onClick={() => {
+                  allMenuItems &&
+                    toggleMenuItems(
+                      allMenuItems.map((_, index) => index),
+                      true
+                    );
+                }}
+              >
+                <FontAwesomeIcon icon={faCirclePlus} />
+                <span>Activar todos</span>
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  allMenuItems &&
+                    toggleMenuItems(
+                      allMenuItems.map((_, index) => index),
+                      false
+                    );
+                }}
+              >
+                <FontAwesomeIcon icon={faCircleMinus} />
+                <span>Desactivar todos</span>
+              </MenuItem>
+            </>
+          )}
+        </>
+      )),
     [
-      Item,
       allMenuItems,
-      changeMode,
-      deleteSelections,
       showSelectionOptions,
+      changeMode,
+      createMenu,
+      deleteSelections,
       toggleMenuItems,
     ]
   );
 
   useEffect(() => {
     if (!menuRef.current || !isLoaded) return;
-    setMenuContent(createPortal(menuItems, menuRef.current));
-  }, [menuRef, isLoaded, menuItems]);
+    setMenuPortal(createPortal(menu, menuRef.current));
+  }, [menuRef, isLoaded, menu]);
+
+  useHeader({
+    title: "Editar menú",
+    backTo: "/main",
+  });
 
   if (!isLoaded)
     return (
@@ -208,7 +209,7 @@ export default function EditMenu() {
   return (
     <>
       <h2 className="text-center font-bangers text-4xl">Menu</h2>
-      {menuContent}
+      {menuPortal}
       <div className="flex flex-col gap-4">
         {allMenuItems &&
           allMenuItems.map((item, index) => (
