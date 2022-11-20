@@ -35,19 +35,6 @@ export default function EditMenu() {
   const [showSelectionOptions, setShowSelectionOptions] = useState(false);
   const [menuPortal, setMenuPortal] = useState<ReactPortal>();
 
-  useEffect(() => {
-    if (!isLoaded) return;
-
-    setSelected(
-      new Map(
-        allMenuItems?.map((item, index) => [
-          item.label,
-          { isSelected: false, index },
-        ]) ?? []
-      )
-    );
-  }, [allMenuItems, isLoaded]);
-
   const deleteSelections = useCallback(() => {
     const indexes = Array.from(selected.values()).filter(
       ({ isSelected }) => isSelected
@@ -70,50 +57,37 @@ export default function EditMenu() {
     [allMenuItems, selected]
   );
 
+  const setModeToggle = useCallback(() => {
+    setShowSelectionOptions(false);
+    setHeaderProperties((prevProperties) => ({
+      ...prevProperties,
+      title: "Editar menú",
+      altBackButton: undefined,
+      altColor: false,
+    }));
+    setMode(Modes.Toggle);
+  }, [setHeaderProperties]);
+
   const altBackButton = useMemo(
     () => (
-      <button
-        onClick={() => {
-          setShowSelectionOptions(false);
-          setHeaderProperties((prevProperties) => ({
-            ...prevProperties,
-            title: "Editar menú",
-            altBackButton: undefined,
-            altColor: false,
-          }));
-          setMode(Modes.Toggle);
-        }}
-      >
+      <button onClick={setModeToggle}>
         <FontAwesomeIcon icon={faTimes} />
       </button>
     ),
-    [setHeaderProperties]
+    [setModeToggle]
   );
 
-  const changeMode = useCallback(
-    (mode: Modes, setAll?: boolean) => {
-      switch (mode) {
-        case Modes.Toggle:
-          setShowSelectionOptions(false);
-          setHeaderProperties((prevProperties) => ({
-            ...prevProperties,
-            title: "Editar menú",
-            altBackButton: undefined,
-            altColor: false,
-          }));
-          break;
-        case Modes.Select:
-          setShowSelectionOptions(true);
-          setHeaderProperties((prevProperties) => ({
-            ...prevProperties,
-            title: "Seleccionar",
-            altBackButton,
-            altColor: true,
-          }));
-          setAll !== undefined && setAllSelections(setAll);
-          break;
-      }
-      setMode(mode);
+  const setModeSelection = useCallback(
+    (setAll?: boolean) => {
+      setShowSelectionOptions(true);
+      setHeaderProperties((prevProperties) => ({
+        ...prevProperties,
+        title: "Seleccionar",
+        altBackButton,
+        altColor: true,
+      }));
+      setMode(Modes.Select);
+      setAll !== undefined && setAllSelections(setAll);
     },
     [altBackButton, setAllSelections, setHeaderProperties]
   );
@@ -125,7 +99,7 @@ export default function EditMenu() {
           {showSelectionOptions || (
             <MenuItem
               onClick={() => {
-                changeMode(Modes.Select, false);
+                setModeSelection(false);
               }}
             >
               <FontAwesomeIcon icon={faCheck} />
@@ -135,7 +109,7 @@ export default function EditMenu() {
 
           <MenuItem
             onClick={() => {
-              changeMode(Modes.Select, true);
+              setModeSelection(true);
             }}
           >
             <FontAwesomeIcon icon={faCheckDouble} />
@@ -180,19 +154,32 @@ export default function EditMenu() {
         </>
       )),
     [
-      allMenuItems,
-      showSelectionOptions,
-      changeMode,
       createMenu,
+      showSelectionOptions,
       deleteSelections,
+      setModeSelection,
+      allMenuItems,
       toggleMenuItems,
     ]
   );
 
   useEffect(() => {
-    if (!menuRef.current || !isLoaded) return;
+    if (!isLoaded) return;
+
+    setSelected(
+      new Map(
+        allMenuItems?.map((item, index) => [
+          item.label,
+          { isSelected: false, index },
+        ]) ?? []
+      )
+    );
+  }, [allMenuItems, isLoaded]);
+
+  useEffect(() => {
+    if (!menuRef.current) return;
     setMenuPortal(createPortal(menu, menuRef.current));
-  }, [menuRef, isLoaded, menu]);
+  }, [menuRef, menu]);
 
   useHeader({
     title: "Editar menú",
