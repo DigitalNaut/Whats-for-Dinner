@@ -20,7 +20,7 @@ import { SpinnerMenuContextProvider } from "src/hooks/SpinnerMenuContext";
 import { MenuHeader, TitleHeader } from "src/components/Header";
 
 // TODO: Remove
-import Tests from "src/pages/Tests";
+// import Tests from "src/pages/Tests";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,8 +29,6 @@ const router = createBrowserRouter(
         <Route index element={<Login redirectTo="/main" />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
-        {/* TODO: Remove */}
-        <Route path="/tests" element={<Tests />} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route

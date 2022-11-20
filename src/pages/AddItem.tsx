@@ -9,7 +9,7 @@ import InputText from "src/components/InputText";
 import Switcher from "src/components/Switcher";
 import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
 import { useNavigate } from "react-router-dom";
-import { useHeader } from "src/hooks/NavigationContext";
+import { useHeader } from "src/hooks/HeaderContext";
 
 enum FormFields {
   DishName = "dishName",
@@ -90,6 +90,7 @@ export default function AddItem() {
 
   useHeader({
     title: "Crear",
+    backTo: "",
   });
 
   // const resetForm = (form: HTMLFormElement) => {

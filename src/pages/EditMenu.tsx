@@ -1,4 +1,6 @@
-import { useState } from "react";
+import type { ReactPortal } from "react";
+import { createPortal } from "react-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Checkbox } from "ariakit";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,142 +16,199 @@ import {
 
 import Floating from "src/components/Floating";
 import Toggle from "src/components/Toggle";
-import { useHeader, useNavigationContext } from "src/hooks/NavigationContext";
+import { useHeader, useHeaderContext } from "src/hooks/HeaderContext";
 import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
+import Spinner from "src/components/Spinner";
 
 enum Modes {
   Toggle,
   Select,
 }
 
-type MenuItemsProps = {
-  selectOptions?: true;
-};
-
 export default function EditMenu() {
-  const { setTitle, setAltBackButton, Item, setMenuContent, setAltColor } =
-    useNavigationContext();
-  const { allMenuItems, toggleMenuItems } = useSpinnerMenuContext();
+  const { setHeaderProperties, Item, menuRef } = useHeaderContext();
+  const { allMenuItems, toggleMenuItems, isLoaded } = useSpinnerMenuContext();
   const [mode, setMode] = useState<Modes>(Modes.Toggle);
-  const [selected, setSelected] = useState<Map<string, boolean>>(
-    new Map(allMenuItems?.map((item) => [item.label, false]) ?? [])
+  const [selected, setSelected] = useState<
+    Map<string, { isSelected: boolean; index: number }>
+  >(new Map());
+  const [showSelectionOptions, setShowSelectionOptions] = useState(false);
+  const [menuContent, setMenuContent] = useState<ReactPortal>();
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    setSelected(
+      new Map(
+        allMenuItems?.map((item, index) => [
+          item.label,
+          { isSelected: false, index },
+        ]) ?? []
+      )
+    );
+  }, [allMenuItems, isLoaded]);
+
+  const deleteSelections = useCallback(() => {
+    const indexes = Array.from(selected.values()).filter(
+      ({ isSelected }) => isSelected
+    );
+    // .map(({ index }) => index);
+    console.log(indexes);
+
+    // deleteMenuItems(indexes);
+    // changeMode(Modes.Toggle, false);
+  }, [selected]);
+
+  const setAllSelections = useCallback(
+    (value = true) => {
+      const newSelected = new Map(selected);
+      allMenuItems?.forEach((item, index) =>
+        newSelected.set(item.label, { isSelected: value, index })
+      );
+      setSelected(newSelected);
+    },
+    [allMenuItems, selected]
   );
 
-  const MenuItems = ({ selectOptions }: MenuItemsProps) => (
-    <>
-      {selectOptions || (
-        <Item
-          onClick={() => {
-            changeMode(Modes.Select, false);
-          }}
-        >
-          <FontAwesomeIcon icon={faCheck} />
-          <span>Seleccionar</span>
-        </Item>
-      )}
-
-      <Item
+  const altBackButton = useMemo(
+    () => (
+      <button
         onClick={() => {
-          changeMode(Modes.Select, true);
+          setShowSelectionOptions(false);
+          setHeaderProperties((prevProperties) => ({
+            ...prevProperties,
+            title: "Editar menú",
+            altBackButton: undefined,
+            altColor: false,
+          }));
+          setMode(Modes.Toggle);
         }}
       >
-        <FontAwesomeIcon icon={faCheckDouble} />
-        <span>Seleccionar todo</span>
-      </Item>
+        <FontAwesomeIcon icon={faTimes} />
+      </button>
+    ),
+    [setHeaderProperties]
+  );
 
-      {selectOptions && (
-        <>
+  const changeMode = useCallback(
+    (mode: Modes, setAll?: boolean) => {
+      switch (mode) {
+        case Modes.Toggle:
+          setShowSelectionOptions(false);
+          setHeaderProperties((prevProperties) => ({
+            ...prevProperties,
+            title: "Editar menú",
+            altBackButton: undefined,
+            altColor: false,
+          }));
+          break;
+        case Modes.Select:
+          setShowSelectionOptions(true);
+          setHeaderProperties((prevProperties) => ({
+            ...prevProperties,
+            title: "Seleccionar",
+            altBackButton,
+            altColor: true,
+          }));
+          setAll !== undefined && setAllSelections(setAll);
+          break;
+      }
+      setMode(mode);
+    },
+    [altBackButton, setAllSelections, setHeaderProperties]
+  );
+
+  useHeader({
+    title: "Editar menú",
+    backTo: "/main",
+  });
+
+  const menuItems = useMemo(
+    () => (
+      <>
+        {showSelectionOptions || (
           <Item
             onClick={() => {
               changeMode(Modes.Select, false);
             }}
           >
-            <FontAwesomeIcon icon={faTimes} />
-            <span>Seleccionar nada</span>
+            <FontAwesomeIcon icon={faCheck} />
+            <span>Seleccionar</span>
           </Item>
-          <Item onClick={() => null}>
+        )}
+
+        <Item
+          onClick={() => {
+            changeMode(Modes.Select, true);
+          }}
+        >
+          <FontAwesomeIcon icon={faCheckDouble} />
+          <span>Seleccionar todo</span>
+        </Item>
+
+        {showSelectionOptions && (
+          <Item onClick={deleteSelections}>
             <FontAwesomeIcon icon={faTrash} />
             <span>Eliminar</span>
           </Item>
-        </>
-      )}
+        )}
 
-      {selectOptions || (
-        <>
-          <Item
-            onClick={() => {
-              allMenuItems &&
-                toggleMenuItems(
-                  allMenuItems.map((_, index) => index),
-                  true
-                );
-            }}
-          >
-            <FontAwesomeIcon icon={faCirclePlus} />
-            <span>Activar todos</span>
-          </Item>
-          <Item
-            onClick={() => {
-              allMenuItems &&
-                toggleMenuItems(
-                  allMenuItems.map((_, index) => index),
-                  false
-                );
-            }}
-          >
-            <FontAwesomeIcon icon={faCircleMinus} />
-            <span>Desactivar todos</span>
-          </Item>
-        </>
-      )}
-    </>
+        {showSelectionOptions || (
+          <>
+            <Item
+              onClick={() => {
+                allMenuItems &&
+                  toggleMenuItems(
+                    allMenuItems.map((_, index) => index),
+                    true
+                  );
+              }}
+            >
+              <FontAwesomeIcon icon={faCirclePlus} />
+              <span>Activar todos</span>
+            </Item>
+            <Item
+              onClick={() => {
+                allMenuItems &&
+                  toggleMenuItems(
+                    allMenuItems.map((_, index) => index),
+                    false
+                  );
+              }}
+            >
+              <FontAwesomeIcon icon={faCircleMinus} />
+              <span>Desactivar todos</span>
+            </Item>
+          </>
+        )}
+      </>
+    ),
+    [
+      Item,
+      allMenuItems,
+      changeMode,
+      deleteSelections,
+      showSelectionOptions,
+      toggleMenuItems,
+    ]
   );
 
-  const setAllSelections = (value = true) => {
-    const newSelected = new Map(selected);
-    allMenuItems?.forEach((item) => newSelected.set(item.label, value));
-    setSelected(newSelected);
-  };
+  useEffect(() => {
+    if (!menuRef.current || !isLoaded) return;
+    setMenuContent(createPortal(menuItems, menuRef.current));
+  }, [menuRef, isLoaded, menuItems]);
 
-  const altBackButton = (
-    <button
-      onClick={() => {
-        changeMode(Modes.Toggle, false);
-      }}
-    >
-      <FontAwesomeIcon icon={faTimes} />
-    </button>
-  );
-
-  const changeMode = (mode: Modes, setAll?: boolean) => {
-    switch (mode) {
-      case Modes.Toggle:
-        setTitle("Editar");
-        setAltBackButton(undefined);
-        setAllSelections(false);
-        setMenuContent(<MenuItems />);
-        setAltColor(false);
-        break;
-      case Modes.Select:
-        setAltBackButton(altBackButton);
-        setTitle("Seleccionar");
-        setMenuContent(<MenuItems selectOptions />);
-        setAltColor(true);
-        setAll !== undefined && setAllSelections(setAll);
-        break;
-    }
-    setMode(mode);
-  };
-
-  useHeader({
-    title: "Editar",
-    backTo: "/main",
-    menuItems: <MenuItems />,
-  });
+  if (!isLoaded)
+    return (
+      <div className="flex h-full flex-col items-center justify-center">
+        <Spinner />
+      </div>
+    );
 
   return (
     <>
       <h2 className="text-center font-bangers text-4xl">Menu</h2>
+      {menuContent}
       <div className="flex flex-col gap-4">
         {allMenuItems &&
           allMenuItems.map((item, index) => (
@@ -168,14 +227,19 @@ export default function EditMenu() {
               ) : (
                 <Checkbox
                   className="h-6 w-6 rounded-sm border-2 border-purple-400 checked:border-none checked:bg-purple-400 focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-700"
-                  checked={selected.get(item.label) ?? false}
+                  checked={selected.get(item.label)?.isSelected}
                   onChange={() => {
-                    setSelected((prevSelected) => {
-                      const newSelected = new Map(prevSelected);
-                      const newValue = !newSelected.get(item.label);
-                      newSelected.set(item.label, newValue);
-                      return newSelected;
+                    const newSelected = new Map(selected);
+                    const values = newSelected.get(item.label);
+
+                    if (!values) return;
+
+                    newSelected.set(item.label, {
+                      index: values.index,
+                      isSelected: !values.isSelected,
                     });
+
+                    setSelected(newSelected);
                   }}
                 />
               )}

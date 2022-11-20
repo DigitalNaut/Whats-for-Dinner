@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 
-import { useNavigationContext } from "src/hooks/NavigationContext";
+import { useHeaderContext } from "src/hooks/HeaderContext";
 
 import { ReactComponent as Chopsticks } from "src/assets/chopsticks.svg";
 
@@ -21,8 +21,8 @@ export function TitleHeader({ children }: PropsWithChildren) {
 
 export function MenuHeader() {
   const navigate = useNavigate();
-  const { backTo, title, menu, altBackButton, altColor } =
-    useNavigationContext();
+  const { headerProperties, menu } = useHeaderContext();
+  const { backTo, title, altBackButton, altColor } = headerProperties;
 
   return (
     <div

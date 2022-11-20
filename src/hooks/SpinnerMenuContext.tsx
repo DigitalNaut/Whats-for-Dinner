@@ -18,14 +18,18 @@ const spinnerMenuContext = createContext<{
   allMenuItems?: SpinnerOption[];
   enabledMenuItems?: SpinnerOption[];
   isLoaded: boolean;
-  toggleMenuItems: (index: number[], value?: boolean) => void;
+  toggleMenuItems: (indexes: number[], value?: boolean) => void;
   addMenuItem: (item: SpinnerOption) => void;
+  deleteMenuItems: (indexes: number[], value?: boolean) => void;
 }>({
   isLoaded: false,
   toggleMenuItems: () => {
     throw new Error("SpinnerMenuContext not initialized");
   },
   addMenuItem: () => {
+    throw new Error("SpinnerMenuContext not initialized");
+  },
+  deleteMenuItems: () => {
     throw new Error("SpinnerMenuContext not initialized");
   },
 });
@@ -184,6 +188,27 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     triggerDelayedUpload(0);
   }
 
+  function deleteMenuItems(indexes: number[]) {
+    if (!allMenuItems) return;
+    if (!indexes.length) return;
+
+    const confirmDelete = confirm(
+      "Se borrarán todos los elementos seleccionados"
+    );
+
+    if (!confirmDelete) return;
+
+    console.log(indexes);
+
+    // const newAllMenuItems = allMenuItems.filter((_, index) =>
+    //   indexes.includes(index)
+    // );
+
+    // setMenuItems(newAllMenuItems);
+
+    // triggerDelayedUpload();
+  }
+
   useEffect(() => {
     if (!isDriveLoaded) return undefined;
 
@@ -219,6 +244,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         allMenuItems,
         toggleMenuItems,
         addMenuItem,
+        deleteMenuItems,
       }}
     >
       {children}
