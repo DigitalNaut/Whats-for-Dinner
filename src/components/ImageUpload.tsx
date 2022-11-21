@@ -33,7 +33,12 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
       setError("El archivo no puede ser mayor a 5.0 MB");
       return;
     }
-    if (!file.type.startsWith("image/")) {
+
+    if (
+      !file.type.startsWith("image/") &&
+      file.type === "application/json" &&
+      file.name !== "config.json"
+    ) {
       setError("El archivo debe ser una imagen");
       return;
     }
@@ -115,7 +120,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
         type="file"
         size={1_000_000}
         onChange={handleImageInputChange}
-        accept="image/png, image/jpeg, image/webp"
+        accept="image/png, image/jpeg, image/webp, application/json"
         className="w-full text-ellipsis"
       />
       {imageFileToUpload && (
