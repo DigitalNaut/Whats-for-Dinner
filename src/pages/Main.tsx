@@ -33,17 +33,16 @@ export default function Main() {
     (SpinnerOption & { timestamp: string })[]
   >([]);
 
+  const handleSpinEnd = (result: SpinnerOption) => {
+    setResultHistory((currentHistory) => [
+      { ...result, timestamp: Date() },
+      ...currentHistory.slice(0, maxHistory - 1),
+    ]);
+  };
+
   return (
     <div className="flex w-full flex-col gap-8">
-      <SpinningWheel
-        choices={enabledMenuItems}
-        onSpinEnd={(result) => {
-          setResultHistory((currentHistory) => [
-            { ...result, timestamp: Date() },
-            ...currentHistory.slice(0, maxHistory - 1),
-          ]);
-        }}
-      />
+      <SpinningWheel choices={enabledMenuItems} onSpinEnd={handleSpinEnd} />
 
       <div className="flex min-w-full gap-4 overflow-x-auto rounded-md bg-slate-700 p-2 shadow-xl">
         {resultHistory.length === 0 && (
