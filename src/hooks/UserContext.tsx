@@ -87,7 +87,7 @@ export function UserProvider({ children }: PropsWithChildren) {
     const { picture, name, email } = user;
 
     return (
-      <div className="group fixed right-2 top-2 flex cursor-pointer hover:gap-4 hover:rounded-md hover:bg-white hover:p-4 hover:text-black">
+      <div className="group fixed right-2 top-2 z-50 flex cursor-pointer hover:gap-4 hover:rounded-md hover:bg-white hover:p-4 hover:text-black">
         <a
           className="flex items-center group-hover:gap-2"
           href="https://drive.google.com/drive/settings"

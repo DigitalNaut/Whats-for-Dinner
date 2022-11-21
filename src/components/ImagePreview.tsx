@@ -18,6 +18,7 @@ export default function ImagePreview({
   src,
   onError,
   onLoad,
+  fileName,
   ...props
 }: ImagePreviewProps) {
   const [error, setError] = useState<string>();
@@ -38,6 +39,7 @@ export default function ImagePreview({
     <div className="group relative m-auto w-fit overflow-hidden rounded-md">
       <img
         src={fileUrl}
+        title={fileName}
         alt="Prevista"
         className={`h-[128px] w-[128px] rounded-md object-cover object-center ${
           isInteractive ? "cursor-pointer bg-black" : ""
