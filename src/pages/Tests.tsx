@@ -1,4 +1,8 @@
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import Floating from "src/components/Floating";
 
 import ImageList from "src/components/ImageList";
 import ImageUpload from "src/components/ImageUpload";
@@ -44,6 +48,15 @@ function Tests() {
           Añadir
         </button>
       </form>
+
+      <Floating>
+        <Link to="/menu">
+          <button data-filled className="flex items-center gap-1">
+            <FontAwesomeIcon icon={faEdit} />
+            <span>Editar menú</span>
+          </button>
+        </Link>
+      </Floating>
     </>
   );
 }
