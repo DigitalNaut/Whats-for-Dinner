@@ -22,10 +22,16 @@ import { MenuHeader, TitleHeader } from "src/components/Header";
 // TODO: Remove
 // import Tests from "src/pages/Tests";
 
+const mainLayout = (
+  <MainLayout>
+    <TitleHeader>¿Qué para comer?</TitleHeader>
+  </MainLayout>
+);
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path="/" element={<MainLayout />}>
+      <Route path="/" element={mainLayout}>
         <Route index element={<Login redirectTo="/main" />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
@@ -40,13 +46,7 @@ const router = createBrowserRouter(
           </GoogleDriveProvider>
         }
       >
-        <Route
-          element={
-            <MainLayout>
-              <TitleHeader>¿Qué para comer?</TitleHeader>
-            </MainLayout>
-          }
-        >
+        <Route element={mainLayout}>
           <Route path="/main" element={<Main />} />
         </Route>
         <Route
