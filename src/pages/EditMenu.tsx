@@ -27,24 +27,14 @@ enum Modes {
 
 export default function EditMenu() {
   const { setHeaderProperties, createMenu } = useHeaderContext();
-  const { allMenuItems, toggleMenuItems, isLoaded } = useSpinnerMenuContext();
+  const { isLoaded, allMenuItems, toggleMenuItems, deleteMenuItems } =
+    useSpinnerMenuContext();
   const [mode, setMode] = useState<Modes>(Modes.Toggle);
   const [selected, setSelected] = useState<
     Map<string, { isSelected: boolean; index: number }>
   >(new Map());
   const [showSelectionOptions, setShowSelectionOptions] = useState(false);
   const [menuPortal, setMenuPortal] = useState<ReactPortal>();
-
-  const deleteSelections = useCallback(() => {
-    const indexes = Array.from(selected.values()).filter(
-      ({ isSelected }) => isSelected
-    );
-    // .map(({ index }) => index);
-    console.log(indexes);
-
-    // deleteMenuItems(indexes);
-    // changeMode(Modes.Toggle, false);
-  }, [selected]);
 
   const setAllSelections = useCallback(
     (value = true) => {
@@ -91,6 +81,16 @@ export default function EditMenu() {
     },
     [altBackButton, setAllSelections, setHeaderProperties]
   );
+
+  const deleteSelections = useCallback(() => {
+    const indexes = Array.from(selected.values())
+      .filter(({ isSelected }) => isSelected)
+      .map(({ index }) => index);
+
+    deleteMenuItems(indexes);
+    setAllSelections(false);
+    setModeToggle();
+  }, [deleteMenuItems, selected, setAllSelections, setModeToggle]);
 
   const { menu, menuRef } = useMemo(
     () =>

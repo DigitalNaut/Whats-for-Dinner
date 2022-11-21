@@ -14,6 +14,14 @@ import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
 const TIMEOUT = 2500;
 const CONFIG_FILE_NAME = "config.json";
 
+enum State {
+  Loading,
+  Idle,
+  Waiting,
+  Uploading,
+  Dirty,
+}
+
 const spinnerMenuContext = createContext<{
   allMenuItems?: SpinnerOption[];
   enabledMenuItems?: SpinnerOption[];
@@ -36,7 +44,6 @@ const spinnerMenuContext = createContext<{
 
 export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   const [error, setError] = useState<string>();
-  const [isLoaded, setIsLoaded] = useState(false);
   const {
     fetchFile,
     fetchList,
@@ -44,17 +51,10 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     updateFile,
     isLoaded: isDriveLoaded,
   } = useGoogleDrive();
-  const [allMenuItems, setAllMenuItems] = useState<SpinnerOption[]>();
-  const [enabledMenuItems, setEnabledMenuItems] = useState<SpinnerOption[]>();
+  const [menuItems, setMenuItems] = useState<SpinnerOption[]>();
   const [configFileId, setConfigFileId] = useState<string>();
-  const [uploadTimeout, setUploadTimeout] = useState<NodeJS.Timeout>();
-  const [isUploading, setIsUploading] = useState(false);
-
-  const setMenuItems = useCallback((config: SpinnerOption[]) => {
-    if (!config) return;
-    setAllMenuItems(config);
-    setEnabledMenuItems(config.filter(({ enabled }) => enabled));
-  }, []);
+  const [state, setState] = useState<State>(State.Loading);
+  const [uploadTimeoutId, setUploadTimeoutId] = useState<NodeJS.Timeout>();
 
   const getConfigFileMeta = useCallback(
     async (signal?: AbortSignal) => {
@@ -63,8 +63,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         params: { q: `name = '${CONFIG_FILE_NAME}'` },
       });
 
-      // List the files
-      if (!data.files || !data.files.length) return null;
+      if (!data.files?.length) return null;
 
       const [config] = data.files;
       setConfigFileId(config.id);
@@ -89,24 +88,28 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     [uploadFile]
   );
 
-  const updateConfig = useCallback(async () => {
-    try {
-      if (!configFileId) throw new Error("No config file id");
+  const updateConfig = useCallback(
+    async (contents: SpinnerOption[]) => {
+      try {
+        if (!configFileId) throw new Error("No config file ID");
 
-      await updateFile({
-        id: configFileId,
-        file: new File([JSON.stringify(allMenuItems)], CONFIG_FILE_NAME),
-        metadata: {
-          name: CONFIG_FILE_NAME,
-          mimeType: "application/json",
-        },
-      });
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
-  }, [allMenuItems, configFileId, updateFile]);
+        await updateFile({
+          id: configFileId,
+          file: new File([JSON.stringify(contents)], CONFIG_FILE_NAME),
+          metadata: {
+            name: CONFIG_FILE_NAME,
+            mimeType: "application/json",
+          },
+        });
+
+        return true;
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
+    },
+    [configFileId, updateFile]
+  );
 
   const getConfigOrCreate = useCallback(
     async (signal: AbortSignal) => {
@@ -121,12 +124,10 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
           });
 
           // Set the menu items
-          if (config && Array.isArray(config)) {
-            setMenuItems(config);
-          }
+          if (config && Array.isArray(config)) setMenuItems(config);
         } else createConfigFile();
 
-        setIsLoaded(true);
+        setState(State.Idle);
       } catch (error) {
         if (error === "Authorizing") return;
 
@@ -140,33 +141,40 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         }
       }
     },
-    [createConfigFile, fetchFile, getConfigFileMeta, setMenuItems]
+    [createConfigFile, fetchFile, getConfigFileMeta]
   );
 
-  function triggerDelayedUpload(timeout: number = TIMEOUT) {
-    // Reset the timeout
-    if (uploadTimeout) clearTimeout(uploadTimeout);
+  const triggerDelayedUpload = useCallback(
+    (timeout: number = TIMEOUT) => {
+      // Reset the timeout & set state to waiting
+      if (uploadTimeoutId) clearTimeout(uploadTimeoutId);
+      setState(State.Waiting);
 
-    const uploadChanges = async () => {
-      // Upload the changes
-      // and toggle the flags
-      setIsUploading(true);
+      const uploadFile = async () => {
+        // Upload the changes
+        // disable the timeout and toggle the flags
+        setState(State.Uploading);
 
-      await updateConfig();
+        await updateConfig(menuItems || []);
 
-      setUploadTimeout(undefined);
-      setIsUploading(false);
-    };
+        if (uploadTimeoutId) clearTimeout(uploadTimeoutId);
+        setUploadTimeoutId(undefined);
+        setState(State.Idle);
+      };
 
-    // Set the new timeout
-    const timeoutId = setTimeout(uploadChanges, timeout);
-    setUploadTimeout(timeoutId);
-  }
+      // Set the timeout
+      const timeoutId = setTimeout(() => {
+        uploadFile();
+      }, timeout);
+      setUploadTimeoutId(timeoutId);
+    },
+    [menuItems, updateConfig, uploadTimeoutId]
+  );
 
   function toggleMenuItems(indexes: number[], value?: boolean) {
-    if (!allMenuItems || !enabledMenuItems) return;
+    if (!menuItems) return;
 
-    const newAllMenuItems = [...allMenuItems];
+    const newAllMenuItems = [...menuItems];
     newAllMenuItems.forEach((item, index) => {
       if (!indexes.includes(index)) return;
 
@@ -175,21 +183,18 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     });
 
     setMenuItems(newAllMenuItems);
-
-    triggerDelayedUpload();
+    setState(State.Dirty);
   }
 
   function addMenuItem(item: SpinnerOption) {
-    if (!allMenuItems) return;
+    if (!menuItems) return;
 
-    allMenuItems.push(item);
-    setMenuItems(allMenuItems);
-
-    triggerDelayedUpload(0);
+    setMenuItems((prevItems) => prevItems && [...prevItems, item]);
+    setState(State.Dirty);
   }
 
-  function deleteMenuItems(indexes: number[]) {
-    if (!allMenuItems) return;
+  async function deleteMenuItems(indexes: number[]) {
+    if (!menuItems) return;
     if (!indexes.length) return;
 
     const confirmDelete = confirm(
@@ -198,16 +203,19 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
 
     if (!confirmDelete) return;
 
-    console.log(indexes);
-
-    // const newAllMenuItems = allMenuItems.filter((_, index) =>
-    //   indexes.includes(index)
-    // );
-
-    // setMenuItems(newAllMenuItems);
-
-    // triggerDelayedUpload();
+    setMenuItems(
+      (prevItems) =>
+        prevItems &&
+        [...prevItems].filter((_, index) => !indexes.includes(index))
+    );
+    setState(State.Dirty);
   }
+
+  useEffect(() => {
+    if (state !== State.Dirty) return;
+
+    triggerDelayedUpload();
+  }, [state, triggerDelayedUpload]);
 
   useEffect(() => {
     if (!isDriveLoaded) return undefined;
@@ -230,25 +238,25 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     };
 
     if (!window.onbeforeunload)
-      if (uploadTimeout || isUploading)
+      if (uploadTimeoutId || state !== State.Idle)
         window.addEventListener("beforeunload", alertUser);
 
     return () => window.removeEventListener("beforeunload", alertUser);
-  }, [uploadTimeout, isUploading]);
+  }, [state, uploadTimeoutId]);
 
   return (
     <spinnerMenuContext.Provider
       value={{
-        isLoaded,
-        enabledMenuItems,
-        allMenuItems,
+        isLoaded: state !== State.Loading,
+        allMenuItems: menuItems,
+        enabledMenuItems: menuItems?.filter(({ enabled }) => enabled),
         toggleMenuItems,
         addMenuItem,
         deleteMenuItems,
       }}
     >
       {children}
-      {isUploading && (
+      {state === State.Uploading && (
         <div className="fixed inset-x-1/2 top-2 w-fit -translate-x-1/2 rounded-lg bg-emerald-700 p-2 text-white">
           <Spinner text="Guardando..." />
         </div>
