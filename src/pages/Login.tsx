@@ -12,7 +12,7 @@ export default function Login({ redirectTo }: LoginProps) {
   if (user) return <Navigate to={redirectTo} />;
 
   return (
-    <div className="flex w-full grow justify-center pt-[10vh]">
+    <div className="flex h-full items-center justify-center">
       <LoginButton />
     </div>
   );

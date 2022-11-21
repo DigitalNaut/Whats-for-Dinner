@@ -188,7 +188,7 @@ export default function EditMenu() {
 
   if (!isLoaded)
     return (
-      <div className="flex h-full flex-col items-center justify-center">
+      <div className="flex h-full items-center justify-center">
         <Spinner />
       </div>
     );
