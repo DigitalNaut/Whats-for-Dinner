@@ -116,7 +116,7 @@ export default function EditMenu() {
           </MenuItem>
 
           {showSelectionOptions && (
-            <MenuItem onClick={deleteSelections}>
+            <MenuItem className="text-red-900" onClick={deleteSelections}>
               <FontAwesomeIcon icon={faTrash} />
               <span>Eliminar</span>
             </MenuItem>
