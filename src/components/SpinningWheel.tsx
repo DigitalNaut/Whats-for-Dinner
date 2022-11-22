@@ -9,6 +9,7 @@ export type SpinnerOption = {
   label: string;
   enabled: boolean;
   imageUrl: string;
+  key: number;
 };
 type SpinningWheelProps = {
   choices?: SpinnerOption[];

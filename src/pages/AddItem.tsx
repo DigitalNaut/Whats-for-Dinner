@@ -119,6 +119,7 @@ export default function AddItem() {
         label,
         imageUrl,
         enabled: true,
+        key: Date.now(),
       });
       navigate("/menu");
     } else
