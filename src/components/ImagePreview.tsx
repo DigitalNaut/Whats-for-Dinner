@@ -4,11 +4,12 @@ import type {
   ReactEventHandler,
 } from "react";
 import { useState } from "react";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type ImagePreviewProps = {
   fileName?: string;
+  showDownloadLink?: true;
 } & Pick<
   DetailedHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>,
   "src" | "onClick" | "title" | "onError" | "onLoad"
@@ -19,6 +20,7 @@ export default function ImagePreview({
   onError,
   onLoad,
   fileName,
+  showDownloadLink,
   ...props
 }: ImagePreviewProps) {
   const [error, setError] = useState<string>();
@@ -56,11 +58,22 @@ export default function ImagePreview({
         </div>
       )}
       {isInteractive && (
-        <div className="pointer-events-none absolute inset-0 z-10 grid h-full w-full place-items-center group-hover:bg-black/50">
-          <span className="invisible inset-x-full inset-y-0 group-hover:visible">
-            <FontAwesomeIcon icon={faTimes} />
-          </span>
-        </div>
+        <>
+          <div className="pointer-events-none absolute inset-0 z-10 grid h-full w-full place-items-center group-hover:bg-black/50">
+            <span className="invisible inset-x-full inset-y-0 group-hover:visible">
+              <FontAwesomeIcon icon={faTimes} />
+            </span>
+          </div>
+          {showDownloadLink && (
+            <a
+              href={fileUrl}
+              className="absolute inset-x-0 bottom-0 z-10 rounded-bl-md bg-black/50 p-2"
+              download
+            >
+              Download <FontAwesomeIcon icon={faDownload} />
+            </a>
+          )}
+        </>
       )}
     </div>
   );

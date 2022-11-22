@@ -280,6 +280,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         src={driveFilePreview && driveFilePreview.url}
         fileName={driveFilePreview?.fileInfo.name}
         onClick={() => setDriveFilePreview(undefined)}
+        showDownloadLink
       />
     </>
   );
