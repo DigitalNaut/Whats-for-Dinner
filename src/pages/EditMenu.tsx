@@ -7,8 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
   faCheckDouble,
-  faCircleMinus,
-  faCirclePlus,
+  faMinus,
   faPlus,
   faTimes,
   faTrash,
@@ -94,7 +93,7 @@ export default function EditMenu() {
 
   const { menu, menuRef } = useMemo(
     () =>
-      createMenu((MenuItem) => (
+      createMenu((MenuItem, MenuSeparator) => (
         <>
           {showSelectionOptions || (
             <MenuItem
@@ -125,6 +124,7 @@ export default function EditMenu() {
 
           {showSelectionOptions || (
             <>
+              <MenuSeparator />
               <MenuItem
                 onClick={() => {
                   allMenuItems &&
@@ -134,7 +134,7 @@ export default function EditMenu() {
                     );
                 }}
               >
-                <FontAwesomeIcon icon={faCirclePlus} />
+                <FontAwesomeIcon icon={faPlus} />
                 <span>Activar todos</span>
               </MenuItem>
               <MenuItem
@@ -146,7 +146,7 @@ export default function EditMenu() {
                     );
                 }}
               >
-                <FontAwesomeIcon icon={faCircleMinus} />
+                <FontAwesomeIcon icon={faMinus} />
                 <span>Desactivar todos</span>
               </MenuItem>
             </>
@@ -184,6 +184,7 @@ export default function EditMenu() {
   useHeader({
     title: "Editar menú",
     backTo: "/main",
+    showMenuButton: true,
   });
 
   if (!isLoaded)
