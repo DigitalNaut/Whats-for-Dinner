@@ -87,9 +87,13 @@ export function UserProvider({ children }: PropsWithChildren) {
     const { picture, name, email } = user;
 
     return (
-      <div className="group fixed right-2 top-2 z-50 flex cursor-pointer hover:gap-4 hover:rounded-md hover:bg-white hover:p-4 hover:text-black">
+      <div
+        className="group fixed right-2 top-2 z-50 flex cursor-pointer 
+          focus-within:gap-4 focus-within:rounded-md focus-within:bg-white focus-within:p-4 focus-within:text-black
+          hover:gap-4 hover:rounded-md hover:bg-white hover:p-4 hover:text-black"
+      >
         <a
-          className="flex items-center group-hover:gap-2"
+          className="flex items-center group-focus-within:gap-2 group-hover:gap-2"
           href="https://drive.google.com/drive/settings"
           target="_blank"
           rel="noreferrer"
@@ -103,13 +107,15 @@ export function UserProvider({ children }: PropsWithChildren) {
             className="h-8 w-8 rounded-full"
           />
           <div>
-            <div className="hidden text-sm font-medium group-hover:block">
+            <div className="hidden text-sm font-medium group-focus-within:block group-hover:block">
               {name}
             </div>
-            <div className="hidden text-xs group-hover:block">{email}</div>
+            <div className="hidden text-xs group-focus-within:block group-hover:block">
+              {email}
+            </div>
           </div>
         </a>
-        <div className="hidden flex-col group-hover:flex">
+        <div className="hidden flex-col group-focus-within:flex group-hover:flex">
           <LogoutButton />
         </div>
       </div>
