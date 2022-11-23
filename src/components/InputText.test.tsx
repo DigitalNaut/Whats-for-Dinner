@@ -1,39 +1,34 @@
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
-import { act } from "react-dom/test-utils";
 import { render, screen, waitFor } from "@testing-library/react";
 
 import InputText from "src/components/InputText";
-
-const user = userEvent.setup();
+import { useState } from "react";
 
 it("renders a custom input element with a label", () => {
-  render(
-    <InputText
-      // cspell: disable-next-line
-      data-testid="input-element"
-      name="input-test"
-      label="Test label"
-    />
-  );
-  const inputElement = screen.getByTestId("input-element");
-  const label = screen.getByLabelText("Test label");
+  render(<InputText name="input-test" label="test label" />);
+  const inputElement = screen.getByRole("textbox", { name: /test label/i });
 
   expect(inputElement).toBeInTheDocument();
-  expect(label).toBeInTheDocument();
 });
 
 it("renders a custom input element with a hint", () => {
   render(<InputText name="input-test" hint="Hint text" />);
-  const hint = screen.getByText("Hint text");
+  const hintElement = screen.getByRole("textbox", {
+    description: /hint text/i,
+  });
 
-  expect(hint).toBeInTheDocument();
+  expect(hintElement).toBeInTheDocument();
 });
 
 it("renders a custom input with an error that obscures the hint", () => {
   render(<InputText name="input-test" error="Error text" hint="Hint text" />);
-  const errorElement = screen.getByText("Error text");
-  const hintElement = screen.queryByText("Hint text");
+  const errorElement = screen.getByRole("textbox", {
+    description: /error text/i,
+  });
+  const hintElement = screen.queryByRole("textbox", {
+    description: /hint text/i,
+  });
 
   expect(errorElement).toBeInTheDocument();
   expect(hintElement).not.toBeInTheDocument();
@@ -60,49 +55,56 @@ it("renders a custom input without a clear button", () => {
   expect(clearButton).toBeNull();
 });
 
-it("renders a button to clear the input", async () => {
-  const onClear = jest.fn();
-  render(
-    <InputText
-      // cspell: disable-next-line
-      data-testid="input-element"
-      name="input-test"
-      value="a value"
-      onClear={onClear}
-    />
-  );
-  const inputElement = screen.getByDisplayValue("a value");
-  const clearButton = screen.getByLabelText("Borrar entrada");
+it("ensures the input is accessible with tab", async () => {
+  render(<InputText name="input-test" label="Test label" />);
+  const inputElement = screen.getByRole("textbox", { name: /test label/i });
 
-  expect(clearButton).toBeInTheDocument();
+  expect(document.body).toHaveFocus();
 
-  await act(async () => {
-    await user.click(clearButton);
-  });
-
-  expect(onClear).toHaveBeenCalledTimes(1);
-  expect(inputElement).toHaveDisplayValue("");
-  waitFor(() => {
-    expect(clearButton).not.toBeInTheDocument();
-  });
-});
-
-it("ensures the input is focusable", async () => {
-  render(
-    <InputText
-      // cspell: disable-next-line
-      data-testid="input-element"
-      name="input-test"
-      label="Test label"
-    />
-  );
-  const inputElement = screen.getByTestId("input-element");
-  const labelElement = screen.getByLabelText("Test label");
-  await user.click(labelElement);
+  await userEvent.tab();
 
   expect(inputElement).toHaveFocus();
 
-  await user.tab();
+  await userEvent.tab();
 
   expect(inputElement).not.toHaveFocus();
+});
+
+function TestElement() {
+  const [value, setValue] = useState("");
+
+  const onClear = () => setValue("");
+
+  return (
+    <InputText
+      name="input-test"
+      label="test textbox"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onClear={onClear}
+    />
+  );
+}
+
+it("renders a button to clear the input", async () => {
+  render(<TestElement />);
+  const inputElement = screen.getByRole("textbox", { name: /test textbox/i });
+  userEvent.type(inputElement, "Test value");
+
+  await waitFor(() => expect(inputElement).toHaveValue("Test value"));
+
+  const clearButton = await screen.findByRole("button", {
+    name: /borrar entrada/i,
+  });
+  expect(clearButton).toBeInTheDocument();
+
+  await userEvent.click(clearButton);
+
+  const inputElementAfterClear = screen.getByRole("textbox", {
+    name: /test textbox/i,
+  });
+
+  await waitFor(() => expect(inputElementAfterClear).toHaveValue(""));
+
+  expect(clearButton).not.toBeInTheDocument();
 });
