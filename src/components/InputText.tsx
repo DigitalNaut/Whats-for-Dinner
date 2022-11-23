@@ -4,6 +4,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type InputTextProps = {
+  name: string;
   label?: string;
   hint?: string;
   error?: string;
@@ -11,7 +12,7 @@ type InputTextProps = {
   onClear?: () => void;
 } & Pick<
   InputHTMLAttributes<HTMLInputElement>,
-  "name" | "value" | "required" | "onChange"
+  "value" | "required" | "onChange"
 >;
 
 export default function InputText({
