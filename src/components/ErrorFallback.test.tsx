@@ -9,7 +9,7 @@ function ErrorComponent() {
   return null;
 }
 
-test("renders an error handler component", () => {
+it("renders an error handler component", () => {
   jest
     .spyOn(console, "error")
     .mockImplementation(() => console.log("Purposeful error thrown!"));
