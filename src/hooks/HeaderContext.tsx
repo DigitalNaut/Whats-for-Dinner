@@ -67,6 +67,7 @@ function PopupMenu({
   return (
     <div className="relative z-10" style={style}>
       <MenuButton
+        aria-label="Menú"
         state={menuState}
         className="flex flex-col overflow-auto rounded-lg p-2 shadow-lg outline-none
         focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
