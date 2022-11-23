@@ -33,9 +33,10 @@ export default function InputText({
   };
 
   return (
-    <label htmlFor={name}>
+    <div>
       <div className="relative">
-        <div
+        <label
+          htmlFor={name}
           className={`absolute left-4 -ml-0.5 h-fit -translate-y-1/2 px-0.5 leading-6 text-gray-400 transition-all ${
             isFocused || value
               ? "top-0 translate-y-0 text-xs leading-6"
@@ -43,7 +44,7 @@ export default function InputText({
           }`}
         >
           {label}
-        </div>
+        </label>
         <input
           id={name}
           name={name}
@@ -60,6 +61,7 @@ export default function InputText({
         />
         {value && onClear && (
           <button
+            aria-label="Borrar entrada"
             type="button"
             className="absolute right-2 bottom-2"
             onClick={() => {
@@ -77,6 +79,6 @@ export default function InputText({
       >
         {description}
       </div>
-    </label>
+    </div>
   );
 }

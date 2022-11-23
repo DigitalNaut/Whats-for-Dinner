@@ -12,7 +12,7 @@ type InputFileProps = Pick<
   "required" | "name"
 >;
 
-function InputFile({ name, ...props }: InputFileProps) {
+export default function InputFile({ name, ...props }: InputFileProps) {
   const [file, setFile] = useState<File>();
   const [fileUrl, setFileUrl] = useState<string>();
   const labelRef = createRef<HTMLDivElement>();
@@ -110,5 +110,3 @@ function InputFile({ name, ...props }: InputFileProps) {
     </>
   );
 }
-
-export default InputFile;
