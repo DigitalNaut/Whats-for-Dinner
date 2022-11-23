@@ -41,7 +41,7 @@ const router = createBrowserRouter(
         element={
           <GoogleDriveProvider>
             <SpinnerMenuContextProvider>
-              <ProtectedRoutes />
+              <ProtectedRoutes redirectTo="/" />
             </SpinnerMenuContextProvider>
           </GoogleDriveProvider>
         }
