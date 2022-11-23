@@ -29,6 +29,7 @@
     "serve": "pnpx serve -s build",
     "eject": "react-scripts eject",
     "test": "react-scripts test",
+    "test:coverage": "cross-env CI=true pnpm test -- --env=jsdom --coverage",
     "generate:css": "tailwindcss -i ./src/styles/index.css -o ./src/styles/tailwind.css",
     "format": "prettier --write .",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
