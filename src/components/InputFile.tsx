@@ -20,6 +20,7 @@ export default function InputFile({
   const [file, setFile] = useState<File>();
   const [fileUrl, setFileUrl] = useState<string>();
   const labelRef = createRef<HTMLDivElement>();
+  const inputRef = createRef<HTMLInputElement>();
 
   const onChangeHandler: ChangeEventHandler<HTMLInputElement> = (event) => {
     const [file] = event.target.files || [];
@@ -32,6 +33,7 @@ export default function InputFile({
   const removeFileHandler = () => {
     setFile(undefined);
     setFileUrl(undefined);
+    if (inputRef.current) inputRef.current.value = "";
   };
 
   return (
@@ -39,13 +41,14 @@ export default function InputFile({
       <div className="flex flex-col items-center gap-2">
         <input
           data-filled
+          className="peer pointer-events-none absolute inset-1/2 h-0 w-0 overflow-hidden opacity-0"
+          style={{ padding: 0 }}
           id={name}
           name={name}
+          ref={inputRef}
           type="file"
           onChange={onChangeHandler}
           accept="image/png, image/jpeg, image/webp"
-          className="peer pointer-events-none absolute inset-1/2 h-0 w-0 overflow-hidden opacity-0"
-          style={{ padding: 0 }}
           {...props}
         />
         <div
@@ -65,12 +68,12 @@ export default function InputFile({
                 />
               </div>
               <button
-                role="button"
                 className="absolute hidden h-full w-full flex-col items-center justify-center gap-2 bg-black/50 group-hover:flex"
+                role="button"
                 onClick={removeFileHandler}
               >
                 <FontAwesomeIcon icon={faTimes} className="h-6 w-6" />
-                <span className="text-sm">Remover</span>
+                <span className="text-sm">Eliminar</span>
               </button>
             </div>
           ) : (
@@ -94,12 +97,13 @@ export default function InputFile({
           <div className="flex max-w-[70%] items-center gap-4 overflow-hidden text-ellipsis p-2">
             <div className="flex min-w-0 max-w-full flex-col flex-nowrap gap-0.5">
               <span className="w-full truncate">{file.name}</span>
-              <span className="text-xs">{file.size * 0.001} kb</span>
+              <span className="text-xs">{file.size * 0.001} KB</span>
             </div>
             <button
-              data-filled
-              role="button"
               className="w-fit max-w-xs"
+              data-filled
+              aria-label="Eliminar"
+              role="button"
               onClick={removeFileHandler}
             >
               <FontAwesomeIcon icon={faTimes} />
