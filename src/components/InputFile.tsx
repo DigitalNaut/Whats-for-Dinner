@@ -7,12 +7,16 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-type InputFileProps = Pick<
-  InputHTMLAttributes<HTMLInputElement>,
-  "required" | "name"
->;
+type InputFileProps = {
+  name: string;
+  label?: string;
+} & Pick<InputHTMLAttributes<HTMLInputElement>, "required">;
 
-export default function InputFile({ name, ...props }: InputFileProps) {
+export default function InputFile({
+  name,
+  label = "Seleccionar",
+  ...props
+}: InputFileProps) {
   const [file, setFile] = useState<File>();
   const [fileUrl, setFileUrl] = useState<string>();
   const labelRef = createRef<HTMLDivElement>();
@@ -55,7 +59,7 @@ export default function InputFile({ name, ...props }: InputFileProps) {
             <div className="group">
               <div className="absolute h-full w-full">
                 <img
-                  src={file ? fileUrl : ""}
+                  src={fileUrl}
                   alt={file?.name}
                   className="h-full w-full object-cover"
                 />
@@ -82,7 +86,7 @@ export default function InputFile({ name, ...props }: InputFileProps) {
                 icon={faCloudUpload}
                 className="hidden h-6 w-6 group-hover:block"
               />
-              <span className="text-sm">Seleccionar</span>
+              <span className="text-sm">{label}</span>
             </label>
           )}
         </div>
