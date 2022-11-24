@@ -73,7 +73,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
             }}
           >
             {isDownloading ? (
-              <Spinner size="sm" />
+              <Spinner text="" />
             ) : (
               <FontAwesomeIcon icon={faDownload} />
             )}
@@ -90,7 +90,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
             }}
           >
             {isDeleting ? (
-              <Spinner size="sm" />
+              <Spinner text="" />
             ) : (
               <FontAwesomeIcon icon={faTrash} />
             )}
@@ -261,7 +261,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         className="w-fit"
       >
         {loadingDriveFiles ? (
-          <Spinner size="sm" />
+          <Spinner text="" />
         ) : (
           <FontAwesomeIcon icon={faSync} />
         )}
