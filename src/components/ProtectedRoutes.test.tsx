@@ -8,19 +8,27 @@ import ProtectedRoutes from "src/components/ProtectedRoutes";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 const { UserProvider, useUser } = UserContextModule;
 
-jest.mock("src/hooks/UserContext", () => ({
-  UserProvider: FakedUserProvider,
-  useUser: jest.fn(),
-}));
-
 const fakedUserContext = createContext({});
 const FakedUserProvider = ({ children }: PropsWithChildren) => (
-  <fakedUserContext.Provider value={{}}>{children}</fakedUserContext.Provider>
+  <fakedUserContext.Provider value={{ user: null }}>
+    {children}
+  </fakedUserContext.Provider>
 );
-const useUserSpy = jest.spyOn(UserContextModule, "useUser");
+const userProviderSpy = jest
+  .spyOn(UserContextModule, "UserProvider")
+  .mockImplementation(FakedUserProvider);
+const useUserSpy = jest
+  .spyOn(UserContextModule, "useUser")
+  .mockReturnValue({ user: { name: "John Doe" } } as ReturnType<
+    typeof useUser
+  >);
 
-beforeEach(() => {
-  useUserSpy.mockRestore();
+afterEach(() => {
+  useUserSpy.mockReset();
+});
+
+afterAll(() => {
+  userProviderSpy.mockRestore();
 });
 
 function Providers({ children }: PropsWithChildren) {
@@ -42,22 +50,24 @@ function TestRoutes() {
   );
 }
 
-it("renders a protected route if user exists", async () => {
-  useUserSpy.mockReturnValue({ user: { name: "John Doe" } } as ReturnType<
-    typeof useUser
-  >);
+describe("ProtectedRoutes", () => {
+  it("renders a protected route if user exists", async () => {
+    useUserSpy.mockReturnValue({ user: { name: "John Doe" } } as ReturnType<
+      typeof useUser
+    >);
 
-  render(<TestRoutes />, { wrapper: Providers });
-  const protectedRoute = await screen.findByText(/protected/i);
+    render(<TestRoutes />, { wrapper: Providers });
+    const protectedRoute = await screen.findByText(/protected/i);
 
-  expect(protectedRoute).toBeInTheDocument();
-});
+    expect(protectedRoute).toBeInTheDocument();
+  });
 
-it("redirects if user doesn't exists", async () => {
-  useUserSpy.mockReturnValue({ user: null } as ReturnType<typeof useUser>);
+  it("redirects if user doesn't exists", async () => {
+    useUserSpy.mockReturnValue({} as ReturnType<typeof useUser>);
 
-  render(<TestRoutes />, { wrapper: Providers });
-  const protectedRoute = await screen.findByText(/main/i);
+    render(<TestRoutes />, { wrapper: Providers });
+    const nonProtectedRoute = await screen.findByText(/main/i);
 
-  expect(protectedRoute).toBeInTheDocument();
+    expect(nonProtectedRoute).toBeInTheDocument();
+  });
 });
