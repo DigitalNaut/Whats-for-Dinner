@@ -53,7 +53,7 @@ export default function Main() {
           </div>
         )}
         {resultHistory.map(({ timestamp, imageUrl, label }) => (
-          <Dish key={timestamp} imageUrl={imageUrl} label={label} />
+          <Dish key={timestamp} imageUrl={imageUrl || ""} label={label} />
         ))}
       </div>
 

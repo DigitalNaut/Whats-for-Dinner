@@ -7,14 +7,19 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+export type FileInfo = Partial<Pick<File, "name" | "size">> & {
+  url?: string;
+};
 type InputFileProps = {
   name: string;
   label?: string;
+  onChange?: (fileInfo: FileInfo) => void;
 } & Pick<InputHTMLAttributes<HTMLInputElement>, "required">;
 
 export default function InputFile({
   name,
   label = "Seleccionar",
+  onChange,
   ...props
 }: InputFileProps) {
   const [file, setFile] = useState<File>();
@@ -27,7 +32,11 @@ export default function InputFile({
     setFile(file);
 
     if (fileUrl) URL.revokeObjectURL(fileUrl);
-    setFileUrl(URL.createObjectURL(file));
+
+    const url = URL.createObjectURL(file);
+    setFileUrl(url);
+
+    onChange?.({ url, name: file?.name, size: file?.size });
   };
 
   const removeFileHandler = () => {

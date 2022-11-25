@@ -1,15 +1,18 @@
 import type { FormEventHandler, Reducer } from "react";
-import { useReducer } from "react";
+import { useState, useReducer, useRef } from "react";
 import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import type { FileInfo } from "src/components/InputFile";
 import ImagePreview from "src/components/ImagePreview";
 import InputFile from "src/components/InputFile";
 import InputText from "src/components/InputText";
-import Switcher from "src/components/Switcher";
+import Switcher, { SwitcherState } from "src/components/Switcher";
 import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
 import { useNavigate } from "react-router-dom";
 import { useHeader } from "src/hooks/HeaderContext";
+import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
+import Spinner from "src/components/Spinner";
 
 enum FormFields {
   DishName = "dishName",
@@ -24,7 +27,12 @@ enum StateActionType {
 enum ErrorActionType {
   FormError,
   InvalidImageURL,
+  InvalidImageFile,
   Reset,
+}
+enum UploadMode {
+  File,
+  URL,
 }
 
 type Action<ActionType> = {
@@ -58,6 +66,7 @@ const stateReducer: Reducer<
 const initialErrorState = {
   formError: "",
   invalidImageURL: "",
+  invalidImageFile: "",
 };
 const errorReducer: Reducer<
   typeof initialErrorState,
@@ -73,6 +82,9 @@ const errorReducer: Reducer<
     case ErrorActionType.InvalidImageURL:
       return { ...prevState, invalidImageURL: action.payload };
 
+    case ErrorActionType.InvalidImageFile:
+      return { ...prevState, invalidImageFile: action.payload };
+
     default:
       throw new Error("Invalid action type" + action.type);
   }
@@ -81,7 +93,13 @@ const errorReducer: Reducer<
 export default function AddItem() {
   const navigate = useNavigate();
   const { addMenuItem } = useSpinnerMenuContext();
+  const { uploadFile, hasScope } = useGoogleDrive();
 
+  const [uploadMode, setUploadMode] = useState<UploadMode>(UploadMode.File);
+  const [fileInfo, setFileInfo] = useState<FileInfo>();
+  const uploadController = useRef<AbortController>();
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number>();
   const [formState, formDispatch] = useReducer(stateReducer, initialFormState);
   const [errorState, errorDispatch] = useReducer(
     errorReducer,
@@ -90,7 +108,7 @@ export default function AddItem() {
 
   useHeader({
     title: "Crear",
-    backTo: "",
+    backTo: "menu",
   });
 
   // const resetForm = (form: HTMLFormElement) => {
@@ -98,26 +116,145 @@ export default function AddItem() {
   //   form.reset();
   // };
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault();
+  const uploadFileHandler = async (imageFileToUpload: File) => {
+    setIsUploadingFile(true);
 
-    const formData = new FormData(event.currentTarget);
+    if (!imageFileToUpload) {
+      errorDispatch({
+        type: ErrorActionType.InvalidImageFile,
+        payload: "No se ha seleccionado ninguna imagen",
+      });
+      return null;
+    }
 
-    const label = formData.get(FormFields.DishName)?.toString().trim();
-    const imageUrl = formData.get(FormFields.DishURL)?.toString().trim();
+    if (uploadController.current) uploadController.current.abort();
+    uploadController.current = new AbortController();
 
+    try {
+      const { data } = await uploadFile(
+        {
+          file: imageFileToUpload,
+          metadata: {
+            name: imageFileToUpload.name,
+            mimeType: imageFileToUpload.type,
+          },
+        },
+        {
+          signal: uploadController.current.signal,
+          onUploadProgress: ({ progress }) => setUploadProgress(progress),
+        }
+      );
+
+      if (data === false)
+        errorDispatch({
+          type: ErrorActionType.InvalidImageFile,
+          payload: "No se ha podido subir la imagen",
+        });
+      else if (data.error) {
+        errorDispatch({
+          type: ErrorActionType.InvalidImageFile,
+          payload: `Error ${data.error.code || "unknown"}: ${
+            data.error.message
+          }`,
+        });
+      } else return data.id;
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.name === "CanceledError") return Promise.reject(error);
+        errorDispatch({
+          type: ErrorActionType.InvalidImageFile,
+          payload: error.message,
+        });
+      } else {
+        errorDispatch({
+          type: ErrorActionType.InvalidImageFile,
+          payload: "Error desconocido",
+        });
+        console.error(error);
+      }
+    }
+    setIsUploadingFile(false);
+    return Promise.resolve(null);
+  };
+
+  const validateForm = (formData: FormData) => {
     if (errorState.invalidImageURL !== "") {
       errorDispatch({
         type: ErrorActionType.FormError,
         payload: errorState.invalidImageURL,
       });
-      return;
+      return null;
     }
 
-    if (label && imageUrl) {
+    const dishName = formData.get(FormFields.DishName)?.toString().trim();
+    const dishURL = formData.get(FormFields.DishURL)?.toString().trim();
+    const dishImage: File | null = formData.get(FormFields.DishImage) as File;
+
+    if (!dishName) {
+      errorDispatch({
+        type: ErrorActionType.FormError,
+        payload: "El nombre del plato no puede estar vacío",
+      });
+      return null;
+    }
+
+    if (uploadMode === UploadMode.URL && !dishURL) {
+      errorDispatch({
+        type: ErrorActionType.FormError,
+        payload: "Debes escribir una URL",
+      });
+      return null;
+    }
+
+    if (uploadMode === UploadMode.File && !dishImage) {
+      errorDispatch({
+        type: ErrorActionType.FormError,
+        payload: "Debes seleccionar una imagen",
+      });
+      return null;
+    }
+
+    return {
+      dishName,
+      dishURL,
+      dishImage,
+    };
+  };
+
+  const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const validation = validateForm(formData);
+
+    if (!validation) return;
+
+    const { dishName, dishURL, dishImage } = validation;
+
+    if (uploadMode === UploadMode.URL && dishURL) {
       addMenuItem({
-        label,
-        imageUrl,
+        label: dishName,
+        imageUrl: dishURL,
+        enabled: true,
+        key: Date.now(),
+      });
+      navigate("/menu");
+    }
+    if (uploadMode === UploadMode.File && dishImage) {
+      const imageId = await uploadFileHandler(dishImage);
+
+      if (!imageId) {
+        errorDispatch({
+          type: ErrorActionType.FormError,
+          payload: "No se ha podido subir la imagen",
+        });
+        return;
+      }
+
+      addMenuItem({
+        label: dishName,
+        fileId: imageId,
+        imageUrl: URL.createObjectURL(dishImage),
         enabled: true,
         key: Date.now(),
       });
@@ -128,6 +265,68 @@ export default function AddItem() {
         payload: "Por favor llena todos los campos: Nombre del platillo y URL",
       });
   };
+
+  if (!hasScope)
+    return (
+      <div className="flex h-full flex-col items-center justify-center">
+        <h1 className="text-center text-2xl font-bold">
+          No tienes permisos para subir imágenes
+        </h1>
+        <p className="text-center">
+          Puedes crear el plato sin imagen, pero no podrás subir una imagen
+          posteriormente
+        </p>
+      </div>
+    );
+
+  if (isUploadingFile)
+    return (
+      <div className="flex h-full flex-col items-center justify-center">
+        <div className="flex flex-col items-center gap-4 rounded-2xl bg-slate-200 p-6 text-slate-600">
+          <h2 className="w-full text-xl font-medium">Cargando archivo</h2>
+          <div className="relative h-32 w-32 overflow-hidden rounded-full">
+            {fileInfo && (
+              <img
+                src={fileInfo?.url}
+                alt={fileInfo?.name}
+                className="h-full w-full object-cover"
+              />
+            )}
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/50 text-white">
+              <span className="text-2xl font-black">
+                {uploadProgress
+                  ? `${(uploadProgress * 100).toFixed(1)}%`
+                  : "..."}
+              </span>
+              <span className="text-xs">
+                <Spinner />
+              </span>
+            </div>
+          </div>
+          {fileInfo && (
+            <div className="flex min-w-0 max-w-md flex-col flex-nowrap gap-0.5 overflow-hidden text-center">
+              <span className="w-full truncate">{fileInfo.name}</span>
+              {fileInfo.size ? (
+                <span className="text-xs"> {fileInfo.size * 0.001} KB</span>
+              ) : (
+                <span>Tamaño desconocido</span>
+              )}
+            </div>
+          )}
+          <div className="flex w-full justify-end">
+            <button
+              className="text-blue-700 hover:text-blue-800"
+              onClick={() => {
+                uploadController.current?.abort();
+                setIsUploadingFile(false);
+              }}
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
 
   return (
     <div className="flex flex-col gap-4 p-6">
@@ -159,13 +358,32 @@ export default function AddItem() {
         />
 
         <Switcher
-          initialState={true}
-          onChange={() =>
-            errorDispatch({ type: ErrorActionType.Reset, payload: "" })
-          }
-          labels={["Imagen", "URL"]}
+          initialState={SwitcherState.FirstOption}
+          onChange={(state) => {
+            errorDispatch({ type: ErrorActionType.Reset, payload: "" });
+
+            switch (state) {
+              case SwitcherState.FirstOption:
+                setUploadMode(UploadMode.File);
+                return UploadMode.File;
+              case SwitcherState.SecondOption:
+                setUploadMode(UploadMode.URL);
+                return UploadMode.URL;
+              default:
+                throw new Error("Invalid upload mode");
+            }
+          }}
+          labels={["Subir imagen", "Asociar URL"]}
           renders={{
-            firstOption: <InputFile required name={FormFields.DishImage} />,
+            firstOption: (
+              <InputFile
+                required
+                name={FormFields.DishImage}
+                onChange={(info) => {
+                  setFileInfo(info);
+                }}
+              />
+            ),
             secondOption: (
               <>
                 <InputText

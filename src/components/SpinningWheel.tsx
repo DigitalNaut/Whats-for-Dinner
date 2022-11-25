@@ -4,13 +4,14 @@ import SpinnerIcon from "src/components/Spinner";
 import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
 
 import { ReactComponent as Arrow } from "src/assets/wedge.svg";
-
 export type SpinnerOption = {
   label: string;
   enabled: boolean;
-  imageUrl: string;
+  imageUrl?: string;
+  fileId?: string;
   key: number;
 };
+
 type SpinningWheelProps = {
   choices?: SpinnerOption[];
   onSpinEnd?: (result: SpinnerOption) => void;
