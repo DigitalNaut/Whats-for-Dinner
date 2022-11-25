@@ -4,16 +4,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 
 import { useHeaderContext } from "src/hooks/HeaderContext";
+import { useUser } from "src/hooks/UserContext";
 
 import { ReactComponent as Chopsticks } from "src/assets/chopsticks.svg";
 
 export function TitleHeader({ children }: PropsWithChildren) {
+  const { UserCard } = useUser();
+
   return (
-    <header className="flex flex-col pb-6">
+    <header className="relative flex flex-col pb-6">
+      <div className="absolute -top-2 right-2">
+        <UserCard />
+      </div>
       <h1 className="text-center font-bangers text-4xl [text-shadow:1px_2px_0px_rgba(245,158,11,1)] sm:text-5xl md:text-6xl">
         {children}
       </h1>
-
       <Chopsticks className="w-full" />
     </header>
   );
@@ -23,6 +28,7 @@ export function MenuHeader() {
   const navigate = useNavigate();
   const { headerProperties, menuButton } = useHeaderContext();
   const { backTo, title, altBackButton, altColor } = headerProperties;
+  const { UserCard } = useUser();
 
   return (
     <div
@@ -42,6 +48,7 @@ export function MenuHeader() {
       )}
       <span className="flex-1">{title}</span>
       {menuButton}
+      <UserCard />
     </div>
   );
 }
