@@ -276,8 +276,6 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         const deleted = await deleteImage(item);
 
         if (!deleted) throw new Error("No se pudo borrar la imagen");
-
-        console.log("Deleted image", item.fileId);
       } catch (error) {
         console.error(error);
       }

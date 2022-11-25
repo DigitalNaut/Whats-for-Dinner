@@ -7,6 +7,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import Spinner from "src/components/Spinner";
+
 export type FileInfo = Partial<Pick<File, "name" | "size">> & {
   url?: string;
 };
@@ -16,6 +18,66 @@ type InputFileProps = {
   onChange?: (fileInfo: FileInfo) => void;
 } & Pick<InputHTMLAttributes<HTMLInputElement>, "required">;
 
+function resizeImage(
+  file: File,
+  { maxWidth, maxHeight }: { maxWidth: number; maxHeight: number }
+) {
+  return new Promise((resolve: (value: File) => void, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = maxWidth;
+        canvas.height = maxHeight;
+        const ctx = canvas.getContext("2d");
+
+        if (!ctx) {
+          reject("Could not obtain canvas context");
+        } else {
+          const ratio = Math.max(maxWidth / img.width, maxHeight / img.height);
+          const width = img.width * ratio;
+          const height = img.height * ratio;
+          const xOffset = (maxWidth - width) / 2;
+          const yOffset = (maxHeight - height) / 2;
+
+          ctx.drawImage(
+            img,
+            0,
+            0,
+            img.width,
+            img.height,
+            width > maxWidth ? xOffset : 0,
+            height > maxHeight ? yOffset : 0,
+            width,
+            height
+          );
+
+          ctx.canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const newFile = new File([blob], file.name, {
+                  type: "image/jpeg",
+                  lastModified: Date.now(),
+                });
+                resolve(newFile);
+              } else {
+                reject("Could not obtain blob");
+              }
+            },
+            "image/png",
+            1
+          );
+        }
+      };
+      img.onerror = (error) => reject(error);
+      img.src = event.target?.result as string;
+    };
+    reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function InputFile({
   name,
   label = "Seleccionar",
@@ -24,19 +86,32 @@ export default function InputFile({
 }: InputFileProps) {
   const [file, setFile] = useState<File>();
   const [fileUrl, setFileUrl] = useState<string>();
+  const [isResizing, setIsResizing] = useState(false);
   const labelRef = createRef<HTMLDivElement>();
   const inputRef = createRef<HTMLInputElement>();
 
-  const onChangeHandler: ChangeEventHandler<HTMLInputElement> = (event) => {
+  const onChangeHandler: ChangeEventHandler<HTMLInputElement> = async (
+    event
+  ) => {
     const [file] = event.target.files || [];
-    setFile(file);
+
+    if (!file) return;
+
+    setIsResizing(true);
+    const resizedImage = await resizeImage(file, {
+      maxWidth: 256,
+      maxHeight: 256,
+    });
+    setIsResizing(false);
+
+    setFile(resizedImage);
 
     if (fileUrl) URL.revokeObjectURL(fileUrl);
 
-    const url = URL.createObjectURL(file);
+    const url = URL.createObjectURL(resizedImage);
     setFileUrl(url);
 
-    onChange?.({ url, name: file?.name, size: file?.size });
+    onChange?.({ url, name: resizedImage?.name, size: resizedImage?.size });
   };
 
   const removeFileHandler = () => {
@@ -90,15 +165,24 @@ export default function InputFile({
               htmlFor={name}
               className="flex h-full w-full cursor-pointer flex-col items-center justify-center gap-2"
             >
-              <FontAwesomeIcon
-                icon={faImage}
-                className="h-6 w-6 group-hover:hidden"
-              />
-              <FontAwesomeIcon
-                icon={faCloudUpload}
-                className="hidden h-6 w-6 group-hover:block"
-              />
-              <span className="text-sm">{label}</span>
+              {isResizing ? (
+                <>
+                  <Spinner text="" />
+                  <span className="text-sm">Procesando...</span>
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon
+                    icon={faImage}
+                    className="h-6 w-6 group-hover:hidden"
+                  />
+                  <FontAwesomeIcon
+                    icon={faCloudUpload}
+                    className="hidden h-6 w-6 group-hover:block"
+                  />
+                  <span className="text-sm">{label}</span>
+                </>
+              )}
             </label>
           )}
         </div>
