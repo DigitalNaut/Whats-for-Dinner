@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useHeader } from "src/hooks/HeaderContext";
 import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
 import Spinner from "src/components/Spinner";
+import Kilobytes from "src/components/Kilobytes";
 
 enum FormFields {
   DishName = "dishName",
@@ -307,7 +308,7 @@ export default function AddItem() {
             <div className="flex min-w-0 max-w-md flex-col flex-nowrap gap-0.5 overflow-hidden text-center">
               <span className="w-full truncate">{fileInfo.name}</span>
               {fileInfo.size ? (
-                <span className="text-xs"> {fileInfo.size * 0.001} KB</span>
+                <Kilobytes className="text-xs" value={fileInfo.size} />
               ) : (
                 <span>Tamaño desconocido</span>
               )}

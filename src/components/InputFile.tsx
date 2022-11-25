@@ -8,6 +8,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Spinner from "src/components/Spinner";
+import Kilobytes from "src/components/Kilobytes";
 
 export type FileInfo = Partial<Pick<File, "name" | "size">> & {
   url?: string;
@@ -190,7 +191,7 @@ export default function InputFile({
           <div className="flex max-w-[70%] items-center gap-4 overflow-hidden text-ellipsis p-2">
             <div className="flex min-w-0 max-w-full flex-col flex-nowrap gap-0.5">
               <span className="w-full truncate">{file.name}</span>
-              <span className="text-xs">{file.size * 0.001} KB</span>
+              <Kilobytes className="text-xs" value={file.size} />
             </div>
             <button
               className="w-fit max-w-xs"
