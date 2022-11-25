@@ -13,7 +13,6 @@ import NotFound from "src/pages/NotFound";
 import EditMenu from "src/pages/EditMenu";
 import AddItem from "src/pages/AddItem";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
-import { useUser } from "src/hooks/UserContext";
 import { MainLayout, MenuLayout } from "src/components/Layouts";
 import { GoogleDriveProvider } from "src/hooks/GoogleDriveContext";
 import { SpinnerMenuContextProvider } from "src/hooks/SpinnerMenuContext";
@@ -65,12 +64,5 @@ const router = createBrowserRouter(
 );
 
 export default function App() {
-  const { UserCard } = useUser();
-
-  return (
-    <>
-      <UserCard />
-      <RouterProvider router={router} />
-    </>
-  );
+  return <RouterProvider router={router} />;
 }

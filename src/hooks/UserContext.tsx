@@ -87,36 +87,45 @@ export function UserProvider({ children }: PropsWithChildren) {
     const { picture, name, email } = user;
 
     return (
-      <div
-        className="group fixed right-2 top-2 z-50 flex cursor-pointer 
-          focus-within:gap-4 focus-within:rounded-md focus-within:bg-white focus-within:p-4 focus-within:text-black
-          hover:gap-4 hover:rounded-md hover:bg-white hover:p-4 hover:text-black"
-      >
-        <a
-          className="flex items-center group-focus-within:gap-2 group-hover:gap-2"
-          href="https://drive.google.com/drive/settings"
-          target="_blank"
-          rel="noreferrer"
-          title="Abrir preferencias de Google Drive"
+      <div className="group relative w-fit lg:fixed lg:right-2 lg:top-2">
+        <img
+          src={picture}
+          alt="User avatar"
+          width={32}
+          height={32}
+          className="h-8 w-8 rounded-full"
+        />
+        <div
+          className="absolute right-0 top-0 z-50 flex cursor-pointer 
+            focus-within:gap-4 focus-within:rounded-md focus-within:bg-white focus-within:p-4 focus-within:text-black
+            group-hover:gap-4 group-hover:rounded-md group-hover:bg-white group-hover:p-4 group-hover:text-black"
         >
-          <img
-            src={picture}
-            alt="User avatar"
-            width={32}
-            height={32}
-            className="h-8 w-8 rounded-full"
-          />
-          <div>
-            <div className="hidden text-sm font-medium group-focus-within:block group-hover:block">
-              {name}
+          <a
+            className="flex items-center group-focus-within:gap-2 group-hover:gap-2"
+            href="https://drive.google.com/drive/settings"
+            target="_blank"
+            rel="noreferrer"
+            title="Abrir preferencias de Google Drive"
+          >
+            <img
+              src={picture}
+              alt="User avatar"
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-full"
+            />
+            <div>
+              <div className="hidden text-sm font-medium group-focus-within:block group-hover:block">
+                {name}
+              </div>
+              <div className="hidden text-xs group-focus-within:block group-hover:block">
+                {email}
+              </div>
             </div>
-            <div className="hidden text-xs group-focus-within:block group-hover:block">
-              {email}
-            </div>
+          </a>
+          <div className="ml-6 hidden flex-col group-focus-within:flex group-hover:flex">
+            <LogoutButton />
           </div>
-        </a>
-        <div className="hidden flex-col group-focus-within:flex group-hover:flex">
-          <LogoutButton />
         </div>
       </div>
     );
