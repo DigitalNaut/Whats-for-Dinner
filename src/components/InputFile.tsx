@@ -12,6 +12,7 @@ import Kilobytes from "src/components/Kilobytes";
 
 export type FileInfo = Partial<Pick<File, "name" | "size">> & {
   url?: string;
+  file?: File;
 };
 type InputFileProps = {
   name: string;
@@ -58,7 +59,7 @@ function resizeImage(
             (blob) => {
               if (blob) {
                 const newFile = new File([blob], file.name, {
-                  type: "image/jpeg",
+                  type: "image/png",
                   lastModified: Date.now(),
                 });
                 resolve(newFile);
@@ -94,7 +95,7 @@ export default function InputFile({
   const onChangeHandler: ChangeEventHandler<HTMLInputElement> = async (
     event
   ) => {
-    const [file] = event.target.files || [];
+    const file = event.target.files?.item(0);
 
     if (!file) return;
 
@@ -104,15 +105,18 @@ export default function InputFile({
       maxHeight: 256,
     });
     setIsResizing(false);
-
     setFile(resizedImage);
 
     if (fileUrl) URL.revokeObjectURL(fileUrl);
 
     const url = URL.createObjectURL(resizedImage);
     setFileUrl(url);
-
-    onChange?.({ url, name: resizedImage?.name, size: resizedImage?.size });
+    onChange?.({
+      url,
+      name: resizedImage?.name,
+      size: resizedImage?.size,
+      file: resizedImage,
+    });
   };
 
   const removeFileHandler = () => {
@@ -129,7 +133,6 @@ export default function InputFile({
           className="peer pointer-events-none absolute inset-1/2 h-0 w-0 overflow-hidden opacity-0"
           style={{ padding: 0 }}
           id={name}
-          name={name}
           ref={inputRef}
           type="file"
           onChange={onChangeHandler}

@@ -226,6 +226,7 @@ export default function AddItem() {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
+    if (fileInfo?.file) formData.append(FormFields.DishImage, fileInfo.file);
     const validation = validateForm(formData);
 
     if (!validation) return;
@@ -369,6 +370,8 @@ export default function AddItem() {
                 return UploadMode.File;
               case SwitcherState.SecondOption:
                 setUploadMode(UploadMode.URL);
+                fileInfo?.url && URL.revokeObjectURL(fileInfo.url);
+                setFileInfo(undefined);
                 return UploadMode.URL;
               default:
                 throw new Error("Invalid upload mode");
