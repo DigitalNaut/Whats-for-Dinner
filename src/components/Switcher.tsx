@@ -1,13 +1,16 @@
 import { useState } from "react";
-
+export enum SwitcherState {
+  FirstOption,
+  SecondOption,
+}
 type SwitcherProps = {
   labels: [string, string];
   renders: {
     firstOption: JSX.Element;
     secondOption: JSX.Element;
   };
-  initialState: boolean;
-  onChange: (value: boolean) => void;
+  initialState: SwitcherState;
+  onChange: (value: SwitcherState) => void;
 };
 
 export default function Switcher({
@@ -23,16 +26,18 @@ export default function Switcher({
 
   return (
     <>
-      <div className="m-auto w-fit cursor-pointer select-none rounded-full bg-slate-500">
+      <div className="m-auto w-fit cursor-pointer select-none rounded-full bg-slate-600 text-slate-400">
         <button
           type="button"
           className={`box-content inline-block rounded-full px-2 py-1 text-center ${
-            state ? "bg-slate-400" : ""
+            state === SwitcherState.FirstOption
+              ? "bg-slate-300 text-slate-600"
+              : ""
           }`}
           style={{ width: largestLabel + "ch" }}
           onClick={() => {
-            setState(true);
-            onChange(true);
+            setState(SwitcherState.FirstOption);
+            onChange(SwitcherState.FirstOption);
           }}
         >
           {firstLabel}
@@ -40,18 +45,20 @@ export default function Switcher({
         <button
           type="button"
           className={`box-content inline-block rounded-full px-2 py-1 text-center ${
-            state ? "" : "bg-slate-400"
+            state === SwitcherState.SecondOption
+              ? "bg-slate-300 text-slate-600"
+              : ""
           }`}
           style={{ width: largestLabel + "ch" }}
           onClick={() => {
-            setState(false);
-            onChange(false);
+            setState(SwitcherState.SecondOption);
+            onChange(SwitcherState.SecondOption);
           }}
         >
           {secondLabel}
         </button>
       </div>
-      {state ? firstOption : secondOption}
+      {state === SwitcherState.FirstOption ? firstOption : secondOption}
     </>
   );
 }

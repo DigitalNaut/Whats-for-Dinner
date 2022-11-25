@@ -32,6 +32,7 @@ export function MenuHeader() {
     >
       {altBackButton ?? (
         <button
+          aria-label="Atrás"
           onClick={() => {
             backTo ? navigate(backTo) : navigate(-1);
           }}

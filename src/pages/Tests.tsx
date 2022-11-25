@@ -42,15 +42,13 @@ function Tests() {
           </div>
         </div>
 
-        {/* <InputText name="dish-name" label="Nombre del platillo" />
-        <InputFile name="dish-image" label="Imagen del platillo" /> */}
         <button data-filled className="w-full">
           Añadir
         </button>
       </form>
 
       <Floating>
-        <Link to="/menu">
+        <Link to="/menu" tabIndex={-1}>
           <button data-filled className="flex items-center gap-1">
             <FontAwesomeIcon icon={faEdit} />
             <span>Editar menú</span>

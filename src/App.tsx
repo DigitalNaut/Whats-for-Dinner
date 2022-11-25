@@ -17,7 +17,7 @@ import { useUser } from "src/hooks/UserContext";
 import { MainLayout, MenuLayout } from "src/components/Layouts";
 import { GoogleDriveProvider } from "src/hooks/GoogleDriveContext";
 import { SpinnerMenuContextProvider } from "src/hooks/SpinnerMenuContext";
-import { MenuHeader, TitleHeader } from "src/components/Header";
+import { MenuHeader, TitleHeader } from "src/components/Headers";
 
 // TODO: Remove
 // import Tests from "src/pages/Tests";
@@ -41,7 +41,7 @@ const router = createBrowserRouter(
         element={
           <GoogleDriveProvider>
             <SpinnerMenuContextProvider>
-              <ProtectedRoutes />
+              <ProtectedRoutes redirectTo="/" />
             </SpinnerMenuContextProvider>
           </GoogleDriveProvider>
         }

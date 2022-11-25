@@ -1,14 +1,20 @@
-import { createRef, useCallback, useEffect, useRef, useState } from "react";
+import { createRef, useEffect, useRef, useState } from "react";
 
 import SpinnerIcon from "src/components/Spinner";
 import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
 
 import { ReactComponent as Arrow } from "src/assets/wedge.svg";
-
 export type SpinnerOption = {
   label: string;
   enabled: boolean;
-  imageUrl: string;
+  imageUrl?: string;
+  fileId?: string;
+  key: number;
+};
+
+type SpinningWheelProps = {
+  choices?: SpinnerOption[];
+  onSpinEnd?: (result: SpinnerOption) => void;
 };
 
 const TAU = 2 * Math.PI;
@@ -193,7 +199,7 @@ class Spinner {
     offscreenContext.fill();
   }
 
-  draw(currentChoice?: number, velocity = 0) {
+  draw(currentChoiceIndex?: number, velocity = 0) {
     if (velocity < 0.1)
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     else this.context.globalAlpha = 1 / (1 + velocity * 5);
@@ -216,7 +222,7 @@ class Spinner {
         label,
         this.radius * 0.75,
         angle,
-        index === currentChoice
+        index === currentChoiceIndex
       );
     });
 
@@ -233,22 +239,19 @@ class Spinner {
     this.cyclingIndex = (this.cyclingIndex + 1) % this.choices.length;
   }
 
-  update() {
-    const currentOption = Math.floor(
+  getCurrentOptionIndex() {
+    const index = Math.floor(
       (((Math.PI * 3 - this.spinAngle) % TAU) / TAU) * this.maxChoices
     );
-    if (
-      this.choices.length > this.wedges.length &&
-      currentOption !== this.prevResult
-    ) {
+    if (this.choices.length > this.wedges.length && index !== this.prevResult) {
       // Calculate the choice at the opposite end of the wheel
-      this.prevResult = currentOption;
+      this.prevResult = index;
       const insertIndex =
-        (currentOption + Math.floor(this.maxChoices * 0.5)) % this.maxChoices;
+        (index + Math.floor(this.maxChoices * 0.5)) % this.maxChoices;
       this.cycleChoices(insertIndex);
     }
 
-    return currentOption;
+    return index;
   }
 
   spin(
@@ -258,9 +261,11 @@ class Spinner {
   ) {
     this.spinAngle = (this.spinAngle + velocity) % TAU;
 
-    const currentOption = this.update();
-    if (velocity < 0.1) onUpdate?.(this.cyclingChoices[currentOption]);
-    this.draw(currentOption, velocity);
+    const currentOptionIndex = this.getCurrentOptionIndex();
+    const result = this.cyclingChoices[currentOptionIndex];
+
+    if (velocity < 0.1) onUpdate?.(result);
+    this.draw(currentOptionIndex, velocity);
 
     velocity = velocity < 0.005 ? 0 : velocity * 0.99;
 
@@ -269,16 +274,11 @@ class Spinner {
         this.spin(velocity, onUpdate, onSpinEnd);
       } else {
         cancelAnimationFrame(animation);
-        onSpinEnd?.(this.cyclingChoices[currentOption]);
+        onSpinEnd?.(result);
       }
     });
   }
 }
-
-type SpinningWheelProps = {
-  choices?: SpinnerOption[];
-  onSpinEnd?: (result: SpinnerOption) => void;
-};
 
 export default function SpinningWheel({
   choices,
@@ -291,23 +291,24 @@ export default function SpinningWheel({
   const [result, setResult] = useState<SpinnerOption>();
   const cannotSpin = isSpinning || (choices && choices.length <= 0);
 
-  const setupSpinner = useCallback(() => {
-    if (!canvasRef.current) return;
-
-    const { width, height } = canvasRef.current;
+  const setupSpinner = (
+    canvas: HTMLCanvasElement,
+    choices: SpinnerOption[]
+  ) => {
+    const { width, height } = canvas;
     wheelRef.current = new Spinner(
-      canvasRef.current,
+      canvas,
       {
         x: width * 0.5,
         y: height * 0.5,
       },
       200,
       3,
-      choices || []
+      choices
     );
 
     wheelRef.current.draw();
-  }, [canvasRef, choices]);
+  };
 
   function randomVelocity(base: number, range: number) {
     return ((Math.random() * range + base) * Math.PI) / 180;
@@ -326,7 +327,12 @@ export default function SpinningWheel({
     });
   };
 
-  useEffect(setupSpinner, [choices, setupSpinner]);
+  useEffect(() => {
+    if (canvasRef.current) setupSpinner(canvasRef.current, choices || []);
+    // The canvasRef is never going to change
+    // Including it in the dependency array causes unnecessary re-renders & resets the spinner
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [choices]);
 
   return (
     <div className="w-full">
@@ -351,7 +357,7 @@ export default function SpinningWheel({
           height="400"
         />
         <button
-          className="absolute inset-x-1/2 bottom-2 h-fit -translate-x-1/2 -translate-y-1/2 cursor-pointer whitespace-nowrap rounded-full bg-red-700 px-4 py-2 font-bangers text-2xl hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-400"
+          className="absolute inset-x-1/2 bottom-2 h-fit w-fit -translate-x-1/2 -translate-y-1/2 cursor-pointer whitespace-nowrap rounded-full bg-red-700 px-4 py-2 font-bangers text-2xl hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-400"
           disabled={cannotSpin}
           onClick={spinTheWheel}
         >

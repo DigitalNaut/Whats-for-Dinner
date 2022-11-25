@@ -10,7 +10,9 @@ import Floating from "src/components/Floating";
 
 const maxHistory = 20;
 
-function Dish({ label, imageUrl }: { label: string; imageUrl: string }) {
+type DishProps = { label: string; imageUrl: string };
+
+function Dish({ label, imageUrl }: DishProps) {
   return (
     <div className="group">
       <div className="relative aspect-square w-16 overflow-hidden rounded-lg bg-gray-700 md:w-24 lg:w-28">
@@ -27,23 +29,22 @@ function Dish({ label, imageUrl }: { label: string; imageUrl: string }) {
   );
 }
 
+type HistoryItem = SpinnerOption & { timestamp: number };
+
 export default function Main() {
   const { enabledMenuItems } = useSpinnerMenuContext();
-  const [resultHistory, setResultHistory] = useState<
-    (SpinnerOption & { timestamp: string })[]
-  >([]);
+  const [resultHistory, setResultHistory] = useState<HistoryItem[]>([]);
+
+  const handleSpinEnd = (result: SpinnerOption) => {
+    setResultHistory((currentHistory) => [
+      { ...result, timestamp: Date.now() },
+      ...currentHistory.slice(0, maxHistory - 1),
+    ]);
+  };
 
   return (
     <div className="flex w-full flex-col gap-8">
-      <SpinningWheel
-        choices={enabledMenuItems}
-        onSpinEnd={(result) => {
-          setResultHistory((currentHistory) => [
-            { ...result, timestamp: Date() },
-            ...currentHistory.slice(0, maxHistory - 1),
-          ]);
-        }}
-      />
+      <SpinningWheel choices={enabledMenuItems} onSpinEnd={handleSpinEnd} />
 
       <div className="flex min-w-full gap-4 overflow-x-auto rounded-md bg-slate-700 p-2 shadow-xl">
         {resultHistory.length === 0 && (
@@ -51,13 +52,13 @@ export default function Main() {
             Sin historial
           </div>
         )}
-        {resultHistory.map((dish) => (
-          <Dish key={dish.timestamp} {...dish} />
+        {resultHistory.map(({ timestamp, imageUrl, label }) => (
+          <Dish key={timestamp} imageUrl={imageUrl || ""} label={label} />
         ))}
       </div>
 
       <Floating>
-        <Link to="/menu">
+        <Link to="/menu" tabIndex={-1}>
           <button data-filled className="flex items-center gap-1">
             <FontAwesomeIcon icon={faEdit} />
             <span>Editar menú</span>

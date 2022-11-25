@@ -7,8 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
   faCheckDouble,
-  faCircleMinus,
-  faCirclePlus,
+  faMinus,
   faPlus,
   faTimes,
   faTrash,
@@ -39,8 +38,8 @@ export default function EditMenu() {
   const setAllSelections = useCallback(
     (value = true) => {
       const newSelected = new Map(selected);
-      allMenuItems?.forEach((item, index) =>
-        newSelected.set(item.label, { isSelected: value, index })
+      allMenuItems?.forEach(({ label }, index) =>
+        newSelected.set(label, { isSelected: value, index })
       );
       setSelected(newSelected);
     },
@@ -94,7 +93,7 @@ export default function EditMenu() {
 
   const { menu, menuRef } = useMemo(
     () =>
-      createMenu((MenuItem) => (
+      createMenu((MenuItem, MenuSeparator) => (
         <>
           {showSelectionOptions || (
             <MenuItem
@@ -117,7 +116,7 @@ export default function EditMenu() {
           </MenuItem>
 
           {showSelectionOptions && (
-            <MenuItem onClick={deleteSelections}>
+            <MenuItem className="text-red-900" onClick={deleteSelections}>
               <FontAwesomeIcon icon={faTrash} />
               <span>Eliminar</span>
             </MenuItem>
@@ -125,6 +124,7 @@ export default function EditMenu() {
 
           {showSelectionOptions || (
             <>
+              <MenuSeparator />
               <MenuItem
                 onClick={() => {
                   allMenuItems &&
@@ -134,7 +134,7 @@ export default function EditMenu() {
                     );
                 }}
               >
-                <FontAwesomeIcon icon={faCirclePlus} />
+                <FontAwesomeIcon icon={faPlus} />
                 <span>Activar todos</span>
               </MenuItem>
               <MenuItem
@@ -146,7 +146,7 @@ export default function EditMenu() {
                     );
                 }}
               >
-                <FontAwesomeIcon icon={faCircleMinus} />
+                <FontAwesomeIcon icon={faMinus} />
                 <span>Desactivar todos</span>
               </MenuItem>
             </>
@@ -168,8 +168,8 @@ export default function EditMenu() {
 
     setSelected(
       new Map(
-        allMenuItems?.map((item, index) => [
-          item.label,
+        allMenuItems?.map(({ label }, index) => [
+          label,
           { isSelected: false, index },
         ]) ?? []
       )
@@ -184,6 +184,7 @@ export default function EditMenu() {
   useHeader({
     title: "Editar menú",
     backTo: "/main",
+    showMenuButton: true,
   });
 
   if (!isLoaded)
@@ -199,30 +200,30 @@ export default function EditMenu() {
       {menuPortal}
       <div className="flex flex-col gap-4">
         {allMenuItems &&
-          allMenuItems.map((item, index) => (
-            <div key={item.label} className="flex items-center gap-2">
+          allMenuItems.map(({ label, imageUrl, key, enabled }, index) => (
+            <div key={key} className="flex items-center gap-2">
               <img
                 className="h-10 w-10 rounded-lg object-cover"
-                src={item.imageUrl}
-                alt={item.label}
+                src={imageUrl}
+                alt={label}
               />
-              <p className="flex-1">{item.label}</p>
+              <p className="flex-1">{label}</p>
               {mode === Modes.Toggle ? (
                 <Toggle
-                  checked={item.enabled}
+                  checked={enabled}
                   onChange={(value) => toggleMenuItems([index], value)}
                 />
               ) : (
                 <Checkbox
                   className="h-6 w-6 rounded-sm border-2 border-purple-400 checked:border-none checked:bg-purple-400 focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-700"
-                  checked={selected.get(item.label)?.isSelected}
+                  checked={selected.get(label)?.isSelected}
                   onChange={() => {
                     const newSelected = new Map(selected);
-                    const values = newSelected.get(item.label);
+                    const values = newSelected.get(label);
 
                     if (!values) return;
 
-                    newSelected.set(item.label, {
+                    newSelected.set(label, {
                       index: values.index,
                       isSelected: !values.isSelected,
                     });
@@ -235,7 +236,7 @@ export default function EditMenu() {
           ))}
       </div>
       <Floating>
-        <Link to="/addItem">
+        <Link to="/addItem" tabIndex={-1}>
           <button data-filled className="flex items-center gap-1">
             <FontAwesomeIcon icon={faPlus} />
             <span>Añadir</span>

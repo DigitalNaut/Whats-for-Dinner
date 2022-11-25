@@ -7,27 +7,42 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-type InputFileProps = Pick<
-  InputHTMLAttributes<HTMLInputElement>,
-  "required" | "name"
->;
+export type FileInfo = Partial<Pick<File, "name" | "size">> & {
+  url?: string;
+};
+type InputFileProps = {
+  name: string;
+  label?: string;
+  onChange?: (fileInfo: FileInfo) => void;
+} & Pick<InputHTMLAttributes<HTMLInputElement>, "required">;
 
-function InputFile({ name, ...props }: InputFileProps) {
+export default function InputFile({
+  name,
+  label = "Seleccionar",
+  onChange,
+  ...props
+}: InputFileProps) {
   const [file, setFile] = useState<File>();
   const [fileUrl, setFileUrl] = useState<string>();
   const labelRef = createRef<HTMLDivElement>();
+  const inputRef = createRef<HTMLInputElement>();
 
   const onChangeHandler: ChangeEventHandler<HTMLInputElement> = (event) => {
     const [file] = event.target.files || [];
     setFile(file);
 
     if (fileUrl) URL.revokeObjectURL(fileUrl);
-    setFileUrl(URL.createObjectURL(file));
+
+    const url = URL.createObjectURL(file);
+    setFileUrl(url);
+
+    onChange?.({ url, name: file?.name, size: file?.size });
   };
 
   const removeFileHandler = () => {
     setFile(undefined);
     setFileUrl(undefined);
+    if (inputRef.current) inputRef.current.value = "";
   };
 
   return (
@@ -35,13 +50,14 @@ function InputFile({ name, ...props }: InputFileProps) {
       <div className="flex flex-col items-center gap-2">
         <input
           data-filled
+          className="peer pointer-events-none absolute inset-1/2 h-0 w-0 overflow-hidden opacity-0"
+          style={{ padding: 0 }}
           id={name}
           name={name}
+          ref={inputRef}
           type="file"
           onChange={onChangeHandler}
           accept="image/png, image/jpeg, image/webp"
-          className="peer pointer-events-none absolute inset-1/2 h-0 w-0 overflow-hidden opacity-0"
-          style={{ padding: 0 }}
           {...props}
         />
         <div
@@ -55,18 +71,18 @@ function InputFile({ name, ...props }: InputFileProps) {
             <div className="group">
               <div className="absolute h-full w-full">
                 <img
-                  src={file ? fileUrl : ""}
+                  src={fileUrl}
                   alt={file?.name}
                   className="h-full w-full object-cover"
                 />
               </div>
               <button
-                role="button"
                 className="absolute hidden h-full w-full flex-col items-center justify-center gap-2 bg-black/50 group-hover:flex"
+                role="button"
                 onClick={removeFileHandler}
               >
                 <FontAwesomeIcon icon={faTimes} className="h-6 w-6" />
-                <span className="text-sm">Remover</span>
+                <span className="text-sm">Eliminar</span>
               </button>
             </div>
           ) : (
@@ -82,7 +98,7 @@ function InputFile({ name, ...props }: InputFileProps) {
                 icon={faCloudUpload}
                 className="hidden h-6 w-6 group-hover:block"
               />
-              <span className="text-sm">Seleccionar</span>
+              <span className="text-sm">{label}</span>
             </label>
           )}
         </div>
@@ -90,12 +106,13 @@ function InputFile({ name, ...props }: InputFileProps) {
           <div className="flex max-w-[70%] items-center gap-4 overflow-hidden text-ellipsis p-2">
             <div className="flex min-w-0 max-w-full flex-col flex-nowrap gap-0.5">
               <span className="w-full truncate">{file.name}</span>
-              <span className="text-xs">{file.size * 0.001} kb</span>
+              <span className="text-xs">{file.size * 0.001} KB</span>
             </div>
             <button
-              data-filled
-              role="button"
               className="w-fit max-w-xs"
+              data-filled
+              aria-label="Eliminar"
+              role="button"
               onClick={removeFileHandler}
             >
               <FontAwesomeIcon icon={faTimes} />
@@ -110,5 +127,3 @@ function InputFile({ name, ...props }: InputFileProps) {
     </>
   );
 }
-
-export default InputFile;

@@ -49,6 +49,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     fetchList,
     uploadFile,
     updateFile,
+    deleteFile,
     isLoaded: isDriveLoaded,
   } = useGoogleDrive();
   const [menuItems, setMenuItems] = useState<SpinnerOption[]>();
@@ -93,9 +94,21 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
       try {
         if (!configFileId) throw new Error("No config file ID");
 
+        // Remove local image blob urls if the image has a file ID
+        const contentsWithoutBlobs = contents.map((item) => {
+          const { fileId, imageUrl } = item;
+          return {
+            ...item,
+            imageUrl: fileId ? undefined : imageUrl,
+          };
+        });
+
         await updateFile({
           id: configFileId,
-          file: new File([JSON.stringify(contents)], CONFIG_FILE_NAME),
+          file: new File(
+            [JSON.stringify(contentsWithoutBlobs)],
+            CONFIG_FILE_NAME
+          ),
           metadata: {
             name: CONFIG_FILE_NAME,
             mimeType: "application/json",
@@ -111,6 +124,38 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     [configFileId, updateFile]
   );
 
+  const getImage = useCallback(
+    async (item: SpinnerOption) => {
+      try {
+        const { data, statusText } = await fetchFile<"blob">(
+          { id: item.fileId },
+          { responseType: "blob" }
+        );
+
+        if (statusText !== "OK" || !data) throw new Error(statusText);
+        if (!(data instanceof Blob)) throw new Error("Data is not a blob");
+
+        const url = URL.createObjectURL(data);
+
+        return url;
+      } catch (error) {
+        return "https://via.placeholder.com/256";
+      }
+    },
+    [fetchFile]
+  );
+
+  const deleteImage = async (item: SpinnerOption) => {
+    try {
+      if (!item.fileId) return false;
+
+      return await deleteFile({ id: item.fileId });
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
+
   const getConfigOrCreate = useCallback(
     async (signal: AbortSignal) => {
       try {
@@ -124,7 +169,25 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
           });
 
           // Set the menu items
-          if (config && Array.isArray(config)) setMenuItems(config);
+          if (config && Array.isArray(config)) {
+            const menuArray = config as SpinnerOption[];
+
+            menuArray.forEach(async (item) => {
+              if (!item.fileId) return;
+
+              const url = await getImage(item);
+
+              setMenuItems((prev) => {
+                if (!prev) return prev;
+                const newMenu = [...prev];
+                const index = newMenu.findIndex((i) => i.key === item.key);
+                newMenu[index].imageUrl = url;
+                return newMenu;
+              });
+            });
+
+            setMenuItems(config);
+          }
         } else createConfigFile();
 
         setState(State.Idle);
@@ -141,7 +204,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         }
       }
     },
-    [createConfigFile, fetchFile, getConfigFileMeta]
+    [createConfigFile, fetchFile, getImage, getConfigFileMeta]
   );
 
   const triggerDelayedUpload = useCallback(
@@ -203,6 +266,23 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
 
     if (!confirmDelete) return;
 
+    // Delete the associated image
+    const itemsToDelete = indexes
+      .map((index) => menuItems[index])
+      .filter(Boolean);
+    itemsToDelete.forEach(async (item) => {
+      if (!item.fileId) return;
+      try {
+        const deleted = await deleteImage(item);
+
+        if (!deleted) throw new Error("No se pudo borrar la imagen");
+
+        console.log("Deleted image", item.fileId);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+
     setMenuItems(
       (prevItems) =>
         prevItems &&
@@ -256,14 +336,14 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
       }}
     >
       {children}
+      {error && (
+        <div className="fixed left-0 top-0 rounded-sm bg-red-500 p-2 text-white">
+          {error}
+        </div>
+      )}
       {state === State.Uploading && (
         <div className="fixed inset-x-1/2 top-2 w-fit -translate-x-1/2 rounded-lg bg-emerald-700 p-2 text-white">
           <Spinner text="Guardando..." />
-        </div>
-      )}
-      {error && (
-        <div className="w-full rounded-sm bg-red-500 p-2 text-white">
-          {error}
         </div>
       )}
     </spinnerMenuContext.Provider>

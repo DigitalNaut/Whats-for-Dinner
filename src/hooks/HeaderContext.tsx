@@ -15,11 +15,18 @@ import {
 } from "react";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Menu, MenuButton, MenuItem, useMenuState } from "ariakit/menu";
+import {
+  Menu,
+  MenuButton,
+  MenuItem,
+  useMenuState,
+  MenuSeparator,
+} from "ariakit/menu";
 
 export type HeaderProps = {
   title: string;
   backTo: To;
+  showMenuButton?: boolean;
   altBackButton?: JSX.Element;
   altColor?: boolean;
 };
@@ -27,7 +34,12 @@ type HeaderContext = {
   headerProperties: HeaderProps;
   setHeaderProperties: Dispatch<SetStateAction<HeaderProps>>;
   menuButton: JSX.Element;
-  createMenu: (items: (MenuItem: typeof Item) => JSX.Element) => {
+  createMenu: (
+    items: (
+      MenuItem: typeof Item,
+      MenuSeparator: typeof Separator
+    ) => JSX.Element
+  ) => {
     menu: JSX.Element;
     menuRef: MutableRefObject<HTMLElement | null>;
   };
@@ -46,15 +58,19 @@ const headerContext = createContext<HeaderContext>({
 function PopupMenu({
   menuState,
   forwardRef,
+  style,
 }: {
   forwardRef: MenuProps["ref"];
   menuState: MenuProps["state"];
+  style?: MenuProps["style"];
 }) {
   return (
-    <div className="relative z-10">
+    <div className="relative z-10" style={style}>
       <MenuButton
+        aria-label="Menú"
         state={menuState}
-        className="flex flex-col overflow-auto rounded-lg p-2 shadow-lg outline-none"
+        className="flex flex-col overflow-auto rounded-lg p-2 shadow-lg outline-none
+        focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
       >
         <FontAwesomeIcon icon={faEllipsis} />
       </MenuButton>
@@ -66,10 +82,20 @@ function PopupMenu({
 function Item({ key, className, ...props }: MenuItemProps) {
   return (
     <MenuItem
-      className={`flex cursor-default scroll-m-2 items-center gap-2 bg-gray-50 p-2 text-gray-900 outline-none 
-    hover:bg-white hover:text-purple-800 active:bg-purple-600 active:text-white aria-disabled:opacity-25 ${className}`}
+      className={`flex cursor-default scroll-m-2 items-center gap-2 rounded-sm bg-gray-50 p-2 text-gray-900 hover:bg-white hover:text-purple-800
+        focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600
+      active:bg-purple-600 active:text-white aria-disabled:opacity-25 ${className}`}
       key={key}
       {...props}
+    />
+  );
+}
+
+function Separator() {
+  return (
+    <MenuSeparator
+      orientation="horizontal"
+      className="my-2 h-0 w-full border-t-gray-300"
     />
   );
 }
@@ -78,21 +104,34 @@ export function HeaderProvider({ children }: PropsWithChildren) {
   const [headerProperties, setHeaderProperties] = useState<HeaderProps>({
     title: "",
     backTo: "",
+    showMenuButton: false,
     altBackButton: undefined,
     altColor: false,
   });
   const menuState = useMenuState({ gutter: 8 });
   const menuRef = createRef<HTMLDivElement>();
-  const menuButton = <PopupMenu menuState={menuState} forwardRef={menuRef} />;
+  const { showMenuButton } = headerProperties;
+  const menuButton = (
+    <PopupMenu
+      menuState={menuState}
+      forwardRef={menuRef}
+      style={{ visibility: showMenuButton ? "visible" : "hidden" }}
+    />
+  );
 
-  const createMenu = (items: (MenuItem: typeof Item) => JSX.Element) => {
+  const createMenu = (
+    items: (
+      MenuItem: typeof Item,
+      MenuSeparator: typeof Separator
+    ) => JSX.Element
+  ) => {
     return {
       menu: (
         <Menu
           state={menuState}
-          className="absolute w-max overflow-hidden rounded-md bg-white shadow-lg outline-none"
+          className="absolute w-max overflow-hidden rounded-md bg-white p-0.5 shadow-lg outline-none"
         >
-          {items(Item)}
+          {items(Item, Separator)}
         </Menu>
       ),
       menuRef,

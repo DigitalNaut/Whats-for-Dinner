@@ -1,11 +1,23 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { useUser } from "src/hooks/UserContext";
 
-export default function ProtectedRoutes() {
-  const { user } = useUser();
+type ProtectedRoutesProps = {
+  redirectTo: string;
+};
 
-  // * User undefined means the context is still loading
-  if (!user) return <Navigate to={"/"} />;
-  else return <Outlet />;
+export default function ProtectedRoutes({ redirectTo }: ProtectedRoutesProps) {
+  const { user } = useUser();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const from = "?redirectTo=" + encodeURI(pathname.slice(1));
+
+  useEffect(() => {
+    if (!user) navigate(redirectTo + from);
+  }, [user, navigate, redirectTo, from]);
+
+  if (user) return <Outlet />;
+  else return null;
 }

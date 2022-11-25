@@ -9,10 +9,10 @@ function ErrorComponent() {
   return null;
 }
 
-test("renders an error handler component", () => {
-  jest
+it("renders an error handler component", () => {
+  const consoleSpy = jest
     .spyOn(console, "error")
-    .mockImplementation(() => console.log("Purposeful error thrown!"));
+    .mockImplementation(() => null);
 
   render(
     <ErrorBoundary FallbackComponent={ErrorFallback}>
@@ -21,4 +21,7 @@ test("renders an error handler component", () => {
   );
   const element = screen.getByText(/Something went wrong:/i);
   expect(element).toBeInTheDocument();
+  expect(consoleSpy).toHaveBeenCalled();
+
+  jest.spyOn(console, "error").mockRestore();
 });
