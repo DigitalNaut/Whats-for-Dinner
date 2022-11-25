@@ -8,75 +8,18 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Spinner from "src/components/Spinner";
+import Kilobytes from "src/components/Kilobytes";
+import { resizeImage } from "src/utils/imageResize";
 
 export type FileInfo = Partial<Pick<File, "name" | "size">> & {
   url?: string;
+  file?: File;
 };
 type InputFileProps = {
   name: string;
   label?: string;
   onChange?: (fileInfo: FileInfo) => void;
 } & Pick<InputHTMLAttributes<HTMLInputElement>, "required">;
-
-function resizeImage(
-  file: File,
-  { maxWidth, maxHeight }: { maxWidth: number; maxHeight: number }
-) {
-  return new Promise((resolve: (value: File) => void, reject) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = maxWidth;
-        canvas.height = maxHeight;
-        const ctx = canvas.getContext("2d");
-
-        if (!ctx) {
-          reject("Could not obtain canvas context");
-        } else {
-          const ratio = Math.max(maxWidth / img.width, maxHeight / img.height);
-          const width = img.width * ratio;
-          const height = img.height * ratio;
-          const xOffset = (maxWidth - width) / 2;
-          const yOffset = (maxHeight - height) / 2;
-
-          ctx.drawImage(
-            img,
-            0,
-            0,
-            img.width,
-            img.height,
-            width > maxWidth ? xOffset : 0,
-            height > maxHeight ? yOffset : 0,
-            width,
-            height
-          );
-
-          ctx.canvas.toBlob(
-            (blob) => {
-              if (blob) {
-                const newFile = new File([blob], file.name, {
-                  type: "image/jpeg",
-                  lastModified: Date.now(),
-                });
-                resolve(newFile);
-              } else {
-                reject("Could not obtain blob");
-              }
-            },
-            "image/png",
-            1
-          );
-        }
-      };
-      img.onerror = (error) => reject(error);
-      img.src = event.target?.result as string;
-    };
-    reader.onerror = (error) => reject(error);
-    reader.readAsDataURL(file);
-  });
-}
 
 export default function InputFile({
   name,
@@ -93,7 +36,7 @@ export default function InputFile({
   const onChangeHandler: ChangeEventHandler<HTMLInputElement> = async (
     event
   ) => {
-    const [file] = event.target.files || [];
+    const file = event.target.files?.item(0);
 
     if (!file) return;
 
@@ -103,15 +46,18 @@ export default function InputFile({
       maxHeight: 256,
     });
     setIsResizing(false);
-
     setFile(resizedImage);
 
     if (fileUrl) URL.revokeObjectURL(fileUrl);
 
     const url = URL.createObjectURL(resizedImage);
     setFileUrl(url);
-
-    onChange?.({ url, name: resizedImage?.name, size: resizedImage?.size });
+    onChange?.({
+      url,
+      name: resizedImage?.name,
+      size: resizedImage?.size,
+      file: resizedImage,
+    });
   };
 
   const removeFileHandler = () => {
@@ -128,7 +74,6 @@ export default function InputFile({
           className="peer pointer-events-none absolute inset-1/2 h-0 w-0 overflow-hidden opacity-0"
           style={{ padding: 0 }}
           id={name}
-          name={name}
           ref={inputRef}
           type="file"
           onChange={onChangeHandler}
@@ -190,7 +135,7 @@ export default function InputFile({
           <div className="flex max-w-[70%] items-center gap-4 overflow-hidden text-ellipsis p-2">
             <div className="flex min-w-0 max-w-full flex-col flex-nowrap gap-0.5">
               <span className="w-full truncate">{file.name}</span>
-              <span className="text-xs">{file.size * 0.001} KB</span>
+              <Kilobytes className="text-xs" value={file.size} />
             </div>
             <button
               className="w-fit max-w-xs"

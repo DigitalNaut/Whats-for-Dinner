@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useHeader } from "src/hooks/HeaderContext";
 import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
 import Spinner from "src/components/Spinner";
+import Kilobytes from "src/components/Kilobytes";
 
 enum FormFields {
   DishName = "dishName",
@@ -225,6 +226,7 @@ export default function AddItem() {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
+    if (fileInfo?.file) formData.append(FormFields.DishImage, fileInfo.file);
     const validation = validateForm(formData);
 
     if (!validation) return;
@@ -307,7 +309,7 @@ export default function AddItem() {
             <div className="flex min-w-0 max-w-md flex-col flex-nowrap gap-0.5 overflow-hidden text-center">
               <span className="w-full truncate">{fileInfo.name}</span>
               {fileInfo.size ? (
-                <span className="text-xs"> {fileInfo.size * 0.001} KB</span>
+                <Kilobytes className="text-xs" value={fileInfo.size} />
               ) : (
                 <span>Tamaño desconocido</span>
               )}
@@ -368,6 +370,8 @@ export default function AddItem() {
                 return UploadMode.File;
               case SwitcherState.SecondOption:
                 setUploadMode(UploadMode.URL);
+                fileInfo?.url && URL.revokeObjectURL(fileInfo.url);
+                setFileInfo(undefined);
                 return UploadMode.URL;
               default:
                 throw new Error("Invalid upload mode");

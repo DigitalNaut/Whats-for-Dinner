@@ -3,14 +3,22 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import InputFile from "src/components/InputFile";
+import * as utils from "src/utils/imageResize";
+
+const testFileResized = new File(["A resized image"], "resized.png", {
+  type: "image/png",
+});
 
 const mockedCreateObjectURL = jest.fn();
 const mockedRevokeObjectURL = jest.fn();
 global.URL.createObjectURL = mockedCreateObjectURL;
 global.URL.revokeObjectURL = mockedRevokeObjectURL;
+const imageResizeSpy = jest.spyOn(utils, "resizeImage");
 
 describe("InputFile", () => {
-  const testFile = new File(["hello"], "hello.png", { type: "image/png" });
+  const testFile = new File(["An original test image"], "original.png", {
+    type: "image/png",
+  });
 
   it("renders an input file", () => {
     render(<InputFile name="test input" label="test label" />);
@@ -32,19 +40,20 @@ describe("InputFile", () => {
   it("renders an image file", async () => {
     mockedCreateObjectURL.mockReturnValue("https://via.placeholder.com/150");
     mockedRevokeObjectURL.mockReturnValue(null);
+    imageResizeSpy.mockResolvedValue(testFileResized);
 
     // cspell:disable-next-line
     render(<InputFile data-testid="test input" name="test input" />);
     const inputElement: HTMLInputElement = screen.getByTestId(/test input/i);
     await userEvent.upload(inputElement, testFile);
 
-    const imageElement = await screen.findByAltText(/hello.png/i);
-    expect(imageElement).toBeInTheDocument();
+    expect(await screen.findByAltText(/resized.png/i)).toBeInTheDocument();
   });
 
   it("removes an image file using each of the remove buttons", async () => {
     mockedCreateObjectURL.mockReturnValue("https://via.placeholder.com/150");
     mockedRevokeObjectURL.mockReturnValue(null);
+    imageResizeSpy.mockResolvedValue(testFileResized);
 
     // cspell:disable-next-line
     render(<InputFile data-testid="test input" name="test input" />);

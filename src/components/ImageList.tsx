@@ -12,6 +12,7 @@ import Spinner from "src/components/Spinner";
 import ImagePreview from "src/components/ImagePreview";
 import AwaitingPermissionsNotice from "src/components/AwaitingPermissionsNotice";
 import ProgressBar from "src/components/ProgressBar";
+import Kilobytes from "src/components/Kilobytes";
 
 type ImageListProps = {
   refreshDate: number;
@@ -56,10 +57,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
       >
         {file.name?.split(".")[0]}
       </span>
-      <span>
-        {file.size ? (Number(file.size) * 0.001).toFixed(2) : "?"}
-        &nbsp;kb
-      </span>
+      <Kilobytes value={Number(file.size)} />
       {file.id && (
         <>
           <button
