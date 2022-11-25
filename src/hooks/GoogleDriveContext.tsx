@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from "react";
-import type { AxiosRequestConfig, AxiosResponse } from "axios";
+import type { AxiosRequestConfig, AxiosResponse, ResponseType } from "axios";
 import type { TokenResponse } from "@react-oauth/google";
 import { useEffect, useState, createContext, useContext } from "react";
 import { useGoogleLogin, hasGrantedAnyScopeGoogle } from "@react-oauth/google";
@@ -30,10 +30,23 @@ type TokenInfo = {
   tokenExpiration: Date;
 };
 
-type FileUploadJSONResponse = (FileUploadSuccess & GoogleDriveError) | false;
-type FileDownloadJSONResponse = ArrayBuffer | GoogleDriveError | JSON | false;
-type FileDeletedJSONResponse = GoogleDriveError | "";
-type FilesListJSONResponse = {
+type FileUploadResponse = (FileUploadSuccess & GoogleDriveError) | false;
+type FileDownloadResponse<T extends ResponseType> = T extends "json"
+  ? JSON | GoogleDriveError | false
+  : T extends "blob"
+  ? Blob | GoogleDriveError | false
+  : T extends "arraybuffer"
+  ? ArrayBuffer | GoogleDriveError | false
+  : T extends "document"
+  ? Document | GoogleDriveError | false
+  : T extends "text"
+  ? string | GoogleDriveError | false
+  : T extends "stream"
+  ? ReadableStream
+  : JSON | GoogleDriveError | false;
+
+type FileDeletedResponse = GoogleDriveError | "";
+type FilesListResponse = {
   files?: gapi.client.drive.File[];
 } & GoogleDriveError;
 
@@ -42,22 +55,22 @@ type GoogleDriveContextType = {
   uploadFile(
     { file, metadata }: Omit<FileParams, "id">,
     config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<FileUploadJSONResponse, unknown>>;
+  ): Promise<AxiosResponse<FileUploadResponse, unknown>>;
   updateFile(
     { file, metadata }: FileParams,
     config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<FileUploadJSONResponse, unknown>>;
+  ): Promise<AxiosResponse<FileUploadResponse, unknown>>;
   fetchList(
     config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<FilesListJSONResponse, unknown>>;
-  fetchFile(
+  ): Promise<AxiosResponse<FilesListResponse, unknown>>;
+  fetchFile<T extends ResponseType>(
     file: gapi.client.drive.File,
-    config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<FileDownloadJSONResponse, unknown>>;
+    config?: AxiosRequestConfig<T>
+  ): Promise<AxiosResponse<FileDownloadResponse<T>, unknown>>;
   deleteFile(
     file: gapi.client.drive.File,
     config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<FileDeletedJSONResponse, unknown>>;
+  ): Promise<AxiosResponse<FileDeletedResponse, unknown>>;
   isLoaded: boolean;
   userTokens?: TokenResponseSuccess & TokenInfo;
 };
@@ -171,7 +184,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     );
     body.append("file", file);
 
-    const request = axios.post<FileUploadJSONResponse>(
+    const request = axios.post<FileUploadResponse>(
       "https://www.googleapis.com/upload/drive/v3/files",
       body,
       {
@@ -200,7 +213,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     );
     body.append("file", file);
 
-    const request = axios.patch<FileUploadJSONResponse>(
+    const request = axios.patch<FileUploadResponse>(
       `https://www.googleapis.com/upload/drive/v3/files/${id}`,
       body,
       {
@@ -238,14 +251,14 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
   };
 
   const fetchFile: GoogleDriveContextType["fetchFile"] = async (
-    file,
+    { id },
     { params, ...config }: AxiosRequestConfig = {}
   ) => {
     const authStatus = authGuard();
     if (authStatus !== "OK") return Promise.reject(authStatus);
 
     const request = axios.get(
-      `https://www.googleapis.com/drive/v3/files/${file.id}`,
+      `https://www.googleapis.com/drive/v3/files/${id}`,
       {
         params: { alt: "media", ...params },
         responseType: "arraybuffer",
@@ -260,14 +273,14 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
   };
 
   const deleteFile: GoogleDriveContextType["deleteFile"] = async (
-    file,
+    { id },
     config
   ) => {
     const authStatus = authGuard();
     if (authStatus !== "OK") return Promise.reject(authStatus);
 
     const request = axios.delete(
-      `https://www.googleapis.com/drive/v3/files/${file.id}`,
+      `https://www.googleapis.com/drive/v3/files/${id}`,
       {
         headers: {
           authorization: `Bearer ${userTokens?.access_token}`,

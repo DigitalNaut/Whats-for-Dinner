@@ -150,16 +150,18 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     downloadController.current = new AbortController();
 
     try {
-      const { data } = await fetchFile(fileInfo, {
+      const { data } = await fetchFile<"arraybuffer">(fileInfo, {
         signal: downloadController.current?.signal,
         onDownloadProgress: ({ progress }) => setDownloadProgress(progress),
+        responseType: "blob",
       });
       setTimeout(() => setDownloadProgress(undefined), 250);
 
       if (data === false) setError("File download failed");
       else if (data instanceof ArrayBuffer) {
         driveFilePreview?.url && URL.revokeObjectURL(driveFilePreview.url);
-        const file = new File([data], fileInfo.name || "Unknown file", {
+
+        const file = new File([data], fileInfo.name || "Archivo desconocido", {
           type: fileInfo.mimeType || "application/octet-stream",
         });
 
