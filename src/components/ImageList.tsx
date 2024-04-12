@@ -7,12 +7,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
-import Spinner from "src/components/common/Spinner";
-import ImagePreview from "src/components/ImagePreview";
 import AwaitingPermissionsNotice from "src/components/AwaitingPermissionsNotice";
-import ProgressBar from "src/components/common/ProgressBar";
+import ImagePreview from "src/components/ImagePreview";
 import Kilobytes from "src/components/common/Kilobytes";
+import ProgressBar from "src/components/common/ProgressBar";
+import Spinner from "src/components/common/Spinner";
 
 type ImageListProps = {
   refreshDate: number;
@@ -97,8 +98,8 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
 }
 
 export default function ImageList({ refreshDate }: ImageListProps) {
-  const { fetchList, fetchFile, deleteFile, hasScope } =
-    useGoogleDriveContext();
+  const { hasScope } = useGoogleDriveContext();
+  const { fetchList, fetchFile, deleteFile } = useGoogleDriveAPI();
   const [error, setError] = useState<string>();
 
   const [driveFiles, setDriveFiles] = useState<gapi.client.drive.File[]>();
@@ -222,7 +223,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     listFiles(signal);
 
     return () => controller.abort();
-  }, [hasScope, listFiles, refreshDate]);
+  }, [listFiles, refreshDate]);
 
   if (!hasScope)
     return (

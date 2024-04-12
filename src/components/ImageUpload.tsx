@@ -5,9 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
 import Spinner from "src/components/common/Spinner";
 import ProgressBar from "src/components/common/ProgressBar";
+import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 
 export default function ImageUpload({ onUpload }: { onUpload(): void }) {
-  const { uploadFile, hasScope } = useGoogleDriveContext();
+  const { hasScope } = useGoogleDriveContext();
+  const { uploadFile } = useGoogleDriveAPI();
 
   const [imageFileToUpload, setImageFileToUpload] = useState<{
     file: File;
