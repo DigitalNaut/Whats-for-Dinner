@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
-import type { SpinnerOption } from "src/components/SpinningWheel";
-import SpinningWheel from "src/components/SpinningWheel";
 import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 import Floating from "src/components/common/Floating";
+import SpinningWheel from "src/components/SpinningWheel";
+import type { SpinnerOption } from "src/components/SpinningWheel";
 
 const maxHistory = 20;
 
