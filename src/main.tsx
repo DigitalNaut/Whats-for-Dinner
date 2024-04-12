@@ -32,5 +32,3 @@ root.render(
     </ErrorBoundary>
   </React.StrictMode>
 );
-
-// reportWebVitals(console.log);

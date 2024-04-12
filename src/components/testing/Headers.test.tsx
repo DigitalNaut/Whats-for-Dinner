@@ -55,7 +55,6 @@ function Providers({ children }: PropsWithChildren) {
 
 function TestComponent({ backTo }: { backTo?: string }) {
   useHeader({
-    title: "Test",
     backTo: backTo || "",
     altColor: true,
     showMenuButton: true,

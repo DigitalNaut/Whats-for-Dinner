@@ -182,7 +182,6 @@ export default function EditMenu() {
   }, [menuRef, menu]);
 
   useHeader({
-    title: "Editar menú",
     backTo: "/main",
     showMenuButton: true,
   });

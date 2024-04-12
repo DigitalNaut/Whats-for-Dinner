@@ -24,12 +24,12 @@ import {
 } from "@ariakit/react/menu";
 
 export type HeaderProps = {
-  title: string;
   backTo: To;
   showMenuButton?: boolean;
   altBackButton?: JSX.Element;
   altColor?: boolean;
 };
+
 type HeaderContext = {
   headerProperties: HeaderProps;
   setHeaderProperties: Dispatch<SetStateAction<HeaderProps>>;
@@ -37,8 +37,8 @@ type HeaderContext = {
   createMenu: (
     items: (
       MenuItem: typeof Item,
-      MenuSeparator: typeof Separator,
-    ) => JSX.Element,
+      MenuSeparator: typeof Separator
+    ) => JSX.Element
   ) => {
     menu: JSX.Element;
     menuRef: MutableRefObject<HTMLElement | null>;
@@ -47,7 +47,6 @@ type HeaderContext = {
 
 const headerContext = createContext<HeaderContext>({
   headerProperties: {
-    title: "",
     backTo: "/",
   },
   menuButton: <></>,
@@ -102,7 +101,6 @@ function Separator() {
 
 export function HeaderProvider({ children }: PropsWithChildren) {
   const [headerProperties, setHeaderProperties] = useState<HeaderProps>({
-    title: "",
     backTo: "",
     showMenuButton: false,
     altBackButton: undefined,
@@ -122,8 +120,8 @@ export function HeaderProvider({ children }: PropsWithChildren) {
   const createMenu = (
     items: (
       MenuItem: typeof Item,
-      MenuSeparator: typeof Separator,
-    ) => JSX.Element,
+      MenuSeparator: typeof Separator
+    ) => JSX.Element
   ) => {
     return {
       menu: (
@@ -161,7 +159,6 @@ export function useHeader(props: Omit<HeaderProps, "menu">) {
 
     return () => {
       setHeaderProperties({
-        title: "",
         backTo: "",
       });
     };
