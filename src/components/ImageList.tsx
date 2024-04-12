@@ -146,7 +146,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     downloadController.current = new AbortController();
 
     try {
-      const { data } = await fetchFile<"arraybuffer">(fileInfo, {
+      const { data } = await fetchFile<ArrayBuffer>(fileInfo, {
         signal: downloadController.current?.signal,
         onDownloadProgress: ({ progress }) => setDownloadProgress(progress),
         responseType: "blob",

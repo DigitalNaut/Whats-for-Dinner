@@ -127,7 +127,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   const getImage = useCallback(
     async (item: SpinnerOption) => {
       try {
-        const { data, status } = await fetchFile<"blob">(
+        const { data, status } = await fetchFile<Blob>(
           { id: item.fileId },
           { responseType: "blob" }
         );
