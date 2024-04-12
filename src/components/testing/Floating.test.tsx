@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { render, screen } from "@testing-library/react";
 
-import Floating from "src/components/Floating";
+import Floating from "src/components/common/Floating";
 
 test("renders a fixed element on the screen with children", () => {
   const { container } = render(<Floating>Test</Floating>);

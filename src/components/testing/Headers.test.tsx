@@ -5,7 +5,7 @@ import { render, screen } from "@testing-library/react";
 import { BrowserRouter, MemoryRouter } from "react-router-dom";
 
 import { MenuHeader, TitleHeader } from "src/components/Headers";
-import { HeaderProvider, useHeader } from "src/hooks/HeaderContext";
+import { HeaderProvider, useHeader } from "src/contexts/HeaderContext";
 import { act } from "react-dom/test-utils";
 
 const user = userEvent.setup();

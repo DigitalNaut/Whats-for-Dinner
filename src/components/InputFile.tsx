@@ -7,8 +7,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Spinner from "src/components/Spinner";
-import Kilobytes from "src/components/Kilobytes";
+import Spinner from "src/components/common/Spinner";
+import Kilobytes from "src/components/common/Kilobytes";
 import { resizeImage } from "src/utils/imageResize";
 
 export type FileInfo = Partial<Pick<File, "name" | "size">> & {

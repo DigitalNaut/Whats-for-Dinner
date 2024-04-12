@@ -2,7 +2,7 @@ import { expect, test, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import Switcher, { SwitcherState } from "src/components/Switcher";
+import Switcher, { SwitcherState } from "src/components/common/Switcher";
 
 test("renders a switcher with two options", () => {
   render(

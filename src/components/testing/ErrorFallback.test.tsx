@@ -2,7 +2,7 @@ import { expect, test, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ErrorBoundary } from "react-error-boundary";
 
-import ErrorFallback from "src/components/ErrorFallback";
+import ErrorFallback from "src/components/common/ErrorFallback";
 
 function ErrorComponent() {
   throw new Error("Error!");

@@ -1,6 +1,6 @@
 import { test, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import Kilobytes from "src/components/Kilobytes";
+import Kilobytes from "src/components/common/Kilobytes";
 
 test("renders a custom element with formatted value in bytes as kilobytes", async () => {
   const { rerender } = render(<Kilobytes value={1024} />);

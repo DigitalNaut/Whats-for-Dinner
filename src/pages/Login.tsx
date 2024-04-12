@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useUser } from "src/hooks/UserContext";
+import { useUser } from "src/contexts/UserContext";
 
 type LoginProps = {
   redirectTo: string;

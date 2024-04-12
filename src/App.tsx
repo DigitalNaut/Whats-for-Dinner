@@ -14,8 +14,8 @@ import EditMenu from "src/pages/EditMenu";
 import AddItem from "src/pages/AddItem";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
 import { MainLayout, MenuLayout } from "src/components/Layouts";
-import { GoogleDriveProvider } from "src/hooks/GoogleDriveContext";
-import { SpinnerMenuContextProvider } from "src/hooks/SpinnerMenuContext";
+import { GoogleDriveProvider } from "src/contexts/GoogleDriveContext";
+import { SpinnerMenuContextProvider } from "src/contexts/SpinnerMenuContext";
 import { MenuHeader, TitleHeader } from "src/components/Headers";
 
 // TODO: Remove

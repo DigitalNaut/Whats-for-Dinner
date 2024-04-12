@@ -5,8 +5,8 @@ import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 import type { SpinnerOption } from "src/components/SpinningWheel";
 import SpinningWheel from "src/components/SpinningWheel";
-import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
-import Floating from "src/components/Floating";
+import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
+import Floating from "src/components/common/Floating";
 
 const maxHistory = 20;
 

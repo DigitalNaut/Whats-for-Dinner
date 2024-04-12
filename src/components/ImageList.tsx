@@ -7,12 +7,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
-import Spinner from "src/components/Spinner";
+import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
+import Spinner from "src/components/common/Spinner";
 import ImagePreview from "src/components/ImagePreview";
 import AwaitingPermissionsNotice from "src/components/AwaitingPermissionsNotice";
-import ProgressBar from "src/components/ProgressBar";
-import Kilobytes from "src/components/Kilobytes";
+import ProgressBar from "src/components/common/ProgressBar";
+import Kilobytes from "src/components/common/Kilobytes";
 
 type ImageListProps = {
   refreshDate: number;
@@ -97,7 +97,8 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
 }
 
 export default function ImageList({ refreshDate }: ImageListProps) {
-  const { fetchList, fetchFile, deleteFile, hasScope } = useGoogleDrive();
+  const { fetchList, fetchFile, deleteFile, hasScope } =
+    useGoogleDriveContext();
   const [error, setError] = useState<string>();
 
   const [driveFiles, setDriveFiles] = useState<gapi.client.drive.File[]>();

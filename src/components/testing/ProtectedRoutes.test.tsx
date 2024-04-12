@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 
 import type { PropsWithChildren } from "react";
 import { createContext } from "react";
-import * as UserContextModule from "src/hooks/UserContext";
+import * as UserContextModule from "src/contexts/UserContext";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 const { UserProvider, useUser } = UserContextModule;

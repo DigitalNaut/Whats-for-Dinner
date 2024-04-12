@@ -13,11 +13,11 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 
-import Floating from "src/components/Floating";
-import Toggle from "src/components/Toggle";
-import { useHeader, useHeaderContext } from "src/hooks/HeaderContext";
-import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
-import Spinner from "src/components/Spinner";
+import Floating from "src/components/common/Floating";
+import Toggle from "src/components/common/Toggle";
+import { useHeader, useHeaderContext } from "src/contexts/HeaderContext";
+import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
+import Spinner from "src/components/common/Spinner";
 
 enum Modes {
   Toggle,
@@ -39,11 +39,11 @@ export default function EditMenu() {
     (value = true) => {
       const newSelected = new Map(selected);
       allMenuItems?.forEach(({ label }, index) =>
-        newSelected.set(label, { isSelected: value, index }),
+        newSelected.set(label, { isSelected: value, index })
       );
       setSelected(newSelected);
     },
-    [allMenuItems, selected],
+    [allMenuItems, selected]
   );
 
   const setModeToggle = useCallback(() => {
@@ -63,7 +63,7 @@ export default function EditMenu() {
         <FontAwesomeIcon icon={faTimes} />
       </button>
     ),
-    [setModeToggle],
+    [setModeToggle]
   );
 
   const setModeSelection = useCallback(
@@ -78,7 +78,7 @@ export default function EditMenu() {
       setMode(Modes.Select);
       setAll !== undefined && setAllSelections(setAll);
     },
-    [altBackButton, setAllSelections, setHeaderProperties],
+    [altBackButton, setAllSelections, setHeaderProperties]
   );
 
   const deleteSelections = useCallback(() => {
@@ -130,7 +130,7 @@ export default function EditMenu() {
                   allMenuItems &&
                     toggleMenuItems(
                       allMenuItems.map((_, index) => index),
-                      true,
+                      true
                     );
                 }}
               >
@@ -142,7 +142,7 @@ export default function EditMenu() {
                   allMenuItems &&
                     toggleMenuItems(
                       allMenuItems.map((_, index) => index),
-                      false,
+                      false
                     );
                 }}
               >
@@ -160,7 +160,7 @@ export default function EditMenu() {
       setModeSelection,
       allMenuItems,
       toggleMenuItems,
-    ],
+    ]
   );
 
   useEffect(() => {
@@ -171,8 +171,8 @@ export default function EditMenu() {
         allMenuItems?.map(({ label }, index) => [
           label,
           { isSelected: false, index },
-        ]) ?? [],
-      ),
+        ]) ?? []
+      )
     );
   }, [allMenuItems, isLoaded]);
 
@@ -196,7 +196,7 @@ export default function EditMenu() {
 
   return (
     <>
-      <h2 className="text-center font-bangers text-4xl">Menu</h2>
+      <h2 className="text-center font-bangers text-4xl">Menú</h2>
       {menuPortal}
       <div className="flex flex-col gap-4">
         {allMenuItems &&

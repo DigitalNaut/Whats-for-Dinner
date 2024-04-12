@@ -2,18 +2,18 @@ import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Floating from "src/components/Floating";
+import Floating from "src/components/common/Floating";
 
 import ImageList from "src/components/ImageList";
 import ImageUpload from "src/components/ImageUpload";
-import Spinner from "src/components/Spinner";
+import Spinner from "src/components/common/Spinner";
 import SpinningWheel from "src/components/SpinningWheel";
-import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
-import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
+import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
+import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 
 function Tests() {
   const { enabledMenuItems } = useSpinnerMenuContext();
-  const { isLoaded } = useGoogleDrive();
+  const { isLoaded } = useGoogleDriveContext();
   const [refreshDate, setRefreshDate] = useState(Date.now());
 
   if (!isLoaded)

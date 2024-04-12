@@ -7,13 +7,13 @@ import type { FileInfo } from "src/components/InputFile";
 import ImagePreview from "src/components/ImagePreview";
 import InputFile from "src/components/InputFile";
 import InputText from "src/components/InputText";
-import Switcher, { SwitcherState } from "src/components/Switcher";
-import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
+import Switcher, { SwitcherState } from "src/components/common/Switcher";
+import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 import { useNavigate } from "react-router-dom";
-import { useHeader } from "src/hooks/HeaderContext";
-import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
-import Spinner from "src/components/Spinner";
-import Kilobytes from "src/components/Kilobytes";
+import { useHeader } from "src/contexts/HeaderContext";
+import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
+import Spinner from "src/components/common/Spinner";
+import Kilobytes from "src/components/common/Kilobytes";
 
 enum FormFields {
   DishName = "dishName",
@@ -94,7 +94,7 @@ const errorReducer: Reducer<
 export default function AddItem() {
   const navigate = useNavigate();
   const { addMenuItem } = useSpinnerMenuContext();
-  const { uploadFile, hasScope } = useGoogleDrive();
+  const { uploadFile, hasScope } = useGoogleDriveContext();
 
   const [uploadMode, setUploadMode] = useState<UploadMode>(UploadMode.File);
   const [fileInfo, setFileInfo] = useState<FileInfo>();

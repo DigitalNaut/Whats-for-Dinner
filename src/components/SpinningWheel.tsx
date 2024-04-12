@@ -1,9 +1,10 @@
 import { createRef, useEffect, useRef, useState } from "react";
 
-import SpinnerIcon from "src/components/Spinner";
-import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
+import SpinnerIcon from "src/components/common/Spinner";
+import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 
 import Arrow from "src/assets/wedge.svg?react";
+
 export type SpinnerOption = {
   label: string;
   enabled: boolean;

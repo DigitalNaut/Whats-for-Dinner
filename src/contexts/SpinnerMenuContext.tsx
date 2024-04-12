@@ -6,10 +6,10 @@ import {
   useContext,
   createContext,
 } from "react";
-import Spinner from "src/components/Spinner";
+import Spinner from "src/components/common/Spinner";
 
 import type { SpinnerOption } from "src/components/SpinningWheel";
-import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
+import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
 
 const TIMEOUT = 2500;
 const CONFIG_FILE_NAME = "config.json";
@@ -51,7 +51,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     updateFile,
     deleteFile,
     isLoaded: isDriveLoaded,
-  } = useGoogleDrive();
+  } = useGoogleDriveContext();
   const [menuItems, setMenuItems] = useState<SpinnerOption[]>();
   const [configFileId, setConfigFileId] = useState<string>();
   const [state, setState] = useState<State>(State.Loading);
