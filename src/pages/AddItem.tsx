@@ -155,9 +155,7 @@ export default function AddItem() {
       else if (data.error) {
         errorDispatch({
           type: ErrorActionType.InvalidImageFile,
-          payload: `Error ${data.error.code || "unknown"}: ${
-            data.error.message
-          }`,
+          payload: `Error ${data.error.code || "unknown"}: ${data.error.message}`,
         });
       } else return data.id;
     } catch (error) {

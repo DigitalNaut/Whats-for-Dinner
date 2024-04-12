@@ -6,9 +6,7 @@ type ToggleProps = {
 export default function Toggle({ checked = false, onChange }: ToggleProps) {
   return (
     <button
-      className={`h-4 w-8 rounded-full transition-colors ${
-        checked ? "bg-purple-600" : "bg-gray-500"
-      }`}
+      className={`h-4 w-8 rounded-full transition-colors ${checked ? "bg-purple-600" : "bg-gray-500"}`}
       onClick={() => {
         onChange?.(!checked);
       }}

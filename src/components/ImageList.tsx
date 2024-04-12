@@ -170,9 +170,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         });
       } else if ("error" in data)
         setError(
-          `Error ${data.error.code || "unknown"}: ${
-            data.error.message || "No message"
-          }`,
+          `Error ${data.error.code || "unknown"}: ${data.error.message || "No message"}`,
         );
     } catch (error) {
       if (error instanceof Error) {
@@ -196,9 +194,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
 
       if (data.error)
         setError(
-          `Error ${data.error.code || "unknown"}: ${
-            data.error.message || "No message"
-          }`,
+          `Error ${data.error.code || "unknown"}: ${data.error.message || "No message"}`,
         );
     } catch (error) {
       if (error instanceof Error) setError(`${error.name}: ${error.message}`);
