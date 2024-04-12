@@ -39,11 +39,10 @@ export default function Privacy() {
         process of our assistance to the Client in the most appropriate manner
         for the express purpose of meeting the Client&apos;s needs in respect of
         provision of the Company&apos;s stated services, in accordance with and
-        subject to, prevailing law of Netherlands. Any use of the above
-        terminology or other words in the singular, plural, capitalization
-        and/or he/she or they, are taken as interchangeable and therefore as
-        referring to same. Our Terms and Conditions were created with the help
-        of the{" "}
+        subject to, prevailing law of Mexico. Any use of the above terminology
+        or other words in the singular, plural, capitalization and/or he/she or
+        they, are taken as interchangeable and therefore as referring to same.
+        Our Terms and Conditions were created with the help of the{" "}
         <a
           href="https://www.privacypolicyonline.com/terms-conditions-generator/"
           target="_blank"
@@ -59,17 +58,16 @@ export default function Privacy() {
       </h3>
 
       <p>
-        We employ the use of cookies. By accessing What&apos;s for Dinner?, you
-        agreed to use cookies in agreement with the What&apos;s for
-        Dinner&apos;s Privacy Policy.
+        We strive to NOT employ the use of cookies. By accessing What&apos;s for
+        Dinner?, you agreed to use cookies in agreement with the What&apos;s for
+        Dinner&apos;s Privacy Policy, if any.
       </p>
 
       <p>
-        Most interactive websites use cookies to let us retrieve the user&apos;s
-        details for each visit. Cookies are used by our website to enable the
-        functionality of certain areas to make it easier for people visiting our
-        website. Some of our affiliate/advertising partners may also use
-        cookies.
+        Most interactive websites use cookies to let developers retrieve the
+        user&apos;s details for each visit. However, cookies are generally NOT
+        used by our website for any purpose other than basic functionality as
+        described by our Privacy Policy.
       </p>
 
       <h3>
@@ -99,49 +97,52 @@ export default function Privacy() {
       <p>
         Parts of this website offer an opportunity for users to post and
         exchange opinions and information in certain areas of the website.
-        What&apos;s for Dinner? does not filter, edit, publish or review
-        Comments prior to their presence on the website. Comments do not reflect
-        the views and opinions of What&apos;s for Dinner?,its agents and/or
-        affiliates. Comments reflect the views and opinions of the person who
-        post their views and opinions. To the extent permitted by applicable
-        laws, What&apos;s for Dinner? shall not be liable for the Comments or
-        for any liability, damages or expenses caused and/or suffered as a
-        result of any use of and/or posting of and/or appearance of the Comments
-        on this website.
+        What&apos;s for Dinner? does not filter, edit, publish or review Content
+        prior to their presence on the website. The Content does not reflect the
+        views and opinions of What&apos;s for Dinner?, its agents and/or
+        affiliates. The Content reflects the views and opinions of the person
+        who post their views and opinions. To the extent permitted by applicable
+        laws, What&apos;s for Dinner? shall not be liable for the Content or for
+        any liability, damages or expenses caused and/or suffered as a result of
+        any use of and/or posting of and/or appearance of the Content on this
+        website.
       </p>
 
       <p>
-        What&apos;s for Dinner? reserves the right to monitor all Comments and
-        to remove any Comments which can be considered inappropriate, offensive
-        or causes breach of these Terms and Conditions.
+        What&apos;s for Dinner? reserves the right to monitor all Content and to
+        remove any Content which can be considered inappropriate, offensive or
+        causes breach of these Terms and Conditions, if at all.
       </p>
 
       <p>You warrant and represent that:</p>
 
       <ul>
         <li>
-          You are entitled to post the Comments on our website and have all
+          You are entitled to post the Content on our website and have all
           necessary licenses and consents to do so;
         </li>
         <li>
-          The Comments do not invade any intellectual property right, including
+          The Content do not invade any intellectual property rights, including
           without limitation copyright, patent or trademark of any third party;
         </li>
         <li>
-          The Comments do not contain any defamatory, libelous, offensive,
+          The Content does not contain any defamatory, libelous, offensive,
           indecent or otherwise unlawful material which is an invasion of
           privacy
         </li>
         <li>
-          The Comments will not be used to solicit or promote business or custom
-          or present commercial activities or unlawful activity.
+          The Content will not be used to solicit or promote business or custom
+          or present commercial activities or unlawful activity. &#40;But
+          we&apos;ll be very surprised if you managed to do that.&#41;
         </li>
       </ul>
 
       <p>
         You hereby grant What&apos;s for Dinner? a non-exclusive license to use,
         reproduce, edit and authorize others to use, reproduce and edit any of
-        your Comments in any and all forms, formats or media.
+        your Content in any and all forms, formats or media, if it ever becomes
+        applicable. Do not upload or post any Content that is sensitive,
+        personal, illegal or otherwise objectionable.
       </p>
 
       <h3>
@@ -213,12 +214,19 @@ export default function Privacy() {
 
       <p>
         If you are one of the organizations listed in paragraph 2 above and are
-        interested in linking to our website, you must inform us by sending an
-        e-mail to What&apos;s for Dinner?. Please include your name, your
-        organization name, contact information as well as the URL of your site,
-        a list of any URLs from which you intend to link to our Website, and a
-        list of the URLs on our site to which you would like to link. Wait 2-3
-        weeks for a response.
+        interested in linking to our website, you must inform us by sending a
+        private message to{" "}
+        <a
+          href="https://github.com/DigitalNaut"
+          target="_blank"
+          rel="noreferrer"
+        >
+          DigitalNaut
+        </a>
+        . Please include your name, your organization name, contact information
+        as well as the URL of your site, a list of any URLs from which you
+        intend to link to our Website, and a list of the URLs on our site to
+        which you would like to link. Wait 2-3 weeks for a response.
       </p>
 
       <p>Approved organizations may hyperlink to our Website as follows:</p>
@@ -245,7 +253,7 @@ export default function Privacy() {
       <p>
         Without prior approval and written permission, you may not create frames
         around our Webpages that alter in any way the visual presentation or
-        appearance of our Website.
+        appearance of our Website for others.
       </p>
 
       <h3>
@@ -253,7 +261,7 @@ export default function Privacy() {
       </h3>
 
       <p>
-        We shall not be hold responsible for any content that appears on your
+        We shall not be hold responsible for any Content that appears on your
         Website. You agree to protect and defend us against all claims that is
         rising on your Website. No link&#40;s&#41; should appear on any Website
         that may be interpreted as libelous, obscene or criminal, or which

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { useUser } from "src/contexts/UserContext";
 
@@ -18,8 +18,17 @@ export default function Login({ redirectTo }: LoginProps) {
   });
 
   return (
-    <div className="flex h-full items-center justify-center">
+    <div className="flex h-full flex-col items-center justify-center gap-4">
       <LoginButton />
+
+      <div className="flex flex-col gap-1 text-center text-sm text-white">
+        <Link to="/terms" className="w-full hover:underline">
+          Términos y Condiciones
+        </Link>
+        <Link to="/privacy" className="w-full hover:underline">
+          Póliza de Privacidad
+        </Link>
+      </div>
     </div>
   );
 }
