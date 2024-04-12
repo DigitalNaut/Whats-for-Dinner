@@ -34,16 +34,16 @@ type FileUploadResponse = (FileUploadSuccess & GoogleDriveError) | false;
 type FileDownloadResponse<T extends ResponseType> = T extends "json"
   ? JSON | GoogleDriveError | false
   : T extends "blob"
-  ? Blob | GoogleDriveError | false
-  : T extends "arraybuffer"
-  ? ArrayBuffer | GoogleDriveError | false
-  : T extends "document"
-  ? Document | GoogleDriveError | false
-  : T extends "text"
-  ? string | GoogleDriveError | false
-  : T extends "stream"
-  ? ReadableStream
-  : JSON | GoogleDriveError | false;
+    ? Blob | GoogleDriveError | false
+    : T extends "arraybuffer"
+      ? ArrayBuffer | GoogleDriveError | false
+      : T extends "document"
+        ? Document | GoogleDriveError | false
+        : T extends "text"
+          ? string | GoogleDriveError | false
+          : T extends "stream"
+            ? ReadableStream
+            : JSON | GoogleDriveError | false;
 
 type FileDeletedResponse = GoogleDriveError | "";
 type FilesListResponse = {
@@ -112,7 +112,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
   async function initGapiClient() {
     try {
       await gapi.client.init({
-        apiKey: process.env.REACT_APP_GOOGLE_API_KEY,
+        apiKey: import.meta.env.REACT_APP_GOOGLE_API_KEY,
         discoveryDocs: [DISCOVERY_DOC],
       });
 

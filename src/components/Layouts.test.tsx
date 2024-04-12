@@ -1,7 +1,6 @@
-import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
-
 import type { PropsWithChildren } from "react";
+import { test, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { MainLayout, MenuLayout } from "src/components/Layouts";
@@ -18,13 +17,13 @@ function Providers({ children }: PropsWithChildren) {
   );
 }
 
-it("renders a main layout", () => {
+test("renders a main layout", () => {
   render(<MainLayout />, { wrapper: Providers });
   const mainLayout = screen.getByText(/content/i);
   expect(mainLayout).toBeInTheDocument();
 });
 
-it("renders a menu layout", () => {
+test("renders a menu layout", () => {
   render(<MenuLayout />, { wrapper: Providers });
   const menuLayout = screen.getByText(/content/i);
   expect(menuLayout).toBeInTheDocument();

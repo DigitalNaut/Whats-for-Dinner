@@ -1,8 +1,8 @@
-import "@testing-library/jest-dom";
+import { test, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import Kilobytes from "src/components/Kilobytes";
 
-it("renders a custom element with formatted value in bytes as kilobytes", async () => {
+test("renders a custom element with formatted value in bytes as kilobytes", async () => {
   const { rerender } = render(<Kilobytes value={1024} />);
 
   expect(await screen.findByText("1 KB"));

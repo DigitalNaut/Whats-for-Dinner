@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+import { expect, test, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -9,10 +9,8 @@ function ErrorComponent() {
   return null;
 }
 
-it("renders an error handler component", () => {
-  const consoleSpy = jest
-    .spyOn(console, "error")
-    .mockImplementation(() => null);
+test("renders an error handler component", () => {
+  const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => null);
 
   render(
     <ErrorBoundary FallbackComponent={ErrorFallback}>
@@ -23,5 +21,5 @@ it("renders an error handler component", () => {
   expect(element).toBeInTheDocument();
   expect(consoleSpy).toHaveBeenCalled();
 
-  jest.spyOn(console, "error").mockRestore();
+  vi.spyOn(console, "error").mockRestore();
 });

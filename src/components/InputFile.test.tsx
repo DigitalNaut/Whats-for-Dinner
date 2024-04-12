@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+import { test, expect, describe, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -9,24 +9,24 @@ const testFileResized = new File(["A resized image"], "resized.png", {
   type: "image/png",
 });
 
-const mockedCreateObjectURL = jest.fn();
-const mockedRevokeObjectURL = jest.fn();
+const mockedCreateObjectURL = vi.fn();
+const mockedRevokeObjectURL = vi.fn();
 global.URL.createObjectURL = mockedCreateObjectURL;
 global.URL.revokeObjectURL = mockedRevokeObjectURL;
-const imageResizeSpy = jest.spyOn(utils, "resizeImage");
+const imageResizeSpy = vi.spyOn(utils, "resizeImage");
 
 describe("InputFile", () => {
   const testFile = new File(["An original test image"], "original.png", {
     type: "image/png",
   });
 
-  it("renders an input file", () => {
+  test("renders an input file", () => {
     render(<InputFile name="test input" label="test label" />);
     const inputElement = screen.getByLabelText(/test label/i);
     expect(inputElement).toBeInTheDocument();
   });
 
-  it("inputs an image file", async () => {
+  test("inputs an image file", async () => {
     // cspell:disable-next-line
     render(<InputFile data-testid="test input" name="test input" />);
     const inputElement = screen.getByTestId<HTMLInputElement>(/test input/i);
@@ -37,7 +37,7 @@ describe("InputFile", () => {
     expect(inputElement.files).toHaveLength(1);
   });
 
-  it("renders an image file", async () => {
+  test("renders an image file", async () => {
     mockedCreateObjectURL.mockReturnValue("https://via.placeholder.com/150");
     mockedRevokeObjectURL.mockReturnValue(null);
     imageResizeSpy.mockResolvedValue(testFileResized);
@@ -50,7 +50,7 @@ describe("InputFile", () => {
     expect(await screen.findByAltText(/resized.png/i)).toBeInTheDocument();
   });
 
-  it("removes an image file using each of the remove buttons", async () => {
+  test("removes an image file using each of the remove buttons", async () => {
     mockedCreateObjectURL.mockReturnValue("https://via.placeholder.com/150");
     mockedRevokeObjectURL.mockReturnValue(null);
     imageResizeSpy.mockResolvedValue(testFileResized);

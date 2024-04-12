@@ -2,7 +2,7 @@ import type { ReactPortal } from "react";
 import { createPortal } from "react-dom";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Checkbox } from "ariakit";
+import { Checkbox } from "@ariakit/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -39,11 +39,11 @@ export default function EditMenu() {
     (value = true) => {
       const newSelected = new Map(selected);
       allMenuItems?.forEach(({ label }, index) =>
-        newSelected.set(label, { isSelected: value, index })
+        newSelected.set(label, { isSelected: value, index }),
       );
       setSelected(newSelected);
     },
-    [allMenuItems, selected]
+    [allMenuItems, selected],
   );
 
   const setModeToggle = useCallback(() => {
@@ -63,7 +63,7 @@ export default function EditMenu() {
         <FontAwesomeIcon icon={faTimes} />
       </button>
     ),
-    [setModeToggle]
+    [setModeToggle],
   );
 
   const setModeSelection = useCallback(
@@ -78,7 +78,7 @@ export default function EditMenu() {
       setMode(Modes.Select);
       setAll !== undefined && setAllSelections(setAll);
     },
-    [altBackButton, setAllSelections, setHeaderProperties]
+    [altBackButton, setAllSelections, setHeaderProperties],
   );
 
   const deleteSelections = useCallback(() => {
@@ -130,7 +130,7 @@ export default function EditMenu() {
                   allMenuItems &&
                     toggleMenuItems(
                       allMenuItems.map((_, index) => index),
-                      true
+                      true,
                     );
                 }}
               >
@@ -142,7 +142,7 @@ export default function EditMenu() {
                   allMenuItems &&
                     toggleMenuItems(
                       allMenuItems.map((_, index) => index),
-                      false
+                      false,
                     );
                 }}
               >
@@ -160,7 +160,7 @@ export default function EditMenu() {
       setModeSelection,
       allMenuItems,
       toggleMenuItems,
-    ]
+    ],
   );
 
   useEffect(() => {
@@ -171,8 +171,8 @@ export default function EditMenu() {
         allMenuItems?.map(({ label }, index) => [
           label,
           { isSelected: false, index },
-        ]) ?? []
-      )
+        ]) ?? [],
+      ),
     );
   }, [allMenuItems, isLoaded]);
 

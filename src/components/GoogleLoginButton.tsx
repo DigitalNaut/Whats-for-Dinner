@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes } from "react";
-import { ReactComponent as GoogleLogo } from "src/assets/google-logo.svg";
+import GoogleLogo from "src/assets/google-logo.svg?react";
 
 export default function GoogleLoginButton({
   className,

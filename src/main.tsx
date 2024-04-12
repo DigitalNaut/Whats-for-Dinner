@@ -13,12 +13,13 @@ import "src/styles/tailwind.css";
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
 root.render(
   <React.StrictMode>
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <UserProvider>
         <GoogleOAuthProvider
-          clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID || ""}
+          clientId={import.meta.env.REACT_APP_GOOGLE_CLIENT_ID || ""}
           onScriptLoadError={() => {
             throw new Error("Google OAuth script failed to load");
           }}

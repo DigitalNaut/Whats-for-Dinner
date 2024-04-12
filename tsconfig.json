@@ -1,21 +1,21 @@
 {
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "compilerOptions": {
-    "target": "ESNEXT",
-    "lib": ["dom", "dom.iterable", "ESNEXT"],
-    "allowJs": true,
+    "target": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "ESNEXT",
+    "module": "ESNext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "noFallthroughCasesInSwitch": true,
     "jsx": "react-jsx",
-    "baseUrl": "./"
-  }
+    "baseUrl": "."
+  },
+  "include": ["src"]
 }

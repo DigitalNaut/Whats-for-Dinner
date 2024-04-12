@@ -4,7 +4,7 @@ import { GoogleLogin, googleLogout } from "@react-oauth/google";
 import { createContext, useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 type UserContext = {
   user?: GoogleUserCredential | null;

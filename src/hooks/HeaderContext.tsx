@@ -5,7 +5,7 @@ import type {
   MutableRefObject,
 } from "react";
 import type { To } from "react-router-dom";
-import type { MenuItemProps, MenuProps } from "ariakit/menu";
+import type { MenuItemProps, MenuProps } from "@ariakit/react/menu";
 import {
   createRef,
   useEffect,
@@ -19,9 +19,9 @@ import {
   Menu,
   MenuButton,
   MenuItem,
-  useMenuState,
+  useMenuStore,
   MenuSeparator,
-} from "ariakit/menu";
+} from "@ariakit/react/menu";
 
 export type HeaderProps = {
   title: string;
@@ -37,8 +37,8 @@ type HeaderContext = {
   createMenu: (
     items: (
       MenuItem: typeof Item,
-      MenuSeparator: typeof Separator
-    ) => JSX.Element
+      MenuSeparator: typeof Separator,
+    ) => JSX.Element,
   ) => {
     menu: JSX.Element;
     menuRef: MutableRefObject<HTMLElement | null>;
@@ -61,14 +61,14 @@ function PopupMenu({
   style,
 }: {
   forwardRef: MenuProps["ref"];
-  menuState: MenuProps["state"];
+  menuState: MenuProps["store"];
   style?: MenuProps["style"];
 }) {
   return (
     <div className="relative z-10" style={style}>
       <MenuButton
         aria-label="Menú"
-        state={menuState}
+        store={menuState}
         className="flex flex-col overflow-auto rounded-lg p-2 shadow-lg outline-none
         focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
       >
@@ -108,12 +108,12 @@ export function HeaderProvider({ children }: PropsWithChildren) {
     altBackButton: undefined,
     altColor: false,
   });
-  const menuState = useMenuState({ gutter: 8 });
+  const menuStore = useMenuStore();
   const menuRef = createRef<HTMLDivElement>();
   const { showMenuButton } = headerProperties;
   const menuButton = (
     <PopupMenu
-      menuState={menuState}
+      menuState={menuStore}
       forwardRef={menuRef}
       style={{ visibility: showMenuButton ? "visible" : "hidden" }}
     />
@@ -122,13 +122,14 @@ export function HeaderProvider({ children }: PropsWithChildren) {
   const createMenu = (
     items: (
       MenuItem: typeof Item,
-      MenuSeparator: typeof Separator
-    ) => JSX.Element
+      MenuSeparator: typeof Separator,
+    ) => JSX.Element,
   ) => {
     return {
       menu: (
         <Menu
-          state={menuState}
+          store={menuStore}
+          gutter={8}
           className="absolute w-max overflow-hidden rounded-md bg-white p-0.5 shadow-lg outline-none"
         >
           {items(Item, Separator)}

@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+import { expect, test, describe, afterEach, afterAll, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import type { PropsWithChildren } from "react";
@@ -14,10 +14,10 @@ const FakedUserProvider = ({ children }: PropsWithChildren) => (
     {children}
   </fakedUserContext.Provider>
 );
-const userProviderSpy = jest
+const userProviderSpy = vi
   .spyOn(UserContextModule, "UserProvider")
   .mockImplementation(FakedUserProvider);
-const useUserSpy = jest
+const useUserSpy = vi
   .spyOn(UserContextModule, "useUser")
   .mockReturnValue({ user: { name: "John Doe" } } as ReturnType<
     typeof useUser
@@ -51,7 +51,7 @@ function TestRoutes() {
 }
 
 describe("ProtectedRoutes", () => {
-  it("renders a protected route if user exists", async () => {
+  test("renders a protected route if user exists", async () => {
     useUserSpy.mockReturnValue({ user: { name: "John Doe" } } as ReturnType<
       typeof useUser
     >);
@@ -62,7 +62,7 @@ describe("ProtectedRoutes", () => {
     expect(protectedRoute).toBeInTheDocument();
   });
 
-  it("redirects if user doesn't exists", async () => {
+  test("redirects if user doesn't exists", async () => {
     useUserSpy.mockReturnValue({} as ReturnType<typeof useUser>);
 
     render(<TestRoutes />, { wrapper: Providers });

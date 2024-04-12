@@ -1,18 +1,18 @@
-import "@testing-library/jest-dom";
+import { expect, test } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/react";
 
 import InputText from "src/components/InputText";
 import { useState } from "react";
 
-it("renders a custom input element with a label", () => {
+test("renders a custom input element with a label", () => {
   render(<InputText name="input-test" label="test label" />);
   const inputElement = screen.getByRole("textbox", { name: /test label/i });
 
   expect(inputElement).toBeInTheDocument();
 });
 
-it("renders a custom input element with a hint", () => {
+test("renders a custom input element with a hint", () => {
   render(<InputText name="input-test" hint="Hint text" />);
   const hintElement = screen.getByRole("textbox", {
     description: /hint text/i,
@@ -21,7 +21,7 @@ it("renders a custom input element with a hint", () => {
   expect(hintElement).toBeInTheDocument();
 });
 
-it("renders a custom input with an error that obscures the hint", () => {
+test("renders a custom input with an error that obscures the hint", () => {
   render(<InputText name="input-test" error="Error text" hint="Hint text" />);
   const errorElement = screen.getByRole("textbox", {
     description: /error text/i,
@@ -34,28 +34,28 @@ it("renders a custom input with an error that obscures the hint", () => {
   expect(hintElement).not.toBeInTheDocument();
 });
 
-it("renders a custom input with a value", () => {
+test("renders a custom input with a value", () => {
   render(<InputText name="input-test" value="Test value" />);
   const inputElement = screen.getByDisplayValue("Test value");
 
   expect(inputElement).toBeInTheDocument();
 });
 
-it("has a placeholder", () => {
+test("has a placeholder", () => {
   render(<InputText name="input-test" placeholder="Placeholder text" />);
   const inputElement = screen.getByPlaceholderText("Placeholder text");
 
   expect(inputElement).toBeInTheDocument();
 });
 
-it("renders a custom input without a clear button", () => {
+test("renders a custom input without a clear button", () => {
   render(<InputText name="input-test" onClear={() => null} />);
   const clearButton = screen.queryByLabelText("Borrar entrada");
 
   expect(clearButton).toBeNull();
 });
 
-it("ensures the input is accessible with tab", async () => {
+test("ensures the input is accessible with tab", async () => {
   render(<InputText name="input-test" label="Test label" />);
   const inputElement = screen.getByRole("textbox", { name: /test label/i });
 
@@ -86,7 +86,7 @@ function TestElement() {
   );
 }
 
-it("renders a button to clear the input", async () => {
+test("renders a button to clear the input", async () => {
   render(<TestElement />);
   const inputElement = screen.getByRole("textbox", { name: /test textbox/i });
   userEvent.type(inputElement, "Test value");

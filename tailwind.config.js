@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
-  content: ["./src/**/*.{ts,tsx,css}", "./public/*.html"],
+  content: ["./src/**/*.{ts,tsx,css}", "./index.html"],
   theme: {
     extend: {
       backgroundImage: {
@@ -30,12 +31,8 @@ module.exports = {
       xl: "1440px",
     },
   },
-  variants: {
-    extend: {},
-  },
   plugins: [
     require("@tailwindcss/typography"),
     require("@tailwindcss/forms"),
-    require("@tailwindcss/line-clamp"),
   ],
 };

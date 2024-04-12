@@ -6,7 +6,7 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { useHeaderContext } from "src/hooks/HeaderContext";
 import { useUser } from "src/hooks/UserContext";
 
-import { ReactComponent as Chopsticks } from "src/assets/chopsticks.svg";
+import Chopsticks from "src/assets/chopsticks.svg?react";
 
 export function TitleHeader({ children }: PropsWithChildren) {
   const { UserCard } = useUser();
