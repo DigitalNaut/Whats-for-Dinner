@@ -1,12 +1,11 @@
 import type { PropsWithChildren } from "react";
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
 import type { TokenResponse } from "@react-oauth/google";
-import { useEffect, useState, createContext, useContext } from "react";
-import { useGoogleLogin, hasGrantedAnyScopeGoogle } from "@react-oauth/google";
+import { useState, createContext, useContext, useMemo } from "react";
+import { useGoogleLogin, hasGrantedAllScopesGoogle } from "@react-oauth/google";
 import axios from "axios";
 
 import { useScript } from "src/hooks/useScript";
-import { useUser } from "src/contexts/UserContext";
 
 type MetadataType = {
   name: string;
@@ -98,12 +97,15 @@ const DISCOVERY_DOC =
   "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest";
 
 export function GoogleDriveProvider({ children }: PropsWithChildren) {
-  const { user } = useUser();
   const [isLoaded, setIsLoaded] = useState(false);
-  const [hasScope, setHasScope] = useState(false);
   const [userTokens, setUserTokens] = useState<
     TokenResponseSuccess & TokenInfo
   >();
+
+  const hasScope = useMemo(() => {
+    if (!userTokens) return false;
+    return hasGrantedAllScopesGoogle(userTokens, scope);
+  }, [userTokens]);
 
   async function initGapiClient() {
     try {
@@ -145,30 +147,28 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     scope,
   });
 
-  function authGuard(): "OK" | "Authorizing" | "Unauthorized" {
+  function hasAuthorization() {
     if (!isLoaded)
       throw new Error("Unauthorized", { cause: "Google Drive is not loaded" });
-    if (!user) {
-      setUserTokens(undefined);
-      throw new Error("User not authenticated");
-    }
 
     if (userTokens === undefined) {
       requestAccess({ prompt: "" });
       return "Authorizing";
-    } else if (userTokens.tokenExpiration > new Date()) {
-      return "OK";
-    } else {
+    }
+
+    if (userTokens.tokenExpiration <= new Date()) {
       setUserTokens(undefined);
       throw new Error("Unauthorized", { cause: "Session expired" });
     }
+
+    return "OK";
   }
 
   const uploadFile: GoogleDriveContextType["uploadFile"] = async (
     { file, metadata },
     config
   ) => {
-    const authStatus = authGuard();
+    const authStatus = hasAuthorization();
     if (authStatus !== "OK") return Promise.reject(authStatus);
 
     metadata.parents = [spaces];
@@ -199,7 +199,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     { id, file, metadata },
     config
   ) => {
-    const authStatus = authGuard();
+    const authStatus = hasAuthorization();
     if (authStatus !== "OK") return Promise.reject(authStatus);
 
     const body = new FormData();
@@ -228,7 +228,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     params,
     ...config
   }: AxiosRequestConfig = {}) => {
-    const authStatus = authGuard();
+    const authStatus = hasAuthorization();
     if (authStatus !== "OK") return Promise.reject(authStatus);
 
     const request = axios.get("https://www.googleapis.com/drive/v3/files", {
@@ -250,7 +250,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     { id },
     { params, ...config }: AxiosRequestConfig = {}
   ) => {
-    const authStatus = authGuard();
+    const authStatus = hasAuthorization();
     if (authStatus !== "OK") return Promise.reject(authStatus);
 
     const request = axios.get(
@@ -272,7 +272,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     { id },
     config
   ) => {
-    const authStatus = authGuard();
+    const authStatus = hasAuthorization();
     if (authStatus !== "OK") return Promise.reject(authStatus);
 
     const request = axios.delete(
@@ -287,11 +287,6 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
 
     return request;
   };
-
-  useEffect(() => {
-    if (!isLoaded || !userTokens) return;
-    setHasScope(hasGrantedAnyScopeGoogle(userTokens, scope));
-  }, [isLoaded, userTokens]);
 
   return (
     <googleDriveContext.Provider
