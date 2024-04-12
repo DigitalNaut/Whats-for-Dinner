@@ -13,7 +13,7 @@
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "typecheck": "pnpm exec tsc -b",
     "validate": "run-s format lint typecheck && pnpm test -- --watchAll=false",
-    "clean": "pnpx rimraf pnpm-lock.yaml node_modules",
+    "cleanup": "pnpx rimraf pnpm-lock.yaml node_modules dist coverage",
     "tailwind:viewer": "tailwind-config-viewer -o"
   },
   "dependencies": {
