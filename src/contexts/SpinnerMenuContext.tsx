@@ -6,10 +6,10 @@ import {
   useContext,
   createContext,
 } from "react";
-import Spinner from "src/components/Spinner";
+import Spinner from "src/components/common/Spinner";
 
 import type { SpinnerOption } from "src/components/SpinningWheel";
-import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
+import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
 
 const TIMEOUT = 2500;
 const CONFIG_FILE_NAME = "config.json";
@@ -51,7 +51,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     updateFile,
     deleteFile,
     isLoaded: isDriveLoaded,
-  } = useGoogleDrive();
+  } = useGoogleDriveContext();
   const [menuItems, setMenuItems] = useState<SpinnerOption[]>();
   const [configFileId, setConfigFileId] = useState<string>();
   const [state, setState] = useState<State>(State.Loading);
@@ -127,18 +127,20 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   const getImage = useCallback(
     async (item: SpinnerOption) => {
       try {
-        const { data, statusText } = await fetchFile<"blob">(
+        const { data, status } = await fetchFile<"blob">(
           { id: item.fileId },
           { responseType: "blob" }
         );
 
-        if (statusText !== "OK" || !data) throw new Error(statusText);
+        if (status !== 200 || !data)
+          throw new Error(`Could not get image: HTTP ${status}`);
         if (!(data instanceof Blob)) throw new Error("Data is not a blob");
 
         const url = URL.createObjectURL(data);
 
         return url;
       } catch (error) {
+        console.error(error);
         return "https://via.placeholder.com/256";
       }
     },

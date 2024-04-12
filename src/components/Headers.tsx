@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 
-import { useHeaderContext } from "src/hooks/HeaderContext";
-import { useUser } from "src/hooks/UserContext";
+import { useHeaderContext } from "src/contexts/HeaderContext";
+import { useUser } from "src/contexts/UserContext";
 
-import { ReactComponent as Chopsticks } from "src/assets/chopsticks.svg";
+import Chopsticks from "src/assets/chopsticks.svg?react";
 
 export function TitleHeader({ children }: PropsWithChildren) {
   const { UserCard } = useUser();

@@ -1,9 +1,9 @@
-import "@testing-library/jest-dom";
+import { expect, test } from "vitest";
 import { render, screen } from "@testing-library/react";
 
-import Floating from "src/components/Floating";
+import Floating from "src/components/common/Floating";
 
-it("renders a fixed element on the screen with children", () => {
+test("renders a fixed element on the screen with children", () => {
   const { container } = render(<Floating>Test</Floating>);
   const children = screen.getByText("Test");
 

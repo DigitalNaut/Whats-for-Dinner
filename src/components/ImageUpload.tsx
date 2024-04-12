@@ -2,12 +2,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { faCloudArrowUp, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { useGoogleDrive } from "src/hooks/GoogleDriveContext";
-import Spinner from "src/components/Spinner";
-import ProgressBar from "src/components/ProgressBar";
+import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
+import Spinner from "src/components/common/Spinner";
+import ProgressBar from "src/components/common/ProgressBar";
 
 export default function ImageUpload({ onUpload }: { onUpload(): void }) {
-  const { uploadFile, hasScope } = useGoogleDrive();
+  const { uploadFile, hasScope } = useGoogleDriveContext();
 
   const [imageFileToUpload, setImageFileToUpload] = useState<{
     file: File;
@@ -127,7 +127,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
         <>
           <img
             src={imageFileToUpload.url || "https://via.placeholder.com/128"}
-            className="h-[128px] w-[128px] rounded-md object-cover object-center"
+            className="size-[128px] rounded-md object-cover object-center"
           />
           {uploadProgress && <ProgressBar progress={uploadProgress} />}
           <div className="flex gap-1">

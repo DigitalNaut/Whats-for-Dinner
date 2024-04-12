@@ -1,10 +1,10 @@
-import "@testing-library/jest-dom";
+import { expect, test, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import Switcher, { SwitcherState } from "src/components/Switcher";
+import Switcher, { SwitcherState } from "src/components/common/Switcher";
 
-it("renders a switcher with two options", () => {
+test("renders a switcher with two options", () => {
   render(
     <Switcher
       initialState={SwitcherState.FirstOption}
@@ -24,7 +24,7 @@ it("renders a switcher with two options", () => {
   expect(buttons[1]).toHaveTextContent("second");
 });
 
-it("renders the first option", async () => {
+test("renders the first option", async () => {
   render(
     <Switcher
       initialState={SwitcherState.FirstOption}
@@ -41,7 +41,7 @@ it("renders the first option", async () => {
   expect(screen.queryByText(/dogs/i)).not.toBeInTheDocument();
 });
 
-it("renders the second option", async () => {
+test("renders the second option", async () => {
   render(
     <Switcher
       initialState={SwitcherState.SecondOption}
@@ -58,8 +58,8 @@ it("renders the second option", async () => {
   expect(screen.queryByText(/cats/i)).not.toBeInTheDocument();
 });
 
-it("switches display based on clicks", async () => {
-  const onChange = jest.fn();
+test("switches display based on clicks", async () => {
+  const onChange = vi.fn();
 
   render(
     <Switcher

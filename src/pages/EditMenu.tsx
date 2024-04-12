@@ -2,7 +2,7 @@ import type { ReactPortal } from "react";
 import { createPortal } from "react-dom";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Checkbox } from "ariakit";
+import { Checkbox } from "@ariakit/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -13,11 +13,11 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 
-import Floating from "src/components/Floating";
-import Toggle from "src/components/Toggle";
-import { useHeader, useHeaderContext } from "src/hooks/HeaderContext";
-import { useSpinnerMenuContext } from "src/hooks/SpinnerMenuContext";
-import Spinner from "src/components/Spinner";
+import Floating from "src/components/common/Floating";
+import Toggle from "src/components/common/Toggle";
+import { useHeader, useHeaderContext } from "src/contexts/HeaderContext";
+import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
+import Spinner from "src/components/common/Spinner";
 
 enum Modes {
   Toggle,
@@ -196,14 +196,14 @@ export default function EditMenu() {
 
   return (
     <>
-      <h2 className="text-center font-bangers text-4xl">Menu</h2>
+      <h2 className="text-center font-bangers text-4xl">Menú</h2>
       {menuPortal}
       <div className="flex flex-col gap-4">
         {allMenuItems &&
           allMenuItems.map(({ label, imageUrl, key, enabled }, index) => (
             <div key={key} className="flex items-center gap-2">
               <img
-                className="h-10 w-10 rounded-lg object-cover"
+                className="size-10 rounded-lg object-cover"
                 src={imageUrl}
                 alt={label}
               />
@@ -215,7 +215,7 @@ export default function EditMenu() {
                 />
               ) : (
                 <Checkbox
-                  className="h-6 w-6 rounded-sm border-2 border-purple-400 checked:border-none checked:bg-purple-400 focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-700"
+                  className="size-6 rounded-sm border-2 border-purple-400 checked:border-none checked:bg-purple-400 focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-700"
                   checked={selected.get(label)?.isSelected}
                   onChange={() => {
                     const newSelected = new Map(selected);
@@ -235,6 +235,7 @@ export default function EditMenu() {
             </div>
           ))}
       </div>
+
       <Floating>
         <Link to="/addItem" tabIndex={-1}>
           <button data-filled className="flex items-center gap-1">

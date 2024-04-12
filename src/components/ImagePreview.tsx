@@ -43,7 +43,7 @@ export default function ImagePreview({
         src={fileUrl}
         title={fileName}
         alt="Prevista"
-        className={`h-[128px] w-[128px] rounded-md object-cover object-center ${
+        className={`size-[128px] rounded-md object-cover object-center ${
           isInteractive ? "cursor-pointer bg-black" : ""
         }`}
         width="128"
@@ -53,13 +53,13 @@ export default function ImagePreview({
         {...props}
       />
       {error && (
-        <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-black/50 text-center">
+        <div className="absolute left-0 top-0 flex size-full items-center justify-center bg-black/50 text-center">
           <span className="text-white">{error}</span>
         </div>
       )}
       {isInteractive && (
         <>
-          <div className="pointer-events-none absolute inset-0 z-10 grid h-full w-full place-items-center group-hover:bg-black/50">
+          <div className="pointer-events-none absolute inset-0 z-10 grid size-full place-items-center group-hover:bg-black/50">
             <span className="invisible inset-x-full inset-y-0 group-hover:visible">
               <FontAwesomeIcon icon={faTimes} />
             </span>

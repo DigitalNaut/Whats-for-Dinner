@@ -1,16 +1,16 @@
 import type { PropsWithChildren } from "react";
-import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
+import { test, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { BrowserRouter, MemoryRouter } from "react-router-dom";
 
 import { MenuHeader, TitleHeader } from "src/components/Headers";
-import { HeaderProvider, useHeader } from "src/hooks/HeaderContext";
+import { HeaderProvider, useHeader } from "src/contexts/HeaderContext";
 import { act } from "react-dom/test-utils";
 
 const user = userEvent.setup();
 
-it("renders a title header with a chopstick svg", () => {
+test("renders a title header with a chopstick svg", () => {
   const { container } = render(<TitleHeader>Test</TitleHeader>);
   const svg = container.querySelector("svg");
   const children = screen.getByText("Test");
@@ -19,7 +19,7 @@ it("renders a title header with a chopstick svg", () => {
   expect(children).toBeInTheDocument();
 });
 
-it("renders a menu header with a back button", async () => {
+test("renders a menu header with a back button", async () => {
   const { container } = render(<MenuHeader />, { wrapper: MemoryRouter });
   const buttons = container.querySelectorAll("button");
   const [backButton, menuButton] = buttons;
@@ -31,7 +31,7 @@ it("renders a menu header with a back button", async () => {
   expect(menuButton).toBeUndefined();
 });
 
-it("expects the default back button behavior", async () => {
+test("expects the default back button behavior", async () => {
   render(<MenuHeader />, { wrapper: BrowserRouter });
   const backButton = screen.getByLabelText("Atrás");
   window.history.pushState({}, "Test page", "/test");
@@ -64,7 +64,7 @@ function TestComponent({ backTo }: { backTo?: string }) {
   return <MenuHeader />;
 }
 
-it("expects a custom back button behavior", async () => {
+test("expects a custom back button behavior", async () => {
   render(<TestComponent backTo="/test" />, { wrapper: Providers });
 
   const backButton = screen.getByLabelText("Atrás");
@@ -78,7 +78,7 @@ it("expects a custom back button behavior", async () => {
   expect(window.location.pathname).toBe("/test");
 });
 
-it("renders a menu header with a menu button", async () => {
+test("renders a menu header with a menu button", async () => {
   render(<TestComponent />, { wrapper: Providers });
 
   const buttons = await screen.findAllByRole("button");
@@ -89,7 +89,7 @@ it("renders a menu header with a menu button", async () => {
   expect(menuButton).toBeInTheDocument();
 });
 
-it("renders a menu header with an alternative color", () => {
+test("renders a menu header with an alternative color", () => {
   const { container } = render(<TestComponent />, { wrapper: Providers });
 
   expect(container.firstChild).toHaveClass("bg-amber-600");

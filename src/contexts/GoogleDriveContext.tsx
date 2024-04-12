@@ -6,7 +6,7 @@ import { useGoogleLogin, hasGrantedAnyScopeGoogle } from "@react-oauth/google";
 import axios from "axios";
 
 import { useScript } from "src/hooks/UseScript";
-import { useUser } from "src/hooks/UserContext";
+import { useUser } from "src/contexts/UserContext";
 
 type MetadataType = {
   name: string;
@@ -34,16 +34,16 @@ type FileUploadResponse = (FileUploadSuccess & GoogleDriveError) | false;
 type FileDownloadResponse<T extends ResponseType> = T extends "json"
   ? JSON | GoogleDriveError | false
   : T extends "blob"
-  ? Blob | GoogleDriveError | false
-  : T extends "arraybuffer"
-  ? ArrayBuffer | GoogleDriveError | false
-  : T extends "document"
-  ? Document | GoogleDriveError | false
-  : T extends "text"
-  ? string | GoogleDriveError | false
-  : T extends "stream"
-  ? ReadableStream
-  : JSON | GoogleDriveError | false;
+    ? Blob | GoogleDriveError | false
+    : T extends "arraybuffer"
+      ? ArrayBuffer | GoogleDriveError | false
+      : T extends "document"
+        ? Document | GoogleDriveError | false
+        : T extends "text"
+          ? string | GoogleDriveError | false
+          : T extends "stream"
+            ? ReadableStream
+            : JSON | GoogleDriveError | false;
 
 type FileDeletedResponse = GoogleDriveError | "";
 type FilesListResponse = {
@@ -112,7 +112,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
   async function initGapiClient() {
     try {
       await gapi.client.init({
-        apiKey: process.env.REACT_APP_GOOGLE_API_KEY,
+        apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
         discoveryDocs: [DISCOVERY_DOC],
       });
 
@@ -315,7 +315,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
   );
 }
 
-export function useGoogleDrive() {
+export function useGoogleDriveContext() {
   const context = useContext(googleDriveContext);
   if (!context)
     throw new Error("useGoogleDrive must be used within a GoogleDriveContext");

@@ -1,8 +1,10 @@
 import { useState } from "react";
+
 export enum SwitcherState {
   FirstOption,
   SecondOption,
 }
+
 type SwitcherProps = {
   labels: [string, string];
   renders: {
