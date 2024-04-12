@@ -286,12 +286,12 @@ export default function AddItem() {
       <div className="flex h-full flex-col items-center justify-center">
         <div className="flex flex-col items-center gap-4 rounded-2xl bg-slate-200 p-6 text-slate-600">
           <h2 className="w-full text-xl font-medium">Cargando archivo</h2>
-          <div className="relative h-32 w-32 overflow-hidden rounded-full">
+          <div className="relative size-32 overflow-hidden rounded-full">
             {fileInfo && (
               <img
                 src={fileInfo?.url}
                 alt={fileInfo?.name}
-                className="h-full w-full object-cover"
+                className="size-full object-cover"
               />
             )}
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/50 text-white">

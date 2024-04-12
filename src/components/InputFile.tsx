@@ -71,7 +71,7 @@ export default function InputFile({
       <div className="flex flex-col items-center gap-2">
         <input
           data-filled
-          className="peer pointer-events-none absolute inset-1/2 h-0 w-0 overflow-hidden opacity-0"
+          className="peer pointer-events-none absolute inset-1/2 size-0 overflow-hidden opacity-0"
           style={{ padding: 0 }}
           id={name}
           ref={inputRef}
@@ -83,32 +83,32 @@ export default function InputFile({
         <div
           id={name + "-label"}
           ref={labelRef}
-          className="group relative h-32 w-32 cursor-pointer overflow-hidden rounded-full border border-gray-400 bg-gray-700 hover:bg-gray-800 
-            peer-invalid:ring-2 peer-invalid:ring-red-300 peer-invalid:ring-offset-2 peer-invalid:ring-offset-gray-700 
-            peer-focus:ring-2 peer-focus:ring-white peer-focus:ring-offset-2 peer-focus:ring-offset-blue-600"
+          className="group relative size-32 cursor-pointer overflow-hidden rounded-full border border-gray-400 bg-gray-700 hover:bg-gray-800 peer-invalid:ring-2 
+            peer-invalid:ring-red-300 peer-invalid:ring-offset-2 peer-invalid:ring-offset-gray-700 peer-focus:ring-2 
+            peer-focus:ring-white peer-focus:ring-offset-2 peer-focus:ring-offset-blue-600"
         >
           {fileUrl ? (
             <div className="group">
-              <div className="absolute h-full w-full">
+              <div className="absolute size-full">
                 <img
                   src={fileUrl}
                   alt={file?.name}
-                  className="h-full w-full object-cover"
+                  className="size-full object-cover"
                 />
               </div>
               <button
-                className="absolute hidden h-full w-full flex-col items-center justify-center gap-2 bg-black/50 group-hover:flex"
+                className="absolute hidden size-full flex-col items-center justify-center gap-2 bg-black/50 group-hover:flex"
                 role="button"
                 onClick={removeFileHandler}
               >
-                <FontAwesomeIcon icon={faTimes} className="h-6 w-6" />
+                <FontAwesomeIcon icon={faTimes} className="size-6" />
                 <span className="text-sm">Eliminar</span>
               </button>
             </div>
           ) : (
             <label
               htmlFor={name}
-              className="flex h-full w-full cursor-pointer flex-col items-center justify-center gap-2"
+              className="flex size-full cursor-pointer flex-col items-center justify-center gap-2"
             >
               {isResizing ? (
                 <>
@@ -119,11 +119,11 @@ export default function InputFile({
                 <>
                   <FontAwesomeIcon
                     icon={faImage}
-                    className="h-6 w-6 group-hover:hidden"
+                    className="size-6 group-hover:hidden"
                   />
                   <FontAwesomeIcon
                     icon={faCloudUpload}
-                    className="hidden h-6 w-6 group-hover:block"
+                    className="hidden size-6 group-hover:block"
                   />
                   <span className="text-sm">{label}</span>
                 </>

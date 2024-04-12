@@ -127,7 +127,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
         <>
           <img
             src={imageFileToUpload.url || "https://via.placeholder.com/128"}
-            className="h-[128px] w-[128px] rounded-md object-cover object-center"
+            className="size-[128px] rounded-md object-cover object-center"
           />
           {uploadProgress && <ProgressBar progress={uploadProgress} />}
           <div className="flex gap-1">

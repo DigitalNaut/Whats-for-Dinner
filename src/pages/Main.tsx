@@ -16,14 +16,10 @@ function Dish({ label, imageUrl }: DishProps) {
   return (
     <div className="group">
       <div className="relative aspect-square w-16 overflow-hidden rounded-lg bg-gray-700 md:w-24 lg:w-28">
-        <span className="pointer-events-none absolute hidden h-full w-full place-items-center bg-black/50 text-center text-sm group-hover:grid">
+        <span className="pointer-events-none absolute hidden size-full place-items-center bg-black/50 text-center text-sm group-hover:grid">
           {label}
         </span>
-        <img
-          className="h-full w-full object-cover"
-          src={imageUrl}
-          alt={label}
-        />
+        <img className="size-full object-cover" src={imageUrl} alt={label} />
       </div>
     </div>
   );

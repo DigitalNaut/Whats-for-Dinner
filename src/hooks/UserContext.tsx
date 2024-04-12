@@ -93,7 +93,7 @@ export function UserProvider({ children }: PropsWithChildren) {
           alt="User avatar"
           width={32}
           height={32}
-          className="h-8 w-8 rounded-full"
+          className="size-8 rounded-full"
         />
         <div
           className="absolute right-0 top-0 z-50 flex cursor-pointer 
@@ -112,7 +112,7 @@ export function UserProvider({ children }: PropsWithChildren) {
               alt="User avatar"
               width={32}
               height={32}
-              className="h-8 w-8 rounded-full"
+              className="size-8 rounded-full"
             />
             <div>
               <div className="hidden text-sm font-medium group-focus-within:block group-hover:block">
@@ -143,7 +143,7 @@ export function UserProvider({ children }: PropsWithChildren) {
     >
       {children}
       {notification && (
-        <div className="fixed top-0 left-0 flex w-full justify-center gap-2 bg-blue-400 p-1 text-white shadow-xl sm:p-2 md:p-4">
+        <div className="fixed left-0 top-0 flex w-full justify-center gap-2 bg-blue-400 p-1 text-white shadow-xl sm:p-2 md:p-4">
           <div className="flex w-full justify-between px-4 sm:max-w-sm sm:px-0 md:max-w-md lg:max-w-lg">
             <div className="flex items-center gap-2">
               <FontAwesomeIcon icon={faInfoCircle} />
@@ -164,4 +164,3 @@ export function useUser() {
   if (!context) throw new Error("useUser must be used within a UserProvider");
   return context;
 }
- 

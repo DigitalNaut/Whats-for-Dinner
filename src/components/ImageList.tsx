@@ -47,14 +47,11 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
         <img
           title={`MIME Type: "${file.mimeType}"`}
           src={file.iconLink}
-          className={`h-[20px] w-[20px] ${isDeleting ? "grayscale" : ""}`}
+          className={`size-[20px] ${isDeleting ? "grayscale" : ""}`}
           alt="File icon"
         />
       )}
-      <span
-        title={file.name}
-        className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
-      >
+      <span title={file.name} className="flex-1 truncate">
         {file.name?.split(".")[0]}
       </span>
       <Kilobytes value={Number(file.size)} />

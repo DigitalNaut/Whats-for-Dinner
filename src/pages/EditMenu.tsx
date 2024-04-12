@@ -203,7 +203,7 @@ export default function EditMenu() {
           allMenuItems.map(({ label, imageUrl, key, enabled }, index) => (
             <div key={key} className="flex items-center gap-2">
               <img
-                className="h-10 w-10 rounded-lg object-cover"
+                className="size-10 rounded-lg object-cover"
                 src={imageUrl}
                 alt={label}
               />
@@ -215,7 +215,7 @@ export default function EditMenu() {
                 />
               ) : (
                 <Checkbox
-                  className="h-6 w-6 rounded-sm border-2 border-purple-400 checked:border-none checked:bg-purple-400 focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-700"
+                  className="size-6 rounded-sm border-2 border-purple-400 checked:border-none checked:bg-purple-400 focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-700"
                   checked={selected.get(label)?.isSelected}
                   onChange={() => {
                     const newSelected = new Map(selected);

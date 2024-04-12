@@ -344,20 +344,20 @@ export default function SpinningWheel({
               src={result.imageUrl}
             />
           ) : (
-            <div className="grid aspect-square h-full w-full items-center rounded-full bg-slate-700 text-center font-bangers text-8xl text-white">
+            <div className="grid aspect-square size-full items-center rounded-full bg-slate-700 text-center font-bangers text-8xl text-white">
               {isLoaded ? "?" : <SpinnerIcon text="" />}
             </div>
           )}
         </div>
-        <Arrow className="absolute inset-x-1/2 -inset-y-4 -translate-x-1/2 -translate-y-4" />
+        <Arrow className="absolute -inset-y-4 inset-x-1/2 -translate-x-1/2 -translate-y-4" />
         <canvas
-          className="aspect-square h-full w-full"
+          className="aspect-square size-full"
           ref={canvasRef}
           width="400"
           height="400"
         />
         <button
-          className="absolute inset-x-1/2 bottom-2 h-fit w-fit -translate-x-1/2 -translate-y-1/2 cursor-pointer whitespace-nowrap rounded-full bg-red-700 px-4 py-2 font-bangers text-2xl hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-400"
+          className="absolute inset-x-1/2 bottom-2 size-fit -translate-x-1/2 -translate-y-1/2 cursor-pointer whitespace-nowrap rounded-full bg-red-700 px-4 py-2 font-bangers text-2xl hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-400"
           disabled={cannotSpin}
           onClick={spinTheWheel}
         >
