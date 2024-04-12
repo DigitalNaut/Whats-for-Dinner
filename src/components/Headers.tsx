@@ -27,26 +27,27 @@ export function TitleHeader({ children }: PropsWithChildren) {
 export function MenuHeader() {
   const navigate = useNavigate();
   const { headerProperties, menuButton } = useHeaderContext();
-  const { backTo, title, altBackButton, altColor } = headerProperties;
+  const { backTo, altBackButton, altColor } = headerProperties;
   const { UserCard } = useUser();
 
   return (
     <div
-      className={`relative flex w-full items-center justify-between gap-4 ${
+      className={`relative flex w-full items-center justify-between ${
         altColor ? "bg-amber-600" : "bg-purple-800"
       } px-4 py-2 md:rounded-t-xl`}
     >
       {altBackButton ?? (
         <button
+          className="flex items-center gap-2"
           aria-label="Atrás"
           onClick={() => {
             backTo ? navigate(backTo) : navigate(-1);
           }}
         >
           <FontAwesomeIcon icon={faChevronLeft} />
+          <span className="flex-1">Atrás</span>
         </button>
       )}
-      <span className="flex-1">{title}</span>
       {menuButton}
       <UserCard />
     </div>

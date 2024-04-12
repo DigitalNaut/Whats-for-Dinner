@@ -108,7 +108,6 @@ export default function AddItem() {
   );
 
   useHeader({
-    title: "Crear",
     backTo: "menu",
   });
 
@@ -275,8 +274,7 @@ export default function AddItem() {
           No tienes permisos para subir imágenes
         </h1>
         <p className="text-center">
-          Puedes crear el plato sin imagen, pero no podrás subir una imagen
-          posteriormente
+          Necesitas iniciar sesión con Google para subir imágenes
         </p>
       </div>
     );
@@ -332,7 +330,8 @@ export default function AddItem() {
 
   return (
     <div className="flex flex-col gap-4 p-6">
-      <h2 className="text-center text-2xl">Nuevo platillo</h2>
+      <h2 className="text-center text-2xl">Añadir platillo</h2>
+      <p>Introduce los datos del platillo:</p>
       <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
         {errorState.formError && (
           <div className="flex w-full items-center gap-1 rounded-sm bg-amber-600 p-2 text-white">
