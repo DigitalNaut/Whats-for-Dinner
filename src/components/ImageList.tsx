@@ -139,7 +139,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
 
       setLoadingDriveFiles(false);
     },
-    [fetchList]
+    [fetchList],
   );
 
   async function downloadFile(fileInfo: gapi.client.drive.File) {
@@ -172,7 +172,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         setError(
           `Error ${data.error.code || "unknown"}: ${
             data.error.message || "No message"
-          }`
+          }`,
         );
     } catch (error) {
       if (error instanceof Error) {
@@ -198,7 +198,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         setError(
           `Error ${data.error.code || "unknown"}: ${
             data.error.message || "No message"
-          }`
+          }`,
         );
     } catch (error) {
       if (error instanceof Error) setError(`${error.name}: ${error.message}`);

@@ -15,7 +15,7 @@ test("renders an error handler component", () => {
   render(
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <ErrorComponent />
-    </ErrorBoundary>
+    </ErrorBoundary>,
   );
   const element = screen.getByText(/Something went wrong:/i);
   expect(element).toBeInTheDocument();

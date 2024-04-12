@@ -23,7 +23,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
   const uploadController = useRef<AbortController>();
 
   const handleImageInputChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setError(undefined);
 
@@ -71,13 +71,13 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
         {
           signal: uploadController.current.signal,
           onUploadProgress: ({ progress }) => setUploadProgress(progress),
-        }
+        },
       );
 
       if (data === false) setError("File upload failed");
       else if (data.error) {
         setError(
-          `Error ${data.error.code || "unknown"}: ${data.error.message}`
+          `Error ${data.error.code || "unknown"}: ${data.error.message}`,
         );
       } else onUpload();
 

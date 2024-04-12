@@ -72,7 +72,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
 
   const onSignInSuccess = async (tokenResponse: TokenResponseSuccess) => {
     const tokenExpiration = new Date(
-      Date.now() + tokenResponse.expires_in * 1000
+      Date.now() + tokenResponse.expires_in * 1000,
     );
     setUserTokens({ ...tokenResponse, tokenExpiration });
   };

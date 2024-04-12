@@ -37,26 +37,26 @@ type FilesListResponse = {
 
 type UploadFile = (
   { file, metadata }: Omit<FileParams, "id">,
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig,
 ) => Promise<AxiosResponse<FileUploadResponse, unknown>>;
 
 type UpdateFile = (
   { file, metadata }: FileParams,
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig,
 ) => Promise<AxiosResponse<FileUploadResponse, unknown>>;
 
 type FetchList = (
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig,
 ) => Promise<AxiosResponse<FilesListResponse, unknown>>;
 
 type FetchFile = <T extends DownloadFileTypes>(
   file: gapi.client.drive.File,
-  config?: AxiosRequestConfig<T>
+  config?: AxiosRequestConfig<T>,
 ) => Promise<AxiosResponse<FileDownloadResponse<T>, unknown>>;
 
 type DeleteFile = (
   file: gapi.client.drive.File,
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig,
 ) => Promise<AxiosResponse<FileDeletedResponse, unknown>>;
 
 const spaces = "appDataFolder";
@@ -73,7 +73,7 @@ export function useGoogleDriveAPI() {
     const body = new FormData();
     body.append(
       "metadata",
-      new Blob([JSON.stringify(metadata)], { type: "application/json" })
+      new Blob([JSON.stringify(metadata)], { type: "application/json" }),
     );
     body.append("file", file);
 
@@ -86,7 +86,7 @@ export function useGoogleDriveAPI() {
           Authorization: `Bearer ${userTokens?.access_token}`,
         },
         ...config,
-      }
+      },
     );
 
     return request;
@@ -99,7 +99,7 @@ export function useGoogleDriveAPI() {
     const body = new FormData();
     body.append(
       "metadata",
-      new Blob([JSON.stringify(metadata)], { type: "application/json" })
+      new Blob([JSON.stringify(metadata)], { type: "application/json" }),
     );
     body.append("file", file);
 
@@ -112,7 +112,7 @@ export function useGoogleDriveAPI() {
           Authorization: `Bearer ${userTokens?.access_token}`,
         },
         ...config,
-      }
+      },
     );
 
     return request;
@@ -142,7 +142,7 @@ export function useGoogleDriveAPI() {
 
   const fetchFile: FetchFile = async (
     { id },
-    { params, ...config }: AxiosRequestConfig = {}
+    { params, ...config }: AxiosRequestConfig = {},
   ) => {
     const authStatus = await hasAuthorization();
     if (authStatus !== "OK") return Promise.reject(authStatus);
@@ -156,7 +156,7 @@ export function useGoogleDriveAPI() {
           authorization: `Bearer ${userTokens?.access_token}`,
         },
         ...config,
-      }
+      },
     );
 
     return request;
@@ -173,7 +173,7 @@ export function useGoogleDriveAPI() {
           authorization: `Bearer ${userTokens?.access_token}`,
         },
         ...config,
-      }
+      },
     );
 
     return request;

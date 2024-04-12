@@ -52,7 +52,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
       try {
         const { data, status } = await fetchFile<Blob>(
           { id: item.fileId },
-          { responseType: "blob" }
+          { responseType: "blob" },
         );
 
         if (status !== 200 || !data)
@@ -67,7 +67,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         return "https://via.placeholder.com/256";
       }
     },
-    [fetchFile]
+    [fetchFile],
   );
 
   const deleteImage = async (item: SpinnerOption) => {
@@ -94,7 +94,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
       setConfigFileId(config.id);
       return config;
     },
-    [fetchList]
+    [fetchList],
   );
 
   const createConfigFile = useCallback(
@@ -107,10 +107,10 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
             mimeType: "application/json",
           },
         },
-        { signal }
+        { signal },
       );
     },
-    [uploadFile]
+    [uploadFile],
   );
 
   const getConfigFile = useCallback(
@@ -141,7 +141,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         setMenuItems(config);
       }
     },
-    [fetchFile, getImage]
+    [fetchFile, getImage],
   );
 
   const updateConfigFile = useCallback(
@@ -162,7 +162,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
           id: configFileId,
           file: new File(
             [JSON.stringify(contentsWithoutBlobs)],
-            CONFIG_FILE_NAME
+            CONFIG_FILE_NAME,
           ),
           metadata: {
             name: CONFIG_FILE_NAME,
@@ -176,7 +176,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         return false;
       }
     },
-    [configFileId, updateFile]
+    [configFileId, updateFile],
   );
 
   const getConfigOrCreate = useCallback(
@@ -202,7 +202,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         }
       }
     },
-    [getConfigFileMeta, createConfigFile, getConfigFile]
+    [getConfigFileMeta, createConfigFile, getConfigFile],
   );
 
   const triggerDelayedUpload = useCallback(
@@ -229,7 +229,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
       }, timeout);
       setUploadTimeoutId(timeoutId);
     },
-    [menuItems, updateConfigFile, uploadTimeoutId]
+    [menuItems, updateConfigFile, uploadTimeoutId],
   );
 
   function toggleMenuItems(indexes: number[], value?: boolean) {
@@ -259,7 +259,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     if (!indexes.length) return;
 
     const confirmDelete = confirm(
-      "Se borrarán todos los elementos seleccionados"
+      "Se borrarán todos los elementos seleccionados",
     );
 
     if (!confirmDelete) return;
@@ -282,7 +282,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     setMenuItems(
       (prevItems) =>
         prevItems &&
-        [...prevItems].filter((_, index) => !indexes.includes(index))
+        [...prevItems].filter((_, index) => !indexes.includes(index)),
     );
     setState("Dirty");
   }
@@ -350,7 +350,7 @@ export function useSpinnerMenuContext() {
   const context = useContext(spinnerMenuContext);
   if (context === undefined)
     throw new Error(
-      "useSpinnerMenuContext must be used within a SpinnerMenuContextProvider"
+      "useSpinnerMenuContext must be used within a SpinnerMenuContextProvider",
     );
   return context;
 }

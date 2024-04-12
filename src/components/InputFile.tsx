@@ -34,7 +34,7 @@ export default function InputFile({
   const inputRef = createRef<HTMLInputElement>();
 
   const onChangeHandler: ChangeEventHandler<HTMLInputElement> = async (
-    event
+    event,
   ) => {
     const file = event.target.files?.item(0);
 
