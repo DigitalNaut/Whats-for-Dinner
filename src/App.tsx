@@ -5,18 +5,18 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
+import { GoogleDriveProvider } from "src/contexts/GoogleDriveContext";
+import { MainLayout, MenuLayout } from "src/components/Layouts";
+import { MenuHeader, TitleHeader } from "src/components/Headers";
+import { SpinnerMenuContextProvider } from "src/contexts/SpinnerMenuContext";
+import AddItem from "src/pages/AddItem";
+import EditMenu from "src/pages/EditMenu";
 import Login from "src/pages/Login";
 import Main from "src/pages/Main";
-import Privacy from "src/pages/Privacy";
-import Terms from "src/pages/Terms";
 import NotFound from "src/pages/NotFound";
-import EditMenu from "src/pages/EditMenu";
-import AddItem from "src/pages/AddItem";
+import Privacy from "src/pages/Privacy";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
-import { MainLayout, MenuLayout } from "src/components/Layouts";
-import { GoogleDriveProvider } from "src/contexts/GoogleDriveContext";
-import { SpinnerMenuContextProvider } from "src/contexts/SpinnerMenuContext";
-import { MenuHeader, TitleHeader } from "src/components/Headers";
+import Terms from "src/pages/Terms";
 
 // TODO: Remove
 // import Tests from "src/pages/Tests";

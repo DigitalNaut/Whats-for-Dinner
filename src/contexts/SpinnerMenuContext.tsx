@@ -127,18 +127,20 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   const getImage = useCallback(
     async (item: SpinnerOption) => {
       try {
-        const { data, statusText } = await fetchFile<"blob">(
+        const { data, status } = await fetchFile<"blob">(
           { id: item.fileId },
           { responseType: "blob" }
         );
 
-        if (statusText !== "OK" || !data) throw new Error(statusText);
+        if (status !== 200 || !data)
+          throw new Error(`Could not get image: HTTP ${status}`);
         if (!(data instanceof Blob)) throw new Error("Data is not a blob");
 
         const url = URL.createObjectURL(data);
 
         return url;
       } catch (error) {
+        console.error(error);
         return "https://via.placeholder.com/256";
       }
     },

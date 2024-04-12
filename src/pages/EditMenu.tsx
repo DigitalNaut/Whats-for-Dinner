@@ -235,6 +235,7 @@ export default function EditMenu() {
             </div>
           ))}
       </div>
+
       <Floating>
         <Link to="/addItem" tabIndex={-1}>
           <button data-filled className="flex items-center gap-1">
