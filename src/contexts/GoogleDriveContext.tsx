@@ -13,19 +13,23 @@ type MetadataType = {
   mimeType: string;
   parents?: string[];
 };
+
 type FileParams = {
   id: string;
   file: File;
   metadata: MetadataType;
 };
+
 type TokenResponseSuccess = Omit<
   TokenResponse,
   "error" | "error_description" | "error_uri"
 >;
+
 type TokenResponseError = Pick<
   TokenResponse,
   "error" | "error_description" | "error_uri"
 >;
+
 type TokenInfo = {
   tokenExpiration: Date;
 };
@@ -46,6 +50,7 @@ type FileDownloadResponse<T extends DownloadFileTypes> =
   | false;
 
 type FileDeletedResponse = GoogleDriveError | "";
+
 type FilesListResponse = {
   files?: gapi.client.drive.File[];
 } & GoogleDriveError;
@@ -85,26 +90,7 @@ type GoogleDriveContextType = {
   userTokens?: TokenResponseSuccess & TokenInfo;
 };
 
-const googleDriveContext = createContext<GoogleDriveContextType>({
-  hasScope: false,
-  uploadFile: () => {
-    throw new Error("Google Drive context is uninitialized");
-  },
-  updateFile: () => {
-    throw new Error("Google Drive context is uninitialized");
-  },
-  fetchList: () => {
-    throw new Error("Google Drive context is uninitialized");
-  },
-  fetchFile: () => {
-    throw new Error("Google Drive context is uninitialized");
-  },
-  deleteFile: () => {
-    throw new Error("Google Drive context is uninitialized");
-  },
-  isLoaded: false,
-  userTokens: undefined,
-});
+const googleDriveContext = createContext<GoogleDriveContextType | null>(null);
 
 const scope = "https://www.googleapis.com/auth/drive.appdata";
 const spaces = "appDataFolder";
@@ -327,7 +313,9 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
 
 export function useGoogleDriveContext() {
   const context = useContext(googleDriveContext);
+
   if (!context)
     throw new Error("useGoogleDrive must be used within a GoogleDriveContext");
+
   return context;
 }
