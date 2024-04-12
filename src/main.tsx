@@ -8,7 +8,7 @@ import ErrorFallback from "src/components/common/ErrorFallback";
 import { UserProvider } from "src/contexts/UserContext";
 import { HeaderProvider } from "src/contexts/HeaderContext";
 
-import "src/styles/tailwind.css";
+import "src/index.css";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
