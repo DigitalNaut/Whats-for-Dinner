@@ -106,7 +106,7 @@ export default function AddItem() {
   const [formState, formDispatch] = useReducer(stateReducer, initialFormState);
   const [errorState, errorDispatch] = useReducer(
     errorReducer,
-    initialErrorState
+    initialErrorState,
   );
 
   useHeader({
@@ -144,7 +144,7 @@ export default function AddItem() {
         {
           signal: uploadController.current.signal,
           onUploadProgress: ({ progress }) => setUploadProgress(progress),
-        }
+        },
       );
 
       if (data === false)

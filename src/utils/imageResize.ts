@@ -1,6 +1,6 @@
 export function resizeImage(
   file: File,
-  { maxWidth, maxHeight }: { maxWidth: number; maxHeight: number }
+  { maxWidth, maxHeight }: { maxWidth: number; maxHeight: number },
 ) {
   return new Promise((resolve: (value: File) => void, reject) => {
     const reader = new FileReader();
@@ -30,7 +30,7 @@ export function resizeImage(
             width > maxWidth ? xOffset : 0,
             height > maxHeight ? yOffset : 0,
             width,
-            height
+            height,
           );
 
           ctx.canvas.toBlob(
@@ -46,7 +46,7 @@ export function resizeImage(
               }
             },
             "image/png",
-            1
+            1,
           );
         }
       };

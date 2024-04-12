@@ -37,8 +37,8 @@ type HeaderContext = {
   createMenu: (
     items: (
       MenuItem: typeof Item,
-      MenuSeparator: typeof Separator
-    ) => JSX.Element
+      MenuSeparator: typeof Separator,
+    ) => JSX.Element,
   ) => {
     menu: JSX.Element;
     menuRef: MutableRefObject<HTMLElement | null>;
@@ -120,8 +120,8 @@ export function HeaderProvider({ children }: PropsWithChildren) {
   const createMenu = (
     items: (
       MenuItem: typeof Item,
-      MenuSeparator: typeof Separator
-    ) => JSX.Element
+      MenuSeparator: typeof Separator,
+    ) => JSX.Element,
   ) => {
     return {
       menu: (

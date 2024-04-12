@@ -36,7 +36,7 @@ class Wedge {
     public readonly startAngle: number,
     public readonly endAngle: number,
     public readonly color: string,
-    public readonly origin: { x: number; y: number }
+    public readonly origin: { x: number; y: number },
   ) {}
 
   drawShape(context: CanvasRenderingContext2D, radius: number) {
@@ -49,7 +49,7 @@ class Wedge {
       this.origin.y,
       radius,
       this.startAngle,
-      this.endAngle
+      this.endAngle,
     );
     context.fill();
     context.restore();
@@ -60,7 +60,7 @@ class Wedge {
     text: string,
     radius: number,
     angle: number,
-    emphasis: boolean
+    emphasis: boolean,
   ) {
     const theta = angle + this.startAngle;
     const x = this.origin.x + radius * Math.cos(theta);
@@ -117,7 +117,7 @@ class Spinner {
     private readonly origin: { x: number; y: number },
     private readonly radius: number,
     private readonly margin: number,
-    private choices: SpinnerOption[]
+    private choices: SpinnerOption[],
   ) {
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
     this.wedges = [];
@@ -145,11 +145,11 @@ class Spinner {
     this.wheelCanvas.height = this.canvas.height;
 
     const offscreenContext = this.wheelCanvas.getContext(
-      "2d"
+      "2d",
     ) as CanvasRenderingContext2D;
 
     this.wedges.forEach((wedge) =>
-      wedge.drawShape(offscreenContext, this.radius - this.margin)
+      wedge.drawShape(offscreenContext, this.radius - this.margin),
     );
   }
 
@@ -158,7 +158,7 @@ class Spinner {
     this.decorationsCanvas.height = this.canvas.height;
 
     const offscreenContext = this.decorationsCanvas.getContext(
-      "2d"
+      "2d",
     ) as CanvasRenderingContext2D;
 
     const radialGradientOverlay = this.context.createRadialGradient(
@@ -167,7 +167,7 @@ class Spinner {
       0,
       this.origin.x,
       this.origin.y,
-      this.radius
+      this.radius,
     );
     radialGradientOverlay.addColorStop(0, "rgba(255, 255, 255, 0.5)");
     radialGradientOverlay.addColorStop(1, "rgba(255, 255, 255, 0)");
@@ -185,7 +185,7 @@ class Spinner {
     // sin(π/4) = 0.707106 and cos(π/4) = 0.707106
     offscreenContext.lineTo(
       radiusPlusOne * -0.707106,
-      radiusPlusOne * 0.707106
+      radiusPlusOne * 0.707106,
     );
     offscreenContext.arcTo(
       0,
@@ -195,7 +195,7 @@ class Spinner {
       radiusPlusOne * 1.414213,
       radiusPlusOne * 0.707106,
       radiusPlusOne * 0.707106,
-      this.radius
+      this.radius,
     );
     offscreenContext.fill();
   }
@@ -223,7 +223,7 @@ class Spinner {
         label,
         this.radius * 0.75,
         angle,
-        index === currentChoiceIndex
+        index === currentChoiceIndex,
       );
     });
 
@@ -234,7 +234,7 @@ class Spinner {
   cycleChoices(insertIndex: number) {
     const newChoice = this.choices.slice(
       this.cyclingIndex,
-      this.cyclingIndex + 1
+      this.cyclingIndex + 1,
     )[0];
     this.cyclingChoices.splice(insertIndex, 1, newChoice);
     this.cyclingIndex = (this.cyclingIndex + 1) % this.choices.length;
@@ -242,7 +242,7 @@ class Spinner {
 
   getCurrentOptionIndex() {
     const index = Math.floor(
-      (((Math.PI * 3 - this.spinAngle) % TAU) / TAU) * this.maxChoices
+      (((Math.PI * 3 - this.spinAngle) % TAU) / TAU) * this.maxChoices,
     );
     if (this.choices.length > this.wedges.length && index !== this.prevResult) {
       // Calculate the choice at the opposite end of the wheel
@@ -258,7 +258,7 @@ class Spinner {
   spin(
     velocity: number,
     onUpdate?: (result: SpinnerOption) => void,
-    onSpinEnd?: (result: SpinnerOption) => void
+    onSpinEnd?: (result: SpinnerOption) => void,
   ) {
     this.spinAngle = (this.spinAngle + velocity) % TAU;
 
@@ -294,7 +294,7 @@ export default function SpinningWheel({
 
   const setupSpinner = (
     canvas: HTMLCanvasElement,
-    choices: SpinnerOption[]
+    choices: SpinnerOption[],
   ) => {
     const { width, height } = canvas;
     wheelRef.current = new Spinner(
@@ -305,7 +305,7 @@ export default function SpinningWheel({
       },
       200,
       3,
-      choices
+      choices,
     );
 
     wheelRef.current.draw();

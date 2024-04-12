@@ -59,8 +59,8 @@ const router = createBrowserRouter(
           <Route path="/addItem" element={<AddItem />} />
         </Route>
       </Route>
-    </>
-  )
+    </>,
+  ),
 );
 
 export default function App() {

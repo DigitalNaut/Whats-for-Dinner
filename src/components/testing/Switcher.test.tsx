@@ -14,7 +14,7 @@ test("renders a switcher with two options", () => {
         secondOption: <p>right option</p>,
       }}
       onChange={() => null}
-    />
+    />,
   );
 
   const buttons = screen.getAllByRole("button");
@@ -34,7 +34,7 @@ test("renders the first option", async () => {
         secondOption: <p>dogs</p>,
       }}
       onChange={() => null}
-    />
+    />,
   );
 
   expect(await screen.findByText(/cats/i)).toBeInTheDocument();
@@ -51,7 +51,7 @@ test("renders the second option", async () => {
         secondOption: <p>dogs</p>,
       }}
       onChange={() => null}
-    />
+    />,
   );
 
   expect(await screen.findByText(/dogs/i)).toBeInTheDocument();
@@ -70,7 +70,7 @@ test("switches display based on clicks", async () => {
         secondOption: <p>dogs</p>,
       }}
       onChange={onChange}
-    />
+    />,
   );
 
   const firstOption = screen.getByRole("button", { name: /first option/i });

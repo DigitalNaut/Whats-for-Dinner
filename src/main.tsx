@@ -11,7 +11,7 @@ import { HeaderProvider } from "src/contexts/HeaderContext";
 import "src/index.css";
 
 const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
 
 root.render(
@@ -30,5 +30,5 @@ root.render(
         </GoogleOAuthProvider>
       </UserProvider>
     </ErrorBoundary>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
