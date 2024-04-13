@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -9,14 +10,16 @@ import { GoogleDriveProvider } from "src/contexts/GoogleDriveContext";
 import { MainLayout, MenuLayout } from "src/components/Layouts";
 import { MenuHeader, TitleHeader } from "src/components/Headers";
 import { SpinnerMenuContextProvider } from "src/contexts/SpinnerMenuContext";
-import AddItem from "src/pages/AddItem";
-import EditMenu from "src/pages/EditMenu";
-import Login from "src/pages/Login";
-import Main from "src/pages/Main";
 import NotFound from "src/pages/NotFound";
-import Privacy from "src/pages/Privacy";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
-import Terms from "src/pages/Terms";
+import Spinner from "src/components/common/Spinner";
+
+const LazyAddItem = lazy(() => import("src/pages/AddItem"));
+const LazyEditMenu = lazy(() => import("src/pages/EditMenu"));
+const LazyMain = lazy(() => import("src/pages/Main"));
+const LazyLogin = lazy(() => import("src/pages/Login"));
+const LazyPrivacy = lazy(() => import("src/pages/Privacy"));
+const LazyTerms = lazy(() => import("src/pages/Terms"));
 
 // TODO: Remove
 // import Tests from "src/pages/Tests";
@@ -31,9 +34,30 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="/" element={mainLayout}>
-        <Route index element={<Login redirectTo="/main" />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/terms" element={<Terms />} />
+        <Route
+          index
+          element={
+            <Suspense fallback={<Spinner />}>
+              <LazyLogin redirectTo="/main" />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/privacy"
+          element={
+            <Suspense fallback={<Spinner />}>
+              <LazyPrivacy />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/terms"
+          element={
+            <Suspense fallback={<Spinner />}>
+              <LazyTerms />
+            </Suspense>
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route
@@ -46,7 +70,14 @@ const router = createBrowserRouter(
         }
       >
         <Route element={mainLayout}>
-          <Route path="/main" element={<Main />} />
+          <Route
+            path="/main"
+            element={
+              <Suspense fallback={<Spinner />}>
+                <LazyMain />
+              </Suspense>
+            }
+          />
         </Route>
         <Route
           element={
@@ -55,8 +86,22 @@ const router = createBrowserRouter(
             </MenuLayout>
           }
         >
-          <Route path="/menu" element={<EditMenu />} />
-          <Route path="/addItem" element={<AddItem />} />
+          <Route
+            path="/menu"
+            element={
+              <Suspense fallback={<Spinner />}>
+                <LazyEditMenu />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/addItem"
+            element={
+              <Suspense fallback={<Spinner />}>
+                <LazyAddItem />
+              </Suspense>
+            }
+          />
         </Route>
       </Route>
     </>,
