@@ -12,16 +12,10 @@ type UserContext = {
   LoginButton(): JSX.Element | null;
   LogoutButton(): JSX.Element | null;
   UserCard(): JSX.Element | null;
-  logout(reason?: string): void;
+  logout(options: { notification?: string }): void;
 };
 
-const userContext = createContext<UserContext>({
-  user: undefined,
-  LoginButton: () => null,
-  LogoutButton: () => null,
-  UserCard: () => null,
-  logout: () => null,
-});
+const userContext = createContext<UserContext | null>(null);
 
 export function UserProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<GoogleUserCredential | null>();
@@ -38,10 +32,10 @@ export function UserProvider({ children }: PropsWithChildren) {
   };
 
   const onSignInError = () => {
-    logout("Error iniciando sesión");
+    logout({ notification: "Error iniciando sesión" });
   };
 
-  const logout = (reason?: string) => {
+  const logout: UserContext["logout"] = ({ notification: reason }) => {
     googleLogout();
     setUser(null);
     setNotification(reason);
@@ -75,7 +69,7 @@ export function UserProvider({ children }: PropsWithChildren) {
       <button
         data-filled
         className="g_id_signout"
-        onClick={() => logout("Logged out")}
+        onClick={() => logout({ notification: "Logged out" })}
       >
         Cerrar sesión
       </button>
@@ -90,47 +84,51 @@ export function UserProvider({ children }: PropsWithChildren) {
     return (
       <div className="group relative w-fit lg:fixed lg:right-2 lg:top-2">
         <img
+          className="size-8 rounded-full"
           src={picture}
           alt="User avatar"
           width={32}
           height={32}
-          className="size-8 rounded-full"
+          referrerPolicy="no-referrer"
         />
         <div
           className="absolute right-0 top-0 z-50 flex flex-col justify-center
             focus-within:gap-4 focus-within:rounded-md focus-within:bg-white focus-within:p-4 focus-within:text-black
-            group-hover:gap-4 group-hover:rounded-md group-hover:bg-white group-hover:p-4 group-hover:text-black"
+            group-hover:gap-4 group-hover:rounded-md group-hover:bg-white group-hover:px-6 group-hover:py-4 group-hover:text-black"
         >
           <div className="flex w-full justify-center">
             <img
+              className="size-8 rounded-full group-focus-within:size-16 group-hover:size-16"
               src={picture}
               alt="User avatar"
               width={32}
               height={32}
-              className="size-8 rounded-full group-focus-within:size-16 group-hover:size-16"
+              referrerPolicy="no-referrer"
             />
           </div>
-          <div className="hidden flex-col gap-2 group-focus-within:flex group-hover:flex">
+          <div className="hidden flex-col gap-4 group-focus-within:flex group-hover:flex">
             <div className="flex w-full flex-col justify-center gap-1 text-sm font-medium">
               <span className="text-base font-bold">{name}</span>
               <span>{email}</span>
             </div>
 
-            <a
-              className="w-full text-blue-700 hover:underline"
-              href="https://drive.google.com/drive/settings"
-              target="_blank"
-              rel="noreferrer"
-              title="Abrir preferencias de Google Drive"
-            >
-              Administrar Drive
-            </a>
+            <div className="flex w-max flex-col justify-center gap-2 rounded-sm bg-slate-100 p-4">
+              <a
+                className="w-full text-blue-700 hover:underline"
+                href="https://drive.google.com/drive/settings"
+                target="_blank"
+                rel="noreferrer"
+                title="Abrir preferencias de Google Drive"
+              >
+                Administrar Drive
+              </a>
 
-            <div className="hidden w-full justify-center group-focus-within:flex group-hover:flex">
-              <LogoutButton />
+              <div className="hidden w-full justify-center group-focus-within:flex group-hover:flex">
+                <LogoutButton />
+              </div>
             </div>
 
-            <div className="flex flex-col gap-1 text-xs italic text-slate-900">
+            <div className="flex w-full flex-col gap-1 text-center text-xs italic text-slate-800">
               <Link to="/terms" className="hover:underline">
                 Términos y Condiciones
               </Link>
@@ -174,6 +172,8 @@ export function UserProvider({ children }: PropsWithChildren) {
 
 export function useUser() {
   const context = useContext(userContext);
+
   if (!context) throw new Error("useUser must be used within a UserProvider");
+
   return context;
 }
