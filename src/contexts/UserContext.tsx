@@ -7,6 +7,8 @@ import { faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { jwtDecode } from "jwt-decode";
 import { Link } from "react-router-dom";
 
+import { useLanguageContext } from "src/contexts/LanguageContext";
+
 type UserContext = {
   user?: GoogleUserCredential | null;
   LoginButton(): JSX.Element | null;
@@ -18,6 +20,7 @@ type UserContext = {
 const userContext = createContext<UserContext | null>(null);
 
 export function UserProvider({ children }: PropsWithChildren) {
+  const { t } = useLanguageContext();
   const [user, setUser] = useState<GoogleUserCredential | null>();
   const [notification, setNotification] = useState<string>();
 
@@ -32,7 +35,7 @@ export function UserProvider({ children }: PropsWithChildren) {
   };
 
   const onSignInError = () => {
-    logout({ notification: "Error iniciando sesión" });
+    logout({ notification: t("Failed to sign in") });
   };
 
   const logout: UserContext["logout"] = ({ notification: reason }) => {
@@ -63,20 +66,24 @@ export function UserProvider({ children }: PropsWithChildren) {
   }
 
   function LogoutButton() {
+    const { t } = useLanguageContext();
+
     if (!user) return null;
 
     return (
       <button
         data-filled
         className="g_id_signout"
-        onClick={() => logout({ notification: "Logged out" })}
+        onClick={() => logout({ notification: t("Logged out") })}
       >
-        Cerrar sesión
+        {t("Sign out")}
       </button>
     );
   }
 
   function UserCard() {
+    const { t } = useLanguageContext();
+
     if (!user) return null;
 
     const { picture, name, email } = user;
@@ -86,7 +93,7 @@ export function UserProvider({ children }: PropsWithChildren) {
         <img
           className="size-8 rounded-full"
           src={picture}
-          alt="User avatar"
+          alt={t("User avatar")}
           width={32}
           height={32}
           referrerPolicy="no-referrer"
@@ -100,7 +107,7 @@ export function UserProvider({ children }: PropsWithChildren) {
             <img
               className="size-8 rounded-full group-focus-within:size-16 group-hover:size-16"
               src={picture}
-              alt="User avatar"
+              alt={t("User avatar")}
               width={32}
               height={32}
               referrerPolicy="no-referrer"
@@ -118,9 +125,9 @@ export function UserProvider({ children }: PropsWithChildren) {
                 href="https://drive.google.com/drive/settings"
                 target="_blank"
                 rel="noreferrer"
-                title="Abrir preferencias de Google Drive"
+                title={t("Open Google Drive preferences")}
               >
-                Administrar Drive
+                {t("Drive Preferences")}
               </a>
 
               <div className="hidden w-full justify-center group-focus-within:flex group-hover:flex">
@@ -130,10 +137,10 @@ export function UserProvider({ children }: PropsWithChildren) {
 
             <div className="flex w-full flex-col gap-1 text-center text-xs italic text-slate-800">
               <Link to="/terms" className="hover:underline">
-                Términos y Condiciones
+                {t("Terms and Conditions")}
               </Link>
               <Link to="/privacy" className="hover:underline">
-                Póliza de Privacidad
+                {t("Privacy Policy")}
               </Link>
             </div>
           </div>

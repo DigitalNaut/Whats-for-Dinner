@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
+import { useLanguageContext } from "src/contexts/LanguageContext";
 import { useUser } from "src/contexts/UserContext";
 
 type LoginProps = {
@@ -8,6 +9,7 @@ type LoginProps = {
 };
 
 export default function Login({ redirectTo }: LoginProps) {
+  const { t } = useLanguageContext();
   const { user, LoginButton } = useUser();
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -23,10 +25,10 @@ export default function Login({ redirectTo }: LoginProps) {
 
       <div className="flex flex-col gap-1 text-center text-sm text-white">
         <Link to="/terms" className="w-full hover:underline">
-          Términos y Condiciones
+          {t("Terms and Conditions")}
         </Link>
         <Link to="/privacy" className="w-full hover:underline">
-          Póliza de Privacidad
+          {t("Privacy Policy")}
         </Link>
       </div>
     </div>

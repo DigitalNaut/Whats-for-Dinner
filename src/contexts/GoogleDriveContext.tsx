@@ -90,7 +90,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
 
   const hasAuthorization = useCallback(() => {
     if (!isLoaded)
-      throw new Error("Unauthorized", { cause: "Google Drive not loaded" });
+      throw new Error("Unauthorized", { cause: "Google Drive is not loaded" });
 
     if (userTokens === undefined) {
       requestAccess({ prompt: "" });

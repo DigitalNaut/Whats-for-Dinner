@@ -13,11 +13,12 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 
-import Floating from "src/components/common/Floating";
-import Toggle from "src/components/common/Toggle";
 import { useHeader, useHeaderContext } from "src/contexts/HeaderContext";
+import { useLanguageContext } from "src/contexts/LanguageContext";
 import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
+import Floating from "src/components/common/Floating";
 import Spinner from "src/components/common/Spinner";
+import Toggle from "src/components/common/Toggle";
 
 enum Modes {
   Toggle,
@@ -25,6 +26,7 @@ enum Modes {
 }
 
 export default function EditMenu() {
+  const { t } = useLanguageContext();
   const { setHeaderProperties, createMenu } = useHeaderContext();
   const { isLoaded, allMenuItems, toggleMenuItems, deleteMenuItems } =
     useSpinnerMenuContext();
@@ -50,7 +52,6 @@ export default function EditMenu() {
     setShowSelectionOptions(false);
     setHeaderProperties((prevProperties) => ({
       ...prevProperties,
-      title: "Editar menú",
       altBackButton: undefined,
       altColor: false,
     }));
@@ -71,14 +72,14 @@ export default function EditMenu() {
       setShowSelectionOptions(true);
       setHeaderProperties((prevProperties) => ({
         ...prevProperties,
-        title: "Seleccionar",
+        title: t("Select"),
         altBackButton,
         altColor: true,
       }));
       setMode(Modes.Select);
       setAll !== undefined && setAllSelections(setAll);
     },
-    [altBackButton, setAllSelections, setHeaderProperties],
+    [altBackButton, setAllSelections, setHeaderProperties, t],
   );
 
   const deleteSelections = useCallback(() => {
@@ -102,7 +103,7 @@ export default function EditMenu() {
               }}
             >
               <FontAwesomeIcon icon={faCheck} />
-              <span>Seleccionar</span>
+              <span>{t("Select")}</span>
             </MenuItem>
           )}
 
@@ -112,13 +113,13 @@ export default function EditMenu() {
             }}
           >
             <FontAwesomeIcon icon={faCheckDouble} />
-            <span>Seleccionar todo</span>
+            <span>{t("Select all")}</span>
           </MenuItem>
 
           {showSelectionOptions && (
             <MenuItem className="text-red-900" onClick={deleteSelections}>
               <FontAwesomeIcon icon={faTrash} />
-              <span>Eliminar</span>
+              <span>{t("Delete")}</span>
             </MenuItem>
           )}
 
@@ -135,7 +136,7 @@ export default function EditMenu() {
                 }}
               >
                 <FontAwesomeIcon icon={faPlus} />
-                <span>Activar todos</span>
+                <span>{t("Toggle all on")}</span>
               </MenuItem>
               <MenuItem
                 onClick={() => {
@@ -147,7 +148,7 @@ export default function EditMenu() {
                 }}
               >
                 <FontAwesomeIcon icon={faMinus} />
-                <span>Desactivar todos</span>
+                <span>{t("Toggle all off")}</span>
               </MenuItem>
             </>
           )}
@@ -156,6 +157,7 @@ export default function EditMenu() {
     [
       createMenu,
       showSelectionOptions,
+      t,
       deleteSelections,
       setModeSelection,
       allMenuItems,
@@ -195,7 +197,7 @@ export default function EditMenu() {
 
   return (
     <>
-      <h2 className="text-center font-bangers text-4xl">Menú</h2>
+      <h2 className="text-center font-bangers text-4xl">{t("Menu")}</h2>
       {menuPortal}
       <div className="flex flex-col gap-4">
         {allMenuItems &&
@@ -239,7 +241,7 @@ export default function EditMenu() {
         <Link to="/addItem" tabIndex={-1}>
           <button data-filled className="flex items-center gap-1">
             <FontAwesomeIcon icon={faPlus} />
-            <span>Añadir</span>
+            <span>{t("Add dish")}</span>
           </button>
         </Link>
       </Floating>

@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
 import { useHeader } from "src/contexts/HeaderContext";
+import { useLanguageContext } from "src/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 import ImagePreview from "src/components/ImagePreview";
@@ -93,6 +94,7 @@ const errorReducer: Reducer<
 };
 
 export default function AddItem() {
+  const { t } = useLanguageContext();
   const navigate = useNavigate();
   const { addMenuItem } = useSpinnerMenuContext();
   const { hasScope } = useGoogleDriveContext();
@@ -113,18 +115,13 @@ export default function AddItem() {
     backTo: "menu",
   });
 
-  // const resetForm = (form: HTMLFormElement) => {
-  //   formDispatch({ type: ActionType.Reset, payload: "" });
-  //   form.reset();
-  // };
-
   const uploadFileHandler = async (imageFileToUpload: File) => {
     setIsUploadingFile(true);
 
     if (!imageFileToUpload) {
       errorDispatch({
         type: ErrorActionType.InvalidImageFile,
-        payload: "No se ha seleccionado ninguna imagen",
+        payload: t("No image file selected"),
       });
       return null;
     }
@@ -150,7 +147,7 @@ export default function AddItem() {
       if (data === false)
         errorDispatch({
           type: ErrorActionType.InvalidImageFile,
-          payload: "No se ha podido subir la imagen",
+          payload: t("Image upload failed"),
         });
       else if (data.error) {
         errorDispatch({
@@ -168,7 +165,7 @@ export default function AddItem() {
       } else {
         errorDispatch({
           type: ErrorActionType.InvalidImageFile,
-          payload: "Error desconocido",
+          payload: t("Unknown error"),
         });
         console.error(error);
       }
@@ -193,7 +190,7 @@ export default function AddItem() {
     if (!dishName) {
       errorDispatch({
         type: ErrorActionType.FormError,
-        payload: "El nombre del plato no puede estar vacío",
+        payload: t("Dish name is required"),
       });
       return null;
     }
@@ -201,7 +198,7 @@ export default function AddItem() {
     if (uploadMode === UploadMode.URL && !dishURL) {
       errorDispatch({
         type: ErrorActionType.FormError,
-        payload: "Debes escribir una URL",
+        payload: t("Enter valid URL"),
       });
       return null;
     }
@@ -209,7 +206,7 @@ export default function AddItem() {
     if (uploadMode === UploadMode.File && !dishImage) {
       errorDispatch({
         type: ErrorActionType.FormError,
-        payload: "Debes seleccionar una imagen",
+        payload: t("Must select an image"),
       });
       return null;
     }
@@ -247,7 +244,7 @@ export default function AddItem() {
       if (!imageId) {
         errorDispatch({
           type: ErrorActionType.FormError,
-          payload: "No se ha podido subir la imagen",
+          payload: t("Image upload failed"),
         });
         return;
       }
@@ -263,7 +260,7 @@ export default function AddItem() {
     } else
       errorDispatch({
         type: ErrorActionType.FormError,
-        payload: "Por favor llena todos los campos: Nombre del platillo y URL",
+        payload: t("Please fill all fields"),
       });
   };
 
@@ -271,10 +268,10 @@ export default function AddItem() {
     return (
       <div className="flex h-full flex-col items-center justify-center">
         <h1 className="text-center text-2xl font-bold">
-          No tienes permisos para subir imágenes
+          {t("Permission required to upload images")}
         </h1>
         <p className="text-center">
-          Necesitas iniciar sesión con Google para subir imágenes
+          {t("Please allow access to your Google Drive account")}
         </p>
       </div>
     );
@@ -321,7 +318,7 @@ export default function AddItem() {
                 setIsUploadingFile(false);
               }}
             >
-              Cancelar
+              {t("Cancel")}
             </button>
           </div>
         </div>
@@ -330,8 +327,8 @@ export default function AddItem() {
 
   return (
     <div className="flex flex-col gap-4 p-6">
-      <h2 className="text-center text-2xl">Añadir platillo</h2>
-      <p>Introduce los datos del platillo:</p>
+      <h2 className="text-center text-2xl">{t("Add dish")}</h2>
+      <p>{t("Add dish details")}</p>
       <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
         {errorState.formError && (
           <div className="flex w-full items-center gap-1 rounded-sm bg-amber-600 p-2 text-white">
@@ -342,7 +339,7 @@ export default function AddItem() {
         <InputText
           required
           name={FormFields.DishName}
-          label="Nombre del platillo"
+          label={t("Dish name")}
           value={formState.imageName}
           onChange={({ target: { value: payload } }) => {
             formDispatch({
@@ -376,7 +373,7 @@ export default function AddItem() {
                 throw new Error("Invalid upload mode");
             }
           }}
-          labels={["Subir imagen", "Asociar URL"]}
+          labels={[t("Upload image"), t("Use URL")]}
           renders={{
             firstOption: (
               <InputFile
@@ -392,7 +389,7 @@ export default function AddItem() {
                 <InputText
                   required
                   name={FormFields.DishURL}
-                  label="URL de la imagen"
+                  label={t("Image URL")}
                   value={formState.imageUrl}
                   error={errorState.invalidImageURL}
                   onChange={({ target: { value: payload } }) => {
@@ -419,7 +416,7 @@ export default function AddItem() {
                   onError={() =>
                     errorDispatch({
                       type: ErrorActionType.InvalidImageURL,
-                      payload: "URL de imagen no válida",
+                      payload: t("Invalid image URL"),
                     })
                   }
                 />
@@ -428,7 +425,7 @@ export default function AddItem() {
           }}
         />
         <button type="submit" data-filled>
-          Añadir
+          {t("Add dish")}
         </button>
       </form>
     </div>

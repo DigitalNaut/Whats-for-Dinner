@@ -2,12 +2,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { faCloudArrowUp, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
-import Spinner from "src/components/common/Spinner";
-import ProgressBar from "src/components/common/ProgressBar";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
+import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
+import { useLanguageContext } from "src/contexts/LanguageContext";
+import ProgressBar from "src/components/common/ProgressBar";
+import Spinner from "src/components/common/Spinner";
 
 export default function ImageUpload({ onUpload }: { onUpload(): void }) {
+  const { t } = useLanguageContext();
   const { hasScope } = useGoogleDriveContext();
   const { uploadFile } = useGoogleDriveAPI();
 
@@ -143,14 +145,14 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
                 <Spinner
                   text={
                     isUploadingFile === "Authorizing"
-                      ? "Autorizando..."
-                      : "Cargando..."
+                      ? t("Authorizing...")
+                      : t("Uploading...")
                   }
                 />
               ) : (
                 <>
                   <FontAwesomeIcon icon={faCloudArrowUp} />
-                  <span>Cargar</span>
+                  <span>{t("Upload")}</span>
                 </>
               )}
             </button>
@@ -159,7 +161,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
               onClick={cancelUploadHandler}
               disabled={!isUploadingFile}
               className={isUploadingFile ? "" : "hidden"}
-              title="Cancelar"
+              title={t("Cancel")}
             >
               <FontAwesomeIcon icon={faTimes} />
             </button>

@@ -1,15 +1,12 @@
 import type { ChangeEventHandler, InputHTMLAttributes } from "react";
 import { createRef, useState } from "react";
-import {
-  faCloudUpload,
-  faImage,
-  faTimes,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCloudUpload, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Spinner from "src/components/common/Spinner";
-import Kilobytes from "src/components/common/Kilobytes";
 import { resizeImage } from "src/utils/imageResize";
+import { useLanguageContext } from "src/contexts/LanguageContext";
+import Kilobytes from "src/components/common/Kilobytes";
+import Spinner from "src/components/common/Spinner";
 
 export type FileInfo = Partial<Pick<File, "name" | "size">> & {
   url?: string;
@@ -23,10 +20,11 @@ type InputFileProps = {
 
 export default function InputFile({
   name,
-  label = "Seleccionar",
+  label,
   onChange,
   ...props
 }: InputFileProps) {
+  const { t } = useLanguageContext();
   const [file, setFile] = useState<File>();
   const [fileUrl, setFileUrl] = useState<string>();
   const [isResizing, setIsResizing] = useState(false);
@@ -102,7 +100,7 @@ export default function InputFile({
                 onClick={removeFileHandler}
               >
                 <FontAwesomeIcon icon={faTimes} className="size-6" />
-                <span className="text-sm">Eliminar</span>
+                <span className="text-sm">{t("Remove")}</span>
               </button>
             </div>
           ) : (
@@ -113,19 +111,14 @@ export default function InputFile({
               {isResizing ? (
                 <>
                   <Spinner text="" />
-                  <span className="text-sm">Procesando...</span>
+                  <span className="text-sm">{t("Resizing...")}</span>
                 </>
               ) : (
                 <>
-                  <FontAwesomeIcon
-                    icon={faImage}
-                    className="size-6 group-hover:hidden"
-                  />
-                  <FontAwesomeIcon
-                    icon={faCloudUpload}
-                    className="hidden size-6 group-hover:block"
-                  />
-                  <span className="text-sm">{label}</span>
+                  <FontAwesomeIcon icon={faCloudUpload} className="size-6" />
+                  <span className="text-center text-sm">
+                    {label ?? t("Select image")}
+                  </span>
                 </>
               )}
             </label>
@@ -140,7 +133,7 @@ export default function InputFile({
             <button
               className="w-fit max-w-xs"
               data-filled
-              aria-label="Eliminar"
+              aria-label={t("Remove")}
               role="button"
               onClick={removeFileHandler}
             >
@@ -149,7 +142,7 @@ export default function InputFile({
           </div>
         ) : (
           <span id="hint" className="p-2">
-            Ningún archivo seleccionado
+            {t("No image file selected")}
           </span>
         )}
       </div>

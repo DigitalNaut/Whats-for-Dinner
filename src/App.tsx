@@ -5,9 +5,11 @@ import { GoogleDriveProvider } from "src/contexts/GoogleDriveContext";
 import { MainLayout, MenuLayout } from "src/components/Layouts";
 import { MenuHeader, TitleHeader } from "src/components/Headers";
 import { SpinnerMenuContextProvider } from "src/contexts/SpinnerMenuContext";
+import { useLanguageContext } from "src/contexts/LanguageContext";
 import NotFound from "src/pages/NotFound";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
 import Spinner from "src/components/common/Spinner";
+import LanguageSelect from "src/components/LanguageSelect";
 
 const LazyAddItem = lazy(() => import("src/pages/AddItem"));
 const LazyEditMenu = lazy(() => import("src/pages/EditMenu"));
@@ -19,16 +21,21 @@ const LazyTerms = lazy(() => import("src/pages/Terms"));
 // TODO: Remove
 // import Tests from "src/pages/Tests";
 
-const mainLayout = (
-  <MainLayout>
-    <TitleHeader>¿Qué para comer?</TitleHeader>
-  </MainLayout>
-);
+function TitleLayout() {
+  const { t } = useLanguageContext();
+
+  return (
+    <MainLayout>
+      <TitleHeader>{t("Title")}</TitleHeader>
+      <LanguageSelect />
+    </MainLayout>
+  );
+}
 
 const newRouter = createBrowserRouter([
   {
     path: "/",
-    element: mainLayout,
+    element: <TitleLayout />,
     children: [
       {
         index: true,
@@ -70,7 +77,7 @@ const newRouter = createBrowserRouter([
     ),
     children: [
       {
-        element: mainLayout,
+        element: <TitleLayout />,
         children: [
           {
             path: "/main",
@@ -86,6 +93,7 @@ const newRouter = createBrowserRouter([
         element: (
           <MenuLayout>
             <MenuHeader />
+            <LanguageSelect />
           </MenuLayout>
         ),
         children: [

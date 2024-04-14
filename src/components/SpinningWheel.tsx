@@ -2,6 +2,7 @@ import { createRef, useEffect, useRef, useState } from "react";
 
 import SpinnerIcon from "src/components/common/Spinner";
 import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
+import { useLanguageContext } from "src/contexts/LanguageContext";
 
 import Arrow from "src/assets/wedge.svg?react";
 
@@ -285,6 +286,7 @@ export default function SpinningWheel({
   choices,
   onSpinEnd,
 }: SpinningWheelProps) {
+  const { t } = useLanguageContext();
   const { isLoaded } = useSpinnerMenuContext();
   const canvasRef = createRef<HTMLCanvasElement>();
   const wheelRef = useRef<Spinner>();
@@ -362,7 +364,7 @@ export default function SpinningWheel({
           disabled={cannotSpin}
           onClick={spinTheWheel}
         >
-          ¡Decide!
+          {t("Choose!")}
         </button>
       </div>
     </div>

@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
+import { useLanguageContext } from "src/contexts/LanguageContext";
 import AwaitingPermissionsNotice from "src/components/AwaitingPermissionsNotice";
 import ImagePreview from "src/components/ImagePreview";
 import Kilobytes from "src/components/common/Kilobytes";
@@ -26,6 +27,7 @@ type ListItemProps = {
 };
 
 function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
+  const { t } = useLanguageContext();
   const [isDownloading, setIsDownloading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -33,7 +35,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
     return (
       <div className="flex items-center gap-2">
         <FontAwesomeIcon icon={faTimes} />
-        <i>File unavailable</i>
+        <i>{t("File unavailable")}</i>
       </div>
     );
 
@@ -49,7 +51,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
           title={`MIME Type: "${file.mimeType}"`}
           src={file.iconLink}
           className={`size-[20px] ${isDeleting ? "grayscale" : ""}`}
-          alt="File icon"
+          alt={t("File icon")}
         />
       )}
       <span title={file.name} className="flex-1 truncate">
@@ -61,7 +63,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
           <button
             disabled={isDownloading || isDeleting}
             className="flex gap-2"
-            title="Descargar"
+            title={t("Download")}
             onClick={async () => {
               setIsDownloading(true);
               await downloadFile(file);
@@ -77,7 +79,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
           <button
             disabled={isDownloading || isDeleting}
             className="flex gap-2"
-            title="Borrar"
+            title={t("Delete")}
             onClick={async () => {
               setIsDeleting(true);
               const wasDeleted = await removeFile(file);
@@ -98,6 +100,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
 }
 
 export default function ImageList({ refreshDate }: ImageListProps) {
+  const { t } = useLanguageContext();
   const { hasScope } = useGoogleDriveContext();
   const { fetchList, fetchFile, deleteFile } = useGoogleDriveAPI();
   const [error, setError] = useState<string>();
@@ -158,7 +161,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
       else if (data instanceof ArrayBuffer) {
         driveFilePreview?.url && URL.revokeObjectURL(driveFilePreview.url);
 
-        const file = new File([data], fileInfo.name || "Archivo desconocido", {
+        const file = new File([data], fileInfo.name || t("Unknown file"), {
           type: fileInfo.mimeType || "application/octet-stream",
         });
 
@@ -194,7 +197,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
 
       if (data.error)
         setError(
-          `Error ${data.error.code || "unknown"}: ${data.error.message || "No message"}`,
+          `Error ${data.error.code || "unknown"}: ${data.error.message || "No error message"}`,
         );
     } catch (error) {
       if (error instanceof Error) setError(`${error.name}: ${error.message}`);
@@ -225,7 +228,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     return (
       <AwaitingPermissionsNotice>
         <button data-filled onClick={() => listFiles()}>
-          Reintentar
+          {t("Retry")}
         </button>
       </AwaitingPermissionsNotice>
     );
@@ -246,13 +249,13 @@ export default function ImageList({ refreshDate }: ImageListProps) {
             removeFile={removeFile}
           />
         ))}
-        {!driveFiles && <i>No hay imágenes</i>}
+        {!driveFiles && <i>{t("No images found")}</i>}
       </div>
       <button
         data-filled
         onClick={() => listFiles()}
         disabled={loadingDriveFiles}
-        title="Actualizar lista"
+        title={t("Refresh list")}
         className="w-fit"
       >
         {loadingDriveFiles ? (
@@ -267,7 +270,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         <>
           <ProgressBar progress={downloadProgress} />{" "}
           <button data-filled onClick={cancelDownload}>
-            Cancelar
+            {t("Cancel")}
           </button>
         </>
       )}
