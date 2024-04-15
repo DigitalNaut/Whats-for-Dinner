@@ -5,11 +5,12 @@ export default function LanguageSelect() {
 
   return (
     <select
-      className="absolute left-2 top-2 h-10 w-max text-slate-900"
+      className="h-fit w-max rounded-md text-xs text-slate-900"
       onChange={onClickLanguageChange}
+      defaultValue={i18n.language}
     >
       {Object.entries(languages).map(([lang, { nativeName }]) => (
-        <option key={nativeName} value={lang} selected={i18n.language === lang}>
+        <option key={nativeName} value={lang}>
           {nativeName}
         </option>
       ))}

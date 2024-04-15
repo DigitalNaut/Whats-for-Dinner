@@ -9,7 +9,6 @@ import { useLanguageContext } from "src/contexts/LanguageContext";
 import NotFound from "src/pages/NotFound";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
 import Spinner from "src/components/common/Spinner";
-import LanguageSelect from "src/components/LanguageSelect";
 
 const LazyAddItem = lazy(() => import("src/pages/AddItem"));
 const LazyEditMenu = lazy(() => import("src/pages/EditMenu"));
@@ -27,7 +26,6 @@ function TitleLayout() {
   return (
     <MainLayout>
       <TitleHeader>{t("Title")}</TitleHeader>
-      <LanguageSelect />
     </MainLayout>
   );
 }
@@ -93,7 +91,6 @@ const newRouter = createBrowserRouter([
         element: (
           <MenuLayout>
             <MenuHeader />
-            <LanguageSelect />
           </MenuLayout>
         ),
         children: [

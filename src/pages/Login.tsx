@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import LanguageSelect from "src/components/LanguageSelect";
 
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import { useUser } from "src/contexts/UserContext";
@@ -22,6 +23,8 @@ export default function Login({ redirectTo }: LoginProps) {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4">
       <LoginButton />
+
+      <LanguageSelect />
 
       <div className="flex flex-col gap-1 text-center text-sm text-white">
         <Link to="/terms" className="w-full hover:underline">

@@ -8,6 +8,7 @@ import { jwtDecode } from "jwt-decode";
 import { Link } from "react-router-dom";
 
 import { useLanguageContext } from "src/contexts/LanguageContext";
+import LanguageSelect from "src/components/LanguageSelect";
 
 type UserContext = {
   user?: GoogleUserCredential | null;
@@ -119,7 +120,7 @@ export function UserProvider({ children }: PropsWithChildren) {
               <span>{email}</span>
             </div>
 
-            <div className="flex w-max flex-col justify-center gap-2 rounded-sm bg-slate-100 p-4">
+            <div className="flex w-max flex-col items-center gap-4 rounded-sm bg-slate-100 p-4">
               <a
                 className="w-full text-blue-700 hover:underline"
                 href="https://drive.google.com/drive/settings"
@@ -129,6 +130,8 @@ export function UserProvider({ children }: PropsWithChildren) {
               >
                 {t("Drive Preferences")}
               </a>
+
+              <LanguageSelect />
 
               <div className="hidden w-full justify-center group-focus-within:flex group-hover:flex">
                 <LogoutButton />
