@@ -33,13 +33,15 @@
   "No images found": "No se encontraron imágenes",
   "Open Google Drive preferences": "Abrir preferencias de Google Drive",
   "Page not found": "Página no encontrada",
+  "Permission required to upload images": "Se requiere permiso para subir imágenes",
+  "Please allow access to your Google Drive account": "Permita el acceso a su cuenta de Google Drive por favor",
   "Please fill all fields": "Por favor llena todos los campos: Nombre del platillo y URL",
   "Preview": "Prevista",
   "Privacy Policy": "Política de Privacidad",
   "Refresh list": "Actualizar lista",
   "Remove": "Remover",
-  "Retry": "Reintentar",
   "Resizing...": "Redimensionando...",
+  "Retry": "Reintentar",
   "Saving...": "Guardando...",
   "Select all": "Seleccionar todo",
   "Select image": "Seleccionar imagen",
@@ -57,7 +59,5 @@
   "Upload": "Subir",
   "Uploading...": "Subiendo...",
   "Use URL": "Usar URL",
-  "User avatar": "Avatar de usuario",
-  "Permission required to upload images": "Se requiere permiso para subir imágenes",
-  "Please allow access to your Google Drive account": "Permita el acceso a su cuenta de Google Drive por favor"
+  "User avatar": "Avatar de usuario"
 }

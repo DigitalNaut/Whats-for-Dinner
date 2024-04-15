@@ -33,13 +33,15 @@
   "No images found": "No images found",
   "Open Google Drive preferences": "Open Google Drive preferences",
   "Page not found": "Page not found",
+  "Permission required to upload images": "Permission required to upload images",
+  "Please allow access to your Google Drive account": "Please allow access to your Google Drive account",
   "Please fill all fields": "Please fill all fields: Dish name and URL",
   "Preview": "Preview",
   "Privacy Policy": "Privacy Policy",
   "Refresh list": "Refresh list",
   "Remove": "Remove",
-  "Retry": "Retry",
   "Resizing...": "Resizing...",
+  "Retry": "Retry",
   "Saving...": "Saving...",
   "Select all": "Select all",
   "Select image": "Select image",
@@ -57,7 +59,5 @@
   "Upload": "Upload",
   "Uploading...": "Uploading...",
   "Use URL": "Use URL",
-  "User avatar": "User avatar",
-  "Permission required to upload images": "Permission required to upload images",
-  "Please allow access to your Google Drive account": "Please allow access to your Google Drive account"
+  "User avatar": "User avatar"
 }
