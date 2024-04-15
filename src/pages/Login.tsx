@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import LanguageSelect from "src/components/LanguageSelect";
 
+import { LoginButton, useUser } from "src/contexts/UserContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
-import { useUser } from "src/contexts/UserContext";
 
 type LoginProps = {
   redirectTo: string;
@@ -11,7 +11,7 @@ type LoginProps = {
 
 export default function Login({ redirectTo }: LoginProps) {
   const { t } = useLanguageContext();
-  const { user, LoginButton } = useUser();
+  const { user } = useUser();
   const navigate = useNavigate();
   const { search } = useLocation();
   const from = decodeURI(new URLSearchParams(search).get("redirectTo") || "");
