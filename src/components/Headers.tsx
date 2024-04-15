@@ -5,6 +5,7 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 
 import { useHeaderContext } from "src/contexts/HeaderContext";
 import { useUser } from "src/contexts/UserContext";
+import { useLanguageContext } from "src/contexts/LanguageContext";
 
 import Chopsticks from "src/assets/chopsticks.svg?react";
 
@@ -25,9 +26,10 @@ export function TitleHeader({ children }: PropsWithChildren) {
 }
 
 export function MenuHeader() {
+  const { t } = useLanguageContext();
   const navigate = useNavigate();
-  const { headerProperties, menuButton } = useHeaderContext();
-  const { backTo, altBackButton, altColor } = headerProperties;
+  const { headerProperties } = useHeaderContext();
+  const { altBackButton, altColor, elements } = headerProperties;
   const { UserCard } = useUser();
 
   return (
@@ -39,17 +41,18 @@ export function MenuHeader() {
       {altBackButton ?? (
         <button
           className="flex items-center gap-2"
-          aria-label="Atrás"
-          onClick={() => {
-            backTo ? navigate(backTo) : navigate(-1);
-          }}
+          aria-label={t("Back")}
+          onClick={() => navigate(-1)}
         >
           <FontAwesomeIcon icon={faChevronLeft} />
-          <span className="flex-1">Atrás</span>
+          <span className="flex-1">{t("Back")}</span>
         </button>
       )}
-      {menuButton}
-      <UserCard />
+
+      <div className="flex gap-4">
+        {elements}
+        <UserCard />
+      </div>
     </div>
   );
 }

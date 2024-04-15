@@ -1,14 +1,17 @@
 import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import LanguageSelect from "src/components/LanguageSelect";
 
-import { useUser } from "src/contexts/UserContext";
+import { LoginButton, useUser } from "src/contexts/UserContext";
+import { useLanguageContext } from "src/contexts/LanguageContext";
 
 type LoginProps = {
   redirectTo: string;
 };
 
 export default function Login({ redirectTo }: LoginProps) {
-  const { user, LoginButton } = useUser();
+  const { t } = useLanguageContext();
+  const { user } = useUser();
   const navigate = useNavigate();
   const { search } = useLocation();
   const from = decodeURI(new URLSearchParams(search).get("redirectTo") || "");
@@ -18,8 +21,19 @@ export default function Login({ redirectTo }: LoginProps) {
   });
 
   return (
-    <div className="flex h-full items-center justify-center">
+    <div className="flex h-full flex-col items-center justify-center gap-4">
       <LoginButton />
+
+      <LanguageSelect />
+
+      <div className="flex flex-col gap-1 text-center text-sm text-white">
+        <Link to="/terms" className="w-full hover:underline">
+          {t("Terms and Conditions")}
+        </Link>
+        <Link to="/privacy" className="w-full hover:underline">
+          {t("Privacy Policy")}
+        </Link>
+      </div>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { render, screen } from "@testing-library/react";
 import { BrowserRouter, MemoryRouter } from "react-router-dom";
 
 import { MenuHeader, TitleHeader } from "src/components/Headers";
-import { HeaderProvider, useHeader } from "src/contexts/HeaderContext";
+import { HeaderProvider, useHeaderContext } from "src/contexts/HeaderContext";
 import { act } from "react-dom/test-utils";
 
 const user = userEvent.setup();
@@ -54,7 +54,9 @@ function Providers({ children }: PropsWithChildren) {
 }
 
 function TestComponent({ backTo }: { backTo?: string }) {
-  useHeader({
+  const { setHeaderProperties } = useHeaderContext();
+
+  setHeaderProperties({
     backTo: backTo || "",
     altColor: true,
     showMenuButton: true,

@@ -6,9 +6,15 @@ export default function Privacy() {
       <h1>Privacy Policy</h1>
 
       <p>
-        What&apos;s for Dinner? operates the{" "}
-        <Link to="/">que-para-comer.netlify.app</Link> website, which provides
-        the SERVICE.
+        <a
+          href="https://github.com/DigitalNaut"
+          target="_blank"
+          rel="noreferrer"
+        >
+          DigitalNaut
+        </a>{" "}
+        operates the <Link to="/">que-para-comer.netlify.app</Link> website,
+        which provides the SERVICE.
       </p>
 
       <p>
@@ -18,45 +24,46 @@ export default function Privacy() {
       </p>
 
       <p>
-        If you choose to use our Service, then you agree to the collection and
-        use of information in relation with this policy. The Personal
-        Information that we collect are used for providing and improving the
-        Service. We will not use or share your information with anyone except as
-        described in this Privacy Policy. Our Privacy Policy was created with
-        the help of the{" "}
-        <Link to="/terms">Privacy Policy Template Generator</Link>.
-      </p>
-
-      <p>
-        The terms used in this Privacy Policy have the same meanings as in our
+        If you choose to use our Service, then you agree to the possible
+        collection and use of information in relation with this policy. The
+        Personal Information that we may collect is strictly used for providing
+        and improving the Service only in the form of analytics. We will not use
+        or share your information with anyone except as described in this
+        Privacy Policy. Our Privacy Policy was created with the help of the{" "}
         <a
           href="https://www.privacypolicyonline.com/terms-conditions-generator/"
           target="_blank"
           rel="noreferrer"
         >
-          Terms and Conditions
+          Privacy Policy Template Generator
         </a>
-        , unless otherwise defined in this Privacy Policy.
+        .
+      </p>
+
+      <p>
+        The terms used in this Privacy Policy have the same meanings as in our{" "}
+        <Link to="/terms">Terms and Conditions</Link>.
       </p>
 
       <h2>Information Collection and Use</h2>
 
       <p>
         For a better experience while using our Service, we may require you to
-        provide us with certain personally identifiable information, including
-        but not limited to your name, phone number, and postal address. The
-        information that we collect will be used to contact or identify you.
+        provide us with anonymous information based on your usage of our
+        Service. The information that we collect will NOT be used to contact or
+        identify you.
       </p>
 
       <h2>Log Data</h2>
 
       <p>
-        We want to inform you that whenever you visit our Service, we collect
-        information that your browser sends to us that is called Log Data. This
-        Log Data may include information such as your computer&apos;s Internet
-        Protocol (&ldquo;IP&rdquo;) address, browser version, pages of our
-        Service that you visit, the time and date of your visit, the time spent
-        on those pages, and other statistics.
+        We want to inform you that whenever you visit our Service, we may
+        collect information that your browser sends to us that is called Log
+        Data. This Log Data may include information such as your computer&apos;s
+        Internet Protocol (&ldquo;IP&rdquo;) address, browser version, pages of
+        our Service that you visit, the time and date of your visit, the time
+        spent on those pages, and other statistics. This information is provided
+        by your browser&apos;s native functionality when you visit our Service.
       </p>
 
       <h2>Cookies</h2>
@@ -69,11 +76,9 @@ export default function Privacy() {
       </p>
 
       <p>
-        Our website uses these &ldquo;cookies&rdquo; to collection information
-        and to improve our Service. You have the option to either accept or
-        refuse these cookies, and know when a cookie is being sent to your
-        computer. If you choose to refuse our cookies, you may not be able to
-        use some portions of our Service.
+        However, our website does NOT use these &ldquo;cookies&rdquo; to collect
+        information, nor to improve our Service. Our website is designed to not
+        use any cookies whenever possible.
       </p>
 
       <h2>Service Providers</h2>
@@ -91,10 +96,18 @@ export default function Privacy() {
       </ul>
 
       <p>
-        We want to inform our Service users that these third parties have access
-        to your Personal Information. The reason is to perform the tasks
-        assigned to them on our behalf. However, they are obligated not to
-        disclose or use the information for any other purpose.
+        This usage data is NOT used in advertising or marketing. This service is
+        free to use without any hidden costs to our users.
+      </p>
+
+      <p>
+        We want to inform our Service users that NO third parties have access to
+        your Personal Information besides Google Services that we use to store
+        and process your usage data. The reason is to store information in your
+        Google Drive account. However, their use of cookies is being phased out.
+        No personal information is retained or used in any way by us. However,
+        they are obligated to disclose or use the information for any other
+        purpose.
       </p>
 
       <p>
@@ -112,11 +125,10 @@ export default function Privacy() {
       <h2>Security</h2>
 
       <p>
-        We value your trust in providing us your Personal Information, thus we
-        are striving to use commercially acceptable means of protecting it. But
-        remember that no method of transmission over the internet, or method of
-        electronic storage is 100% secure and reliable, and we cannot guarantee
-        its absolute security.
+        We value your trust, thus we are striving to use commercially acceptable
+        means of protecting it. But remember that no method of transmission over
+        the internet, or method of electronic storage is 100% secure and
+        reliable, and we cannot guarantee its absolute security.
       </p>
 
       <h2>Links to Other Sites</h2>
@@ -130,32 +142,51 @@ export default function Privacy() {
         practices of any third-party sites or services.
       </p>
 
-      <p>Children&apos;s Privacy</p>
+      <h2>Children&apos;s Privacy</h2>
 
       <p>
         Our Services do not address anyone under the age of 13. We do not
         knowingly collect personal identifiable information from children under
-        13. In the case we discover that a child under 13 has provided us with
-        personal information, we immediately delete this from our servers. If
-        you are a parent or guardian and you are aware that your child has
-        provided us with personal information, please contact us so that we will
-        be able to do necessary actions.
+        13. If you are a parent or guardian and you are aware that your child
+        has provided us with personal information, please note that we do not
+        retain it in any way and it is only used for display purposes. You can
+        revoke access to your child&apos;s personal information at any time by
+        revoking our site&apos;s access to your account by managing your{" "}
+        <a
+          href="https://drive.google.com/drive/settings"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Google Drive Settings
+        </a>{" "}
+        under <code>Manage apps &gt; What&apos;s for Dinner? &gt; Options</code>
+        .
       </p>
 
       <h2>Changes to This Privacy Policy</h2>
 
       <p>
         We may update our Privacy Policy from time to time. Thus, we advise you
-        to review this page periodically for any changes. We will notify you of
-        any changes by posting the new Privacy Policy on this page. These
-        changes are effective immediately, after they are posted on this page.
+        to review this page periodically for any changes. As we do NOT collect
+        your information, we CANNOT notify you personally of any changes other
+        than by posting the new Privacy Policy on this page. However, we will
+        strive to show a notice of any changes on our website. These changes are
+        effective immediately, after they are posted on this page.
       </p>
 
       <h2>Contact Us</h2>
 
       <p>
         If you have any questions or suggestions about our Privacy Policy, do
-        not hesitate to contact us.
+        not hesitate to contact us by private message to{" "}
+        <a
+          href="https://github.com/DigitalNaut"
+          target="_blank"
+          rel="noreferrer"
+        >
+          DigitalNaut
+        </a>
+        .
       </p>
     </div>
   );

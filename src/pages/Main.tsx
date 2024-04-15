@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
+import { useLanguageContext } from "src/contexts/LanguageContext";
 import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 import Floating from "src/components/common/Floating";
 import SpinningWheel from "src/components/SpinningWheel";
@@ -28,6 +29,7 @@ function Dish({ label, imageUrl }: DishProps) {
 type HistoryItem = SpinnerOption & { timestamp: number };
 
 export default function Main() {
+  const { t } = useLanguageContext();
   const { enabledMenuItems } = useSpinnerMenuContext();
   const [resultHistory, setResultHistory] = useState<HistoryItem[]>([]);
 
@@ -45,7 +47,7 @@ export default function Main() {
       <div className="flex min-w-full gap-4 overflow-x-auto rounded-md bg-slate-700 p-2 shadow-xl">
         {resultHistory.length === 0 && (
           <div className="grid aspect-square h-16 w-full place-items-center text-gray-400 md:h-24 lg:h-28">
-            Sin historial
+            {t("No history yet")}
           </div>
         )}
         {resultHistory.map(({ timestamp, imageUrl, label }) => (
@@ -57,7 +59,7 @@ export default function Main() {
         <Link to="/menu" tabIndex={-1}>
           <button data-filled className="flex items-center gap-1">
             <FontAwesomeIcon icon={faEdit} />
-            <span>Editar menú</span>
+            <span>{t("Edit Menu")}</span>
           </button>
         </Link>
       </Floating>

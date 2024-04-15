@@ -3,6 +3,8 @@ import { createRef, useState } from "react";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { useLanguageContext } from "src/contexts/LanguageContext";
+
 type InputTextProps = {
   name: string;
   label?: string;
@@ -24,6 +26,7 @@ export default function InputText({
   onClear,
   ...props
 }: InputTextProps) {
+  const { t } = useLanguageContext();
   const inputRef = createRef<HTMLInputElement>();
   const [isFocused, setIsFocused] = useState(false);
   const description = error || hint;
@@ -62,7 +65,7 @@ export default function InputText({
         />
         {value && onClear && (
           <button
-            aria-label="Borrar entrada"
+            aria-label={t("Clear input")}
             type="button"
             className="absolute bottom-2 right-2"
             onClick={() => {

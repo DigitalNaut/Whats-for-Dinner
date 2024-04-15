@@ -10,6 +10,7 @@ import Spinner from "src/components/common/Spinner";
 
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
+import { useLanguageContext } from "src/contexts/LanguageContext";
 import type { SpinnerOption } from "src/components/SpinningWheel";
 
 const TIMEOUT = 2500;
@@ -38,6 +39,7 @@ const spinnerMenuContext = createContext<{
 });
 
 export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
+  const { t } = useLanguageContext();
   const [error, setError] = useState<string>();
   const { isLoaded: isDriveLoaded } = useGoogleDriveContext();
   const { fetchFile, fetchList, uploadFile, updateFile, deleteFile } =
@@ -258,9 +260,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     if (!menuItems) return;
     if (!indexes.length) return;
 
-    const confirmDelete = confirm(
-      "Se borrarán todos los elementos seleccionados",
-    );
+    const confirmDelete = confirm(t("All selected elements will be deleted"));
 
     if (!confirmDelete) return;
 
@@ -273,7 +273,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
       try {
         const deleted = await deleteImage(item);
 
-        if (!deleted) throw new Error("No se pudo borrar la imagen");
+        if (!deleted) throw new Error(t("Image could not be deleted"));
       } catch (error) {
         console.error(error);
       }
@@ -310,7 +310,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     const alertUser = (event: BeforeUnloadEvent) => {
       // See: https://stackoverflow.com/a/69232120/13351497
       event.preventDefault();
-      return (event.returnValue = "Aún hay información sin guardar");
+      return (event.returnValue = t("There are unsaved changes"));
     };
 
     if (!window.onbeforeunload)
@@ -339,7 +339,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
       )}
       {state === "Uploading" && (
         <div className="fixed inset-x-1/2 top-2 w-fit -translate-x-1/2 rounded-lg bg-emerald-700 p-2 text-white">
-          <Spinner text="Guardando..." />
+          <Spinner text={t("Saving...")} />
         </div>
       )}
     </spinnerMenuContext.Provider>

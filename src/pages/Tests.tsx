@@ -43,7 +43,7 @@ function Tests() {
         </div>
 
         <button data-filled className="w-full">
-          Añadir
+          Add
         </button>
       </form>
 

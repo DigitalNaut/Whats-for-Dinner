@@ -7,6 +7,8 @@ import { useState } from "react";
 import { faDownload, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { useLanguageContext } from "src/contexts/LanguageContext";
+
 type ImagePreviewProps = {
   fileName?: string;
   showDownloadLink?: true;
@@ -23,6 +25,7 @@ export default function ImagePreview({
   showDownloadLink,
   ...props
 }: ImagePreviewProps) {
+  const { t } = useLanguageContext();
   const [error, setError] = useState<string>();
   const isInteractive = src && props.onClick;
   const fileUrl = src ? src : "https://via.placeholder.com/128";
@@ -42,7 +45,7 @@ export default function ImagePreview({
       <img
         src={fileUrl}
         title={fileName}
-        alt="Prevista"
+        alt={t("Preview")}
         className={`size-[128px] rounded-md object-cover object-center ${
           isInteractive ? "cursor-pointer bg-black" : ""
         }`}

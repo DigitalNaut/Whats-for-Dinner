@@ -11,6 +11,7 @@
     "montserrat",
     "netlify",
     "pnpx",
+    "Redimensionando",
     "Reintentar",
     "roboto",
     "Roboto",
@@ -19,7 +20,8 @@
     "tailwindcss",
     "TTFB",
     "typecheck",
-    "webp"
+    "webp",
+    "Xmark"
   ],
   "[javascript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
