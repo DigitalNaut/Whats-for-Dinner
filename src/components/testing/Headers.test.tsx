@@ -53,11 +53,10 @@ function Providers({ children }: PropsWithChildren) {
   );
 }
 
-function TestComponent({ backTo }: { backTo?: string }) {
+function TestComponent() {
   const { setHeaderProperties } = useHeaderContext();
 
   setHeaderProperties({
-    backTo: backTo || "",
     altColor: true,
     showMenuButton: true,
   });
@@ -66,7 +65,7 @@ function TestComponent({ backTo }: { backTo?: string }) {
 }
 
 test("expects a custom back button behavior", async () => {
-  render(<TestComponent backTo="/test" />, { wrapper: Providers });
+  render(<TestComponent />, { wrapper: Providers });
 
   const backButton = screen.getByLabelText("Atrás");
 
