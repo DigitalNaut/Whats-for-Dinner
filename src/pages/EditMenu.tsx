@@ -1,44 +1,133 @@
-import type { ReactPortal } from "react";
-import { createPortal } from "react-dom";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Checkbox } from "@ariakit/react";
+import { Checkbox, useMenuStore } from "@ariakit/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
   faCheckDouble,
-  faMinus,
   faPlus,
   faTimes,
+  faToggleOff,
+  faToggleOn,
   faTrash,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { useHeader, useHeaderContext } from "src/contexts/HeaderContext";
+import {
+  ContextMenu,
+  ContextMenuButton,
+  ContextMenuItem,
+  ContextMenuSeparator,
+} from "src/components/HeaderContextMenu";
+import { useHeaderContext } from "src/contexts/HeaderContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 import Floating from "src/components/common/Floating";
 import Spinner from "src/components/common/Spinner";
 import Toggle from "src/components/common/Toggle";
 
-enum Modes {
-  Toggle,
-  Select,
+const Modes = ["Toggle", "Select"] as const;
+
+function HeaderContextMenu({
+  showSelectionOptions,
+  enterSelectMode,
+  selectAll,
+  selectNone,
+  deleteSelections,
+  toggleAllOn,
+  toggleAllOff,
+}: {
+  showSelectionOptions?: boolean;
+  enterSelectMode: () => void;
+  selectNone: () => void;
+  selectAll: () => void;
+  deleteSelections: () => void;
+  toggleAllOn: () => void;
+  toggleAllOff: () => void;
+}) {
+  const { t } = useLanguageContext();
+  const menuStore = useMenuStore();
+
+  return (
+    <div className="z-10">
+      <ContextMenuButton store={menuStore} />
+      <ContextMenu store={menuStore}>
+        {showSelectionOptions || (
+          <ContextMenuItem onClick={enterSelectMode}>
+            <FontAwesomeIcon icon={faCheck} />
+            <span>{t("Select")}</span>
+          </ContextMenuItem>
+        )}
+
+        {showSelectionOptions && (
+          <ContextMenuItem onClick={selectNone}>
+            <FontAwesomeIcon icon={faXmark} />
+            <span>{t("Select none")}</span>
+          </ContextMenuItem>
+        )}
+
+        <ContextMenuItem onClick={selectAll}>
+          <FontAwesomeIcon icon={faCheckDouble} />
+          <span>{t("Select all")}</span>
+        </ContextMenuItem>
+
+        {showSelectionOptions && (
+          <>
+            <ContextMenuSeparator />
+
+            <ContextMenuItem
+              className="text-red-900"
+              onClick={deleteSelections}
+            >
+              <FontAwesomeIcon icon={faTrash} />
+              <span>{t("Delete")}</span>
+            </ContextMenuItem>
+          </>
+        )}
+
+        {showSelectionOptions || (
+          <>
+            <ContextMenuSeparator />
+
+            <ContextMenuItem onClick={toggleAllOn}>
+              <FontAwesomeIcon icon={faToggleOn} />
+              <span>{t("Toggle all on")}</span>
+            </ContextMenuItem>
+
+            <ContextMenuItem onClick={toggleAllOff}>
+              <FontAwesomeIcon icon={faToggleOff} />
+              <span>{t("Toggle all off")}</span>
+            </ContextMenuItem>
+          </>
+        )}
+      </ContextMenu>
+    </div>
+  );
 }
 
 export default function EditMenu() {
   const { t } = useLanguageContext();
-  const { setHeaderProperties, createMenu } = useHeaderContext();
+  const { setHeaderProperties } = useHeaderContext();
   const { isLoaded, allMenuItems, toggleMenuItems, deleteMenuItems } =
     useSpinnerMenuContext();
-  const [mode, setMode] = useState<Modes>(Modes.Toggle);
+  const [mode, setMode] = useState<(typeof Modes)[number]>("Toggle");
   const [selected, setSelected] = useState<
     Map<string, { isSelected: boolean; index: number }>
   >(new Map());
   const [showSelectionOptions, setShowSelectionOptions] = useState(false);
-  const [menuPortal, setMenuPortal] = useState<ReactPortal>();
 
-  const setAllSelections = useCallback(
-    (value = true) => {
+  const setModeToggle = useCallback(() => {
+    setShowSelectionOptions(false);
+    setHeaderProperties((prevProperties) => ({
+      ...prevProperties,
+      altBackButton: undefined,
+      altColor: false,
+    }));
+    setMode("Toggle");
+  }, [setHeaderProperties]);
+
+  const setAllSelected = useCallback(
+    (value: boolean) => {
       const newSelected = new Map(selected);
       allMenuItems?.forEach(({ label }, index) =>
         newSelected.set(label, { isSelected: value, index }),
@@ -48,145 +137,81 @@ export default function EditMenu() {
     [allMenuItems, selected],
   );
 
-  const setModeToggle = useCallback(() => {
-    setShowSelectionOptions(false);
-    setHeaderProperties((prevProperties) => ({
-      ...prevProperties,
-      altBackButton: undefined,
-      altColor: false,
-    }));
-    setMode(Modes.Toggle);
-  }, [setHeaderProperties]);
-
-  const altBackButton = useMemo(
-    () => (
-      <button onClick={setModeToggle}>
-        <FontAwesomeIcon icon={faTimes} />
-      </button>
-    ),
-    [setModeToggle],
-  );
-
-  const setModeSelection = useCallback(
-    (setAll?: boolean) => {
-      setShowSelectionOptions(true);
-      setHeaderProperties((prevProperties) => ({
-        ...prevProperties,
-        title: t("Select"),
-        altBackButton,
-        altColor: true,
-      }));
-      setMode(Modes.Select);
-      setAll !== undefined && setAllSelections(setAll);
-    },
-    [altBackButton, setAllSelections, setHeaderProperties, t],
-  );
-
-  const deleteSelections = useCallback(() => {
+  const deleteSelected = useCallback(() => {
     const indexes = Array.from(selected.values())
       .filter(({ isSelected }) => isSelected)
       .map(({ index }) => index);
 
     deleteMenuItems(indexes);
-    setAllSelections(false);
+    setAllSelected(false);
     setModeToggle();
-  }, [deleteMenuItems, selected, setAllSelections, setModeToggle]);
+  }, [deleteMenuItems, selected, setAllSelected, setModeToggle]);
 
-  const { menu, menuRef } = useMemo(
-    () =>
-      createMenu((MenuItem, MenuSeparator) => (
-        <>
-          {showSelectionOptions || (
-            <MenuItem
-              onClick={() => {
-                setModeSelection(false);
-              }}
-            >
-              <FontAwesomeIcon icon={faCheck} />
-              <span>{t("Select")}</span>
-            </MenuItem>
-          )}
-
-          <MenuItem
-            onClick={() => {
-              setModeSelection(true);
-            }}
-          >
-            <FontAwesomeIcon icon={faCheckDouble} />
-            <span>{t("Select all")}</span>
-          </MenuItem>
-
-          {showSelectionOptions && (
-            <MenuItem className="text-red-900" onClick={deleteSelections}>
-              <FontAwesomeIcon icon={faTrash} />
-              <span>{t("Delete")}</span>
-            </MenuItem>
-          )}
-
-          {showSelectionOptions || (
-            <>
-              <MenuSeparator />
-              <MenuItem
-                onClick={() => {
-                  allMenuItems &&
-                    toggleMenuItems(
-                      allMenuItems.map((_, index) => index),
-                      true,
-                    );
-                }}
-              >
-                <FontAwesomeIcon icon={faPlus} />
-                <span>{t("Toggle all on")}</span>
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  allMenuItems &&
-                    toggleMenuItems(
-                      allMenuItems.map((_, index) => index),
-                      false,
-                    );
-                }}
-              >
-                <FontAwesomeIcon icon={faMinus} />
-                <span>{t("Toggle all off")}</span>
-              </MenuItem>
-            </>
-          )}
-        </>
-      )),
-    [
-      createMenu,
-      showSelectionOptions,
-      t,
-      deleteSelections,
-      setModeSelection,
-      allMenuItems,
-      toggleMenuItems,
-    ],
+  const toggleAll = useCallback(
+    (active: boolean) => {
+      allMenuItems &&
+        toggleMenuItems(
+          allMenuItems.map((_, index) => index),
+          active,
+        );
+    },
+    [allMenuItems, toggleMenuItems],
   );
+
+  const altBackButton = useMemo(() => {
+    return mode === "Select" ? (
+      <button onClick={setModeToggle}>
+        <FontAwesomeIcon icon={faTimes} />
+      </button>
+    ) : undefined;
+  }, [mode, setModeToggle]);
+
+  const setModeSelect = useCallback(
+    (allSelected: boolean) => {
+      setShowSelectionOptions(true);
+
+      setHeaderProperties((prevProperties) => ({
+        ...prevProperties,
+        altColor: true,
+      }));
+
+      setMode("Select");
+
+      allSelected !== undefined && setAllSelected(allSelected);
+    },
+    [setAllSelected, setHeaderProperties],
+  );
+
+  const contextMenu = useMemo(() => {
+    return (
+      <>
+        {mode === "Select" && (
+          <button className="text-red-900" onClick={deleteSelected}>
+            <FontAwesomeIcon icon={faTrash} />
+          </button>
+        )}
+        <HeaderContextMenu
+          showSelectionOptions={showSelectionOptions}
+          enterSelectMode={() => setModeSelect(false)}
+          selectAll={() => setModeSelect(true)}
+          selectNone={() => setModeSelect(false)}
+          deleteSelections={deleteSelected}
+          toggleAllOn={() => toggleAll(true)}
+          toggleAllOff={() => toggleAll(false)}
+        />
+      </>
+    );
+  }, [deleteSelected, mode, setModeSelect, showSelectionOptions, toggleAll]);
 
   useEffect(() => {
     if (!isLoaded) return;
 
-    setSelected(
-      new Map(
-        allMenuItems?.map(({ label }, index) => [
-          label,
-          { isSelected: false, index },
-        ]) ?? [],
-      ),
-    );
-  }, [allMenuItems, isLoaded]);
-
-  useEffect(() => {
-    if (!menuRef.current) return;
-    setMenuPortal(createPortal(menu, menuRef.current));
-  }, [menuRef, menu]);
-
-  useHeader({
-    backTo: "/main",
-    showMenuButton: true,
-  });
+    setHeaderProperties((prevProperties) => ({
+      ...prevProperties,
+      altBackButton,
+      elements: contextMenu,
+    }));
+  }, [altBackButton, contextMenu, isLoaded, setHeaderProperties]);
 
   if (!isLoaded)
     return (
@@ -198,7 +223,7 @@ export default function EditMenu() {
   return (
     <>
       <h2 className="text-center font-bangers text-4xl">{t("Menu")}</h2>
-      {menuPortal}
+
       <div className="flex flex-col gap-4">
         {allMenuItems &&
           allMenuItems.map(({ label, imageUrl, key, enabled }, index) => (
@@ -209,7 +234,7 @@ export default function EditMenu() {
                 alt={label}
               />
               <p className="flex-1">{label}</p>
-              {mode === Modes.Toggle ? (
+              {mode === "Toggle" ? (
                 <Toggle
                   checked={enabled}
                   onChange={(value) => toggleMenuItems([index], value)}

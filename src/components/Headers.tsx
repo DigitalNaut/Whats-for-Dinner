@@ -28,8 +28,8 @@ export function TitleHeader({ children }: PropsWithChildren) {
 export function MenuHeader() {
   const { t } = useLanguageContext();
   const navigate = useNavigate();
-  const { headerProperties, menuButton } = useHeaderContext();
-  const { backTo, altBackButton, altColor } = headerProperties;
+  const { headerProperties } = useHeaderContext();
+  const { altBackButton, altColor, elements } = headerProperties;
   const { UserCard } = useUser();
 
   return (
@@ -42,16 +42,17 @@ export function MenuHeader() {
         <button
           className="flex items-center gap-2"
           aria-label={t("Back")}
-          onClick={() => {
-            backTo ? navigate(backTo) : navigate(-1);
-          }}
+          onClick={() => navigate(-1)}
         >
           <FontAwesomeIcon icon={faChevronLeft} />
           <span className="flex-1">{t("Back")}</span>
         </button>
       )}
-      {menuButton}
-      <UserCard />
+
+      <div className="flex gap-4">
+        {elements}
+        <UserCard />
+      </div>
     </div>
   );
 }

@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
-import { useHeader } from "src/contexts/HeaderContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
@@ -17,26 +16,16 @@ import Spinner from "src/components/common/Spinner";
 import Switcher, { SwitcherState } from "src/components/common/Switcher";
 import type { FileInfo } from "src/components/InputFile";
 
-enum FormFields {
-  DishName = "dishName",
-  DishURL = "dishURL",
-  DishImage = "dishImage",
-}
-enum StateActionType {
-  SetName,
-  SetURL,
-  Reset,
-}
-enum ErrorActionType {
-  FormError,
-  InvalidImageURL,
-  InvalidImageFile,
-  Reset,
-}
-enum UploadMode {
-  File,
-  URL,
-}
+const StateActionType = ["setName", "setURL", "reset"] as const;
+
+const ErrorActionType = [
+  "formError",
+  "invalidImageURL",
+  "invalidImageFile",
+  "reset",
+] as const;
+
+const UploadMode = ["File", "URL"] as const;
 
 type Action<ActionType> = {
   type: ActionType;
@@ -49,16 +38,16 @@ const initialFormState = {
 };
 const stateReducer: Reducer<
   typeof initialFormState,
-  Action<StateActionType>
+  Action<(typeof StateActionType)[number]>
 > = (prevState, action) => {
   switch (action.type) {
-    case StateActionType.Reset:
+    case "reset":
       return initialFormState;
 
-    case StateActionType.SetName:
+    case "setName":
       return { ...prevState, imageName: action.payload };
 
-    case StateActionType.SetURL:
+    case "setURL":
       return { ...prevState, imageUrl: action.payload };
 
     default:
@@ -71,21 +60,22 @@ const initialErrorState = {
   invalidImageURL: "",
   invalidImageFile: "",
 };
+
 const errorReducer: Reducer<
   typeof initialErrorState,
-  Action<ErrorActionType>
+  Action<(typeof ErrorActionType)[number]>
 > = (prevState, action) => {
   switch (action.type) {
-    case ErrorActionType.Reset:
+    case "reset":
       return initialErrorState;
 
-    case ErrorActionType.FormError:
+    case "formError":
       return { ...prevState, formError: action.payload };
 
-    case ErrorActionType.InvalidImageURL:
+    case "invalidImageURL":
       return { ...prevState, invalidImageURL: action.payload };
 
-    case ErrorActionType.InvalidImageFile:
+    case "invalidImageFile":
       return { ...prevState, invalidImageFile: action.payload };
 
     default:
@@ -100,7 +90,8 @@ export default function AddItem() {
   const { hasScope } = useGoogleDriveContext();
   const { uploadFile } = useGoogleDriveAPI();
 
-  const [uploadMode, setUploadMode] = useState<UploadMode>(UploadMode.File);
+  const [uploadMode, setUploadMode] =
+    useState<(typeof UploadMode)[number]>("File");
   const [fileInfo, setFileInfo] = useState<FileInfo>();
   const uploadController = useRef<AbortController>();
   const [isUploadingFile, setIsUploadingFile] = useState(false);
@@ -111,16 +102,12 @@ export default function AddItem() {
     initialErrorState,
   );
 
-  useHeader({
-    backTo: "menu",
-  });
-
   const uploadFileHandler = async (imageFileToUpload: File) => {
     setIsUploadingFile(true);
 
     if (!imageFileToUpload) {
       errorDispatch({
-        type: ErrorActionType.InvalidImageFile,
+        type: "invalidImageFile",
         payload: t("No image file selected"),
       });
       return null;
@@ -146,12 +133,12 @@ export default function AddItem() {
 
       if (data === false)
         errorDispatch({
-          type: ErrorActionType.InvalidImageFile,
+          type: "invalidImageFile",
           payload: t("Image upload failed"),
         });
       else if (data.error) {
         errorDispatch({
-          type: ErrorActionType.InvalidImageFile,
+          type: "invalidImageFile",
           payload: `Error ${data.error.code || "unknown"}: ${data.error.message}`,
         });
       } else return data.id;
@@ -159,12 +146,12 @@ export default function AddItem() {
       if (error instanceof Error) {
         if (error.name === "CanceledError") return Promise.reject(error);
         errorDispatch({
-          type: ErrorActionType.InvalidImageFile,
+          type: "invalidImageFile",
           payload: error.message,
         });
       } else {
         errorDispatch({
-          type: ErrorActionType.InvalidImageFile,
+          type: "invalidImageFile",
           payload: t("Unknown error"),
         });
         console.error(error);
@@ -177,35 +164,35 @@ export default function AddItem() {
   const validateForm = (formData: FormData) => {
     if (errorState.invalidImageURL !== "") {
       errorDispatch({
-        type: ErrorActionType.FormError,
+        type: "formError",
         payload: errorState.invalidImageURL,
       });
       return null;
     }
 
-    const dishName = formData.get(FormFields.DishName)?.toString().trim();
-    const dishURL = formData.get(FormFields.DishURL)?.toString().trim();
-    const dishImage: File | null = formData.get(FormFields.DishImage) as File;
+    const dishName = formData.get("dishName")?.toString().trim();
+    const dishURL = formData.get("dishURL")?.toString().trim();
+    const dishImage: File | null = formData.get("dishImage") as File;
 
     if (!dishName) {
       errorDispatch({
-        type: ErrorActionType.FormError,
+        type: "formError",
         payload: t("Dish name is required"),
       });
       return null;
     }
 
-    if (uploadMode === UploadMode.URL && !dishURL) {
+    if (uploadMode === "URL" && !dishURL) {
       errorDispatch({
-        type: ErrorActionType.FormError,
+        type: "formError",
         payload: t("Enter valid URL"),
       });
       return null;
     }
 
-    if (uploadMode === UploadMode.File && !dishImage) {
+    if (uploadMode === "File" && !dishImage) {
       errorDispatch({
-        type: ErrorActionType.FormError,
+        type: "formError",
         payload: t("Must select an image"),
       });
       return null;
@@ -222,28 +209,29 @@ export default function AddItem() {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    if (fileInfo?.file) formData.append(FormFields.DishImage, fileInfo.file);
+    if (fileInfo?.file) formData.append("dishImage", fileInfo.file);
     const validation = validateForm(formData);
 
     if (!validation) return;
 
     const { dishName, dishURL, dishImage } = validation;
 
-    if (uploadMode === UploadMode.URL && dishURL) {
+    if (uploadMode === "URL" && dishURL) {
       addMenuItem({
         label: dishName,
         imageUrl: dishURL,
         enabled: true,
         key: Date.now(),
       });
-      navigate("/menu");
+      navigate(-1);
     }
-    if (uploadMode === UploadMode.File && dishImage) {
+
+    if (uploadMode === "File" && dishImage) {
       const imageId = await uploadFileHandler(dishImage);
 
       if (!imageId) {
         errorDispatch({
-          type: ErrorActionType.FormError,
+          type: "formError",
           payload: t("Image upload failed"),
         });
         return;
@@ -256,10 +244,11 @@ export default function AddItem() {
         enabled: true,
         key: Date.now(),
       });
-      navigate("/menu");
+
+      navigate(-1);
     } else
       errorDispatch({
-        type: ErrorActionType.FormError,
+        type: "formError",
         payload: t("Please fill all fields"),
       });
   };
@@ -338,18 +327,18 @@ export default function AddItem() {
         )}
         <InputText
           required
-          name={FormFields.DishName}
+          name="dishName"
           label={t("Dish name")}
           value={formState.imageName}
           onChange={({ target: { value: payload } }) => {
             formDispatch({
-              type: StateActionType.SetName,
+              type: "setName",
               payload,
             });
           }}
           onClear={() => {
             formDispatch({
-              type: StateActionType.SetName,
+              type: "setName",
               payload: "",
             });
           }}
@@ -358,17 +347,17 @@ export default function AddItem() {
         <Switcher
           initialState={SwitcherState.FirstOption}
           onChange={(state) => {
-            errorDispatch({ type: ErrorActionType.Reset, payload: "" });
+            errorDispatch({ type: "reset", payload: "" });
 
             switch (state) {
               case SwitcherState.FirstOption:
-                setUploadMode(UploadMode.File);
-                return UploadMode.File;
+                setUploadMode("File");
+                return "File";
               case SwitcherState.SecondOption:
-                setUploadMode(UploadMode.URL);
+                setUploadMode("URL");
                 fileInfo?.url && URL.revokeObjectURL(fileInfo.url);
                 setFileInfo(undefined);
-                return UploadMode.URL;
+                return "URL";
               default:
                 throw new Error("Invalid upload mode");
             }
@@ -378,7 +367,7 @@ export default function AddItem() {
             firstOption: (
               <InputFile
                 required
-                name={FormFields.DishImage}
+                name="dishImage"
                 onChange={(info) => {
                   setFileInfo(info);
                 }}
@@ -388,19 +377,19 @@ export default function AddItem() {
               <>
                 <InputText
                   required
-                  name={FormFields.DishURL}
+                  name="dishURL"
                   label={t("Image URL")}
                   value={formState.imageUrl}
                   error={errorState.invalidImageURL}
                   onChange={({ target: { value: payload } }) => {
                     formDispatch({
-                      type: StateActionType.SetURL,
+                      type: "setURL",
                       payload,
                     });
                   }}
                   onClear={() => {
                     formDispatch({
-                      type: StateActionType.SetURL,
+                      type: "setURL",
                       payload: "",
                     });
                   }}
@@ -409,13 +398,13 @@ export default function AddItem() {
                   src={formState.imageUrl}
                   onLoad={() => {
                     errorDispatch({
-                      type: ErrorActionType.InvalidImageURL,
+                      type: "invalidImageURL",
                       payload: "",
                     });
                   }}
                   onError={() =>
                     errorDispatch({
-                      type: ErrorActionType.InvalidImageURL,
+                      type: "invalidImageURL",
                       payload: t("Invalid image URL"),
                     })
                   }
