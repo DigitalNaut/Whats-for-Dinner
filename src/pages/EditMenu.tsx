@@ -25,6 +25,7 @@ import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 import Floating from "src/components/common/Floating";
 import Spinner from "src/components/common/Spinner";
 import Toggle from "src/components/common/Toggle";
+import { useSpinnerMenu } from "src/hooks/useSpinnerMenu";
 
 const Modes = ["Toggle", "Select"] as const;
 
@@ -110,8 +111,8 @@ function HeaderContextMenu({
 export default function EditMenu() {
   const { t } = useLanguageContext();
   const { setHeaderProperties } = useHeaderContext();
-  const { isLoaded, allMenuItems, toggleMenuItems, deleteMenuItems } =
-    useSpinnerMenuContext();
+  const { isLoaded, allMenuItems } = useSpinnerMenuContext();
+  const { toggleMenuItems, deleteMenuItems } = useSpinnerMenu();
   const [mode, setMode] = useState<(typeof Modes)[number]>("Toggle");
   const [selected, setSelected] = useState<
     Map<string, { isSelected: boolean; index: number }>

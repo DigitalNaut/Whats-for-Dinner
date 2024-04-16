@@ -65,59 +65,65 @@ const spaces = "appDataFolder";
 export function useGoogleDriveAPI() {
   const { hasAuthorization, userTokens } = useGoogleDriveContext();
 
-  const uploadFile: UploadFile = async ({ file, metadata }, config) => {
-    const authStatus = hasAuthorization();
-    if (authStatus !== "OK") return Promise.reject(authStatus);
+  const uploadFile: UploadFile = useCallback(
+    async ({ file, metadata }, config) => {
+      const authStatus = hasAuthorization();
+      if (authStatus !== "OK") return Promise.reject(authStatus);
 
-    metadata.parents = [spaces];
+      metadata.parents = [spaces];
 
-    const body = new FormData();
-    body.append(
-      "metadata",
-      new Blob([JSON.stringify(metadata)], { type: "application/json" }),
-    );
-    body.append("file", file);
+      const body = new FormData();
+      body.append(
+        "metadata",
+        new Blob([JSON.stringify(metadata)], { type: "application/json" }),
+      );
+      body.append("file", file);
 
-    const request = axios.post<FileUploadResponse>(
-      "https://www.googleapis.com/upload/drive/v3/files",
-      body,
-      {
-        params: { uploadType: "multipart" },
-        headers: {
-          Authorization: `Bearer ${userTokens?.access_token}`,
+      const request = axios.post<FileUploadResponse>(
+        "https://www.googleapis.com/upload/drive/v3/files",
+        body,
+        {
+          params: { uploadType: "multipart" },
+          headers: {
+            Authorization: `Bearer ${userTokens?.access_token}`,
+          },
+          ...config,
         },
-        ...config,
-      },
-    );
+      );
 
-    return request;
-  };
+      return request;
+    },
+    [hasAuthorization, userTokens?.access_token],
+  );
 
-  const updateFile: UpdateFile = async ({ id, file, metadata }, config) => {
-    const authStatus = hasAuthorization();
-    if (authStatus !== "OK") return Promise.reject(authStatus);
+  const updateFile: UpdateFile = useCallback(
+    async ({ id, file, metadata }, config) => {
+      const authStatus = hasAuthorization();
+      if (authStatus !== "OK") return Promise.reject(authStatus);
 
-    const body = new FormData();
-    body.append(
-      "metadata",
-      new Blob([JSON.stringify(metadata)], { type: "application/json" }),
-    );
-    body.append("file", file);
+      const body = new FormData();
+      body.append(
+        "metadata",
+        new Blob([JSON.stringify(metadata)], { type: "application/json" }),
+      );
+      body.append("file", file);
 
-    const request = axios.patch<FileUploadResponse>(
-      `https://www.googleapis.com/upload/drive/v3/files/${id}`,
-      body,
-      {
-        params: { uploadType: "multipart" },
-        headers: {
-          Authorization: `Bearer ${userTokens?.access_token}`,
+      const request = axios.patch<FileUploadResponse>(
+        `https://www.googleapis.com/upload/drive/v3/files/${id}`,
+        body,
+        {
+          params: { uploadType: "multipart" },
+          headers: {
+            Authorization: `Bearer ${userTokens?.access_token}`,
+          },
+          ...config,
         },
-        ...config,
-      },
-    );
+      );
 
-    return request;
-  };
+      return request;
+    },
+    [hasAuthorization, userTokens?.access_token],
+  );
 
   const fetchList: FetchList = useCallback(
     async ({ params, ...config }: AxiosRequestConfig = {}) => {
@@ -141,44 +147,47 @@ export function useGoogleDriveAPI() {
     [hasAuthorization, userTokens?.access_token],
   );
 
-  const fetchFile: FetchFile = async (
-    { id },
-    { params, ...config }: AxiosRequestConfig = {},
-  ) => {
-    const authStatus = hasAuthorization();
-    if (authStatus !== "OK") return Promise.reject(authStatus);
+  const fetchFile: FetchFile = useCallback(
+    async ({ id }, { params, ...config }: AxiosRequestConfig = {}) => {
+      const authStatus = hasAuthorization();
+      if (authStatus !== "OK") return Promise.reject(authStatus);
 
-    const request = axios.get(
-      `https://www.googleapis.com/drive/v3/files/${id}`,
-      {
-        params: { alt: "media", ...params },
-        responseType: "blob",
-        headers: {
-          authorization: `Bearer ${userTokens?.access_token}`,
+      const request = axios.get(
+        `https://www.googleapis.com/drive/v3/files/${id}`,
+        {
+          params: { alt: "media", ...params },
+          responseType: "blob",
+          headers: {
+            authorization: `Bearer ${userTokens?.access_token}`,
+          },
+          ...config,
         },
-        ...config,
-      },
-    );
+      );
 
-    return request;
-  };
+      return request;
+    },
+    [hasAuthorization, userTokens?.access_token],
+  );
 
-  const deleteFile: DeleteFile = async ({ id }, config) => {
-    const authStatus = hasAuthorization();
-    if (authStatus !== "OK") return Promise.reject(authStatus);
+  const deleteFile: DeleteFile = useCallback(
+    async ({ id }, config) => {
+      const authStatus = hasAuthorization();
+      if (authStatus !== "OK") return Promise.reject(authStatus);
 
-    const request = axios.delete(
-      `https://www.googleapis.com/drive/v3/files/${id}`,
-      {
-        headers: {
-          authorization: `Bearer ${userTokens?.access_token}`,
+      const request = axios.delete(
+        `https://www.googleapis.com/drive/v3/files/${id}`,
+        {
+          headers: {
+            authorization: `Bearer ${userTokens?.access_token}`,
+          },
+          ...config,
         },
-        ...config,
-      },
-    );
+      );
 
-    return request;
-  };
+      return request;
+    },
+    [hasAuthorization, userTokens?.access_token],
+  );
 
   return {
     uploadFile,

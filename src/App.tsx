@@ -18,7 +18,7 @@ const LazyPrivacy = lazy(() => import("src/pages/Privacy"));
 const LazyTerms = lazy(() => import("src/pages/Terms"));
 
 // TODO: Remove
-// import Tests from "src/pages/Tests";
+const LazyTests = lazy(() => import("src/pages/Tests"));
 
 function TitleLayout() {
   const { t } = useLanguageContext();
@@ -107,6 +107,14 @@ const newRouter = createBrowserRouter([
             element: (
               <Suspense fallback={<Spinner />}>
                 <LazyAddItem />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/test",
+            element: (
+              <Suspense fallback={<Spinner />}>
+                <LazyTests />
               </Suspense>
             ),
           },
