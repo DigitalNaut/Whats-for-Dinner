@@ -100,7 +100,7 @@ function UserCard() {
 
           <div className="flex w-full flex-col gap-1 text-center text-xs italic text-slate-800">
             <Link to="/terms" className="hover:underline">
-              {t("Terms and Conditions")}
+              {t("Terms & Conditions")}
             </Link>
             <Link to="/privacy" className="hover:underline">
               {t("Privacy Policy")}

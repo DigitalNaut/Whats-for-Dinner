@@ -28,7 +28,7 @@ export default function Login({ redirectTo }: LoginProps) {
 
       <div className="flex flex-col gap-1 text-center text-sm text-white">
         <Link to="/terms" className="w-full hover:underline">
-          {t("Terms and Conditions")}
+          {t("Terms & Conditions")}
         </Link>
         <Link to="/privacy" className="w-full hover:underline">
           {t("Privacy Policy")}
