@@ -318,7 +318,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         window.addEventListener("beforeunload", alertUser);
 
     return () => window.removeEventListener("beforeunload", alertUser);
-  }, [state, uploadTimeoutId]);
+  }, [state, t, uploadTimeoutId]);
 
   return (
     <spinnerMenuContext.Provider
