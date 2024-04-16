@@ -36,6 +36,7 @@ function HeaderContextMenu({
   deleteSelections,
   toggleAllOn,
   toggleAllOff,
+  title,
 }: {
   showSelectionOptions?: boolean;
   enterSelectMode: () => void;
@@ -44,12 +45,13 @@ function HeaderContextMenu({
   deleteSelections: () => void;
   toggleAllOn: () => void;
   toggleAllOff: () => void;
+  title?: string;
 }) {
   const { t } = useLanguageContext();
   const menuStore = useMenuStore();
 
   return (
-    <div className="z-10">
+    <div className="z-10" title={title}>
       <ContextMenuButton store={menuStore} />
       <ContextMenu store={menuStore}>
         {showSelectionOptions || (
@@ -186,11 +188,12 @@ export default function EditMenu() {
     return (
       <>
         {mode === "Select" && (
-          <button className="text-red-900" onClick={deleteSelected}>
+          <button onClick={deleteSelected} title={t("Delete")}>
             <FontAwesomeIcon icon={faTrash} />
           </button>
         )}
         <HeaderContextMenu
+          title={t("Edit menu")}
           showSelectionOptions={showSelectionOptions}
           enterSelectMode={() => setModeSelect(false)}
           selectAll={() => setModeSelect(true)}
@@ -201,7 +204,7 @@ export default function EditMenu() {
         />
       </>
     );
-  }, [deleteSelected, mode, setModeSelect, showSelectionOptions, toggleAll]);
+  }, [deleteSelected, mode, setModeSelect, showSelectionOptions, t, toggleAll]);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -225,7 +228,7 @@ export default function EditMenu() {
       <h2 className="text-center font-bangers text-4xl">{t("Menu")}</h2>
 
       <div className="flex flex-col gap-4">
-        {allMenuItems &&
+        {allMenuItems?.length ? (
           allMenuItems.map(({ label, imageUrl, key, enabled }, index) => (
             <div key={key} className="flex items-center gap-2">
               <img
@@ -259,7 +262,12 @@ export default function EditMenu() {
                 />
               )}
             </div>
-          ))}
+          ))
+        ) : (
+          <p className="p-6 text-center text-slate-300">
+            {t("No items yet. Add some dishes to get started.")}
+          </p>
+        )}
       </div>
 
       <Floating>
