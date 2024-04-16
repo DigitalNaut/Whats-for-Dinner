@@ -18,25 +18,21 @@ const CONFIG_FILE_NAME = "config.json";
 
 const State = ["Loading", "Idle", "Waiting", "Uploading", "Dirty"] as const;
 
-const spinnerMenuContext = createContext<{
+type SpinnerMenuContext = {
   allMenuItems?: SpinnerOption[];
   enabledMenuItems?: SpinnerOption[];
   isLoaded: boolean;
   toggleMenuItems: (indexes: number[], value?: boolean) => void;
   addMenuItem: (item: SpinnerOption) => void;
   deleteMenuItems: (indexes: number[], value?: boolean) => void;
-}>({
-  isLoaded: false,
-  toggleMenuItems: () => {
-    throw new Error("SpinnerMenuContext not initialized");
-  },
-  addMenuItem: () => {
-    throw new Error("SpinnerMenuContext not initialized");
-  },
-  deleteMenuItems: () => {
-    throw new Error("SpinnerMenuContext not initialized");
-  },
-});
+};
+
+const spinnerMenuContext = createContext<SpinnerMenuContext | null>(null);
+
+const getDefaultConfig = async () => {
+  const config = await import("src/data/DefaultConfig.json");
+  return config.default;
+};
 
 export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   const { t } = useLanguageContext();
@@ -74,21 +70,24 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
 
   const deleteImage = async (item: SpinnerOption) => {
     try {
-      if (!item.fileId) return false;
+      if (!item.fileId) return null;
 
       return await deleteFile({ id: item.fileId });
     } catch (error) {
       console.error(error);
-      return false;
+      return null;
     }
   };
 
   const getConfigFileMeta = useCallback(
     async (signal?: AbortSignal) => {
-      const { data } = await fetchList({
+      const { data, status } = await fetchList({
         signal,
         params: { q: `name = '${CONFIG_FILE_NAME}'` },
       });
+
+      if (status !== 200) throw new Error("Could not get config file");
+      if (!data) return null;
 
       if (!data.files?.length) return null;
 
@@ -100,17 +99,23 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   );
 
   const createConfigFile = useCallback(
-    async (signal?: AbortSignal) => {
-      await uploadFile(
+    async (signal?: AbortSignal, fileContents?: unknown) => {
+      const { data, status } = await uploadFile(
         {
-          file: new File([JSON.stringify([])], CONFIG_FILE_NAME),
+          file: new File([JSON.stringify(fileContents)], CONFIG_FILE_NAME),
           metadata: {
-            name: "config.json",
+            name: CONFIG_FILE_NAME,
             mimeType: "application/json",
           },
         },
         { signal },
       );
+
+      if (status !== 200) throw new Error("Could not create config file");
+      if (!data) return null;
+
+      setConfigFileId(data.id);
+      return data;
     },
     [uploadFile],
   );
@@ -188,7 +193,12 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
 
         // List the files
         if (fileMeta) await getConfigFile(signal, fileMeta);
-        else createConfigFile();
+        else {
+          const defaultConfig = await getDefaultConfig();
+
+          await createConfigFile(signal, defaultConfig);
+          setMenuItems(defaultConfig);
+        }
 
         setState("Idle");
       } catch (error) {
@@ -197,11 +207,11 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         if (error instanceof Error) {
           if (error.name === "CanceledError") return;
           setError(`${error.name}: ${error.message}`);
-          console.error(error);
         } else {
           setError("An unknown error ocurred");
-          console.error(error);
         }
+
+        console.error(error);
       }
     },
     [getConfigFileMeta, createConfigFile, getConfigFile],
@@ -271,9 +281,9 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     itemsToDelete.forEach(async (item) => {
       if (!item.fileId) return;
       try {
-        const deleted = await deleteImage(item);
+        const { status } = (await deleteImage(item)) || {};
 
-        if (!deleted) throw new Error(t("Image could not be deleted"));
+        if (status !== 200) throw new Error(t("Image could not be deleted"));
       } catch (error) {
         console.error(error);
       }
@@ -348,9 +358,11 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
 
 export function useSpinnerMenuContext() {
   const context = useContext(spinnerMenuContext);
-  if (context === undefined)
+
+  if (!context)
     throw new Error(
       "useSpinnerMenuContext must be used within a SpinnerMenuContextProvider",
     );
+
   return context;
 }

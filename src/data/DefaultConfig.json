@@ -1,0 +1,92 @@
+[
+  {
+    "key": 1,
+    "label": "Burger",
+    "enabled": true,
+    "imageUrl": "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?q=80&w=256&auto=format&fit=crop"
+  },
+  {
+    "key": 2,
+    "label": "Chicken Salad",
+    "enabled": true,
+    "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=256&auto=format&fit=crop"
+  },
+  {
+    "key": 3,
+    "label": "Pasta",
+    "enabled": true,
+    "imageUrl": "https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?q=80&w=256&auto=format&fit=crop"
+  },
+  {
+    "key": 4,
+    "label": "Pizza",
+    "enabled": true,
+    "imageUrl": "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=256&auto=format&fit=crop"
+  },
+  {
+    "key": 5,
+    "label": "Tacos",
+    "enabled": true,
+    "imageUrl": "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?q=80&w=256&auto=format&fit=crop"
+  },
+  {
+    "key": 6,
+    "label": "Pozole",
+    "enabled": true,
+    "imageUrl": "https://images.unsplash.com/photo-1649532245300-c3ed0565ffa4?q=80&w=256&auto=format&fit=crop"
+  },
+  {
+    "key": 7,
+    "label": "Ensalada de atún",
+    "enabled": true,
+    "imageUrl": "https://images.unsplash.com/photo-1612949060306-4c298ad7f34c?q=80&w=256&auto=format&fit=crop"
+  },
+  {
+    "key": 8,
+    "label": "Sopa de pollo",
+    "enabled": true,
+    "imageUrl": "https://images.unsplash.com/photo-1569058242276-0bc3e078cf86?q=80&w=256&auto=format&fit=crop"
+  },
+  {
+    "key": 9,
+    "label": "Ensalada verde",
+    "enabled": true,
+    "imageUrl": "https://images.unsplash.com/photo-1608032077018-c9aad9565d29?q=80&w=256&auto=format&fit=crop"
+  },
+  {
+    "key": 10,
+    "label": "Carne asada",
+    "enabled": true,
+    "imageUrl": "https://images.unsplash.com/photo-1612871689353-cccf581d667b?q=80&w=256&auto=format&fit=crop"
+  },
+  {
+    "key": 11,
+    "label": "Hamburguesa",
+    "enabled": true,
+    "imageUrl": "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?q=80&w=256&auto=format&fit=crop"
+  },
+  {
+    "key": 12,
+    "label": "Pollo empanizado",
+    "enabled": true,
+    "imageUrl": "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?q=80&w=256&auto=format&fit=crop"
+  },
+  {
+    "key": 13,
+    "label": "Arroz con pollo",
+    "enabled": true,
+    "imageUrl": "https://images.unsplash.com/photo-1569058242252-623df46b5025?q=80&w=256&auto=format&fit=crop"
+  },
+  {
+    "key": 14,
+    "label": "Sushi",
+    "enabled": true,
+    "imageUrl": "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=256&auto=format&fit=crop"
+  },
+  {
+    "key": 15,
+    "label": "Spaghetti",
+    "enabled": true,
+    "imageUrl": "https://images.unsplash.com/photo-1635264685671-739e75e73e0f?q=80&w=256&auto=format&fit=crop"
+  }
+]
