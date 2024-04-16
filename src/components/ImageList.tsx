@@ -46,10 +46,10 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
         isDeleting ? "line-through opacity-50 grayscale" : ""
       }`}
     >
-      {file.iconLink && (
+      {(file.thumbnailLink || file.iconLink) && (
         <img
           title={`MIME Type: "${file.mimeType}"`}
-          src={file.iconLink}
+          src={file.thumbnailLink || file.iconLink}
           className={`size-[20px] ${isDeleting ? "grayscale" : ""}`}
           alt={t("File icon")}
         />
@@ -108,19 +108,18 @@ export default function ImageList({ refreshDate }: ImageListProps) {
   const [driveFiles, setDriveFiles] = useState<gapi.client.drive.File[]>();
   const [driveFilePreview, setDriveFilePreview] = useState<{
     fileInfo: gapi.client.drive.File;
-    data: ArrayBuffer;
+    data: Blob;
     file: File;
     url: string;
   }>();
   const [downloadProgress, setDownloadProgress] = useState<number>();
   const downloadController = useRef<AbortController>();
 
-  const [loadingDriveFiles, setLoadingDriveFiles] = useState(true);
+  const [loadingDriveFiles, setLoadingDriveFiles] = useState(false);
 
   const listFiles = useCallback(
-    async function (signal?: AbortSignal) {
+    async (signal?: AbortSignal) => {
       setLoadingDriveFiles(true);
-
       try {
         const { data } = await fetchList({ signal });
         if (data.files?.length) setDriveFiles(data.files);
@@ -130,7 +129,6 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         }
       } catch (error) {
         if (error === "Authorizing") return;
-
         if (error instanceof Error) {
           if (error.name === "CanceledError") return;
           setError(`${error.name}: ${error.message}`);
@@ -139,7 +137,6 @@ export default function ImageList({ refreshDate }: ImageListProps) {
           console.error(error);
         }
       }
-
       setLoadingDriveFiles(false);
     },
     [fetchList],
@@ -150,7 +147,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     downloadController.current = new AbortController();
 
     try {
-      const { data } = await fetchFile<ArrayBuffer>(fileInfo, {
+      const { data } = await fetchFile<Blob>(fileInfo, {
         signal: downloadController.current?.signal,
         onDownloadProgress: ({ progress }) => setDownloadProgress(progress),
         responseType: "blob",
@@ -158,7 +155,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
       setTimeout(() => setDownloadProgress(undefined), 250);
 
       if (data === false) setError("File download failed");
-      else if (data instanceof ArrayBuffer) {
+      else if (data instanceof Blob) {
         driveFilePreview?.url && URL.revokeObjectURL(driveFilePreview.url);
 
         const file = new File([data], fileInfo.name || t("Unknown file"), {
@@ -171,10 +168,11 @@ export default function ImageList({ refreshDate }: ImageListProps) {
           file,
           url: URL.createObjectURL(file),
         });
-      } else if ("error" in data)
+      } else if ("error" in data) {
         setError(
           `Error ${data.error.code || "unknown"}: ${data.error.message || "No message"}`,
         );
+      }
     } catch (error) {
       if (error instanceof Error) {
         if (error.name === "CanceledError") return;
@@ -258,24 +256,20 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         title={t("Refresh list")}
         className="w-fit"
       >
-        {loadingDriveFiles ? (
-          <Spinner text="" />
-        ) : (
-          <FontAwesomeIcon icon={faSync} />
-        )}
+        {loadingDriveFiles ? <Spinner /> : <FontAwesomeIcon icon={faSync} />}
       </button>
 
       <h3 className="text-lg">Imagen descargada</h3>
       {downloadProgress && (
         <>
-          <ProgressBar progress={downloadProgress} />{" "}
+          <ProgressBar progress={downloadProgress} />
           <button data-filled onClick={cancelDownload}>
             {t("Cancel")}
           </button>
         </>
       )}
       <ImagePreview
-        src={driveFilePreview && driveFilePreview.url}
+        src={driveFilePreview?.url}
         fileName={driveFilePreview?.fileInfo.name}
         onClick={() => setDriveFilePreview(undefined)}
         showDownloadLink
