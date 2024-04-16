@@ -1,9 +1,4 @@
-import {
-  type PropsWithChildren,
-  type ChangeEventHandler,
-  createContext,
-  useContext,
-} from "react";
+import { type PropsWithChildren, createContext, useContext } from "react";
 import { useTranslation } from "react-i18next";
 
 type Languages = Record<string, { nativeName: string }>;
@@ -17,7 +12,6 @@ type LanguageContext = {
   t: (key: string) => string;
   i18n: ReturnType<typeof useTranslation>["i18n"];
   languages: typeof languages;
-  onClickLanguageChange: ChangeEventHandler<HTMLSelectElement>;
 };
 
 export const LanguageContext = createContext<LanguageContext | null>(null);
@@ -25,17 +19,8 @@ export const LanguageContext = createContext<LanguageContext | null>(null);
 export function LanguageContextProvider({ children }: PropsWithChildren) {
   const { t, i18n } = useTranslation();
 
-  const onClickLanguageChange: LanguageContext["onClickLanguageChange"] = (
-    event,
-  ) => {
-    const language = event.target.value;
-    i18n.changeLanguage(language); //change the language
-  };
-
   return (
-    <LanguageContext.Provider
-      value={{ t, i18n, onClickLanguageChange, languages }}
-    >
+    <LanguageContext.Provider value={{ t, i18n, languages }}>
       {children}
     </LanguageContext.Provider>
   );
