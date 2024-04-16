@@ -1,7 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { type z } from "zod";
 
-function saveSettingsToStorage<T extends Record<string, unknown>>(key: string, callback: (settings: T) => void) {
+function saveSettingsToStorage<T extends Record<string, unknown>>(
+  key: string,
+  callback: (settings: T) => void,
+) {
   return (settings: T) => {
     localStorage.setItem(key, JSON.stringify(settings));
     callback(settings);
@@ -16,17 +19,25 @@ function saveSettingsToStorage<T extends Record<string, unknown>>(key: string, c
  * @param schema The schema to validate the data with
  * @returns The data and a function to save the data
  */
-export function useLocalStorage<T extends Record<string, unknown>>(key: string, defaultData: T, schema: z.Schema) {
+export function useLocalStorage<T extends Record<string, unknown>>(
+  key: string,
+  defaultData: T,
+  schema: z.Schema,
+) {
   const [data, setData] = useState<T>(defaultData);
 
-  const saveData = useCallback((newSettings: T) => saveSettingsToStorage<T>(key, setData)(newSettings), [key]);
+  const saveData = useCallback(
+    (newSettings: T) => saveSettingsToStorage<T>(key, setData)(newSettings),
+    [key],
+  );
 
   useEffect(() => {
     // Load settings from local storage
     const savedSettings = localStorage.getItem(key);
     // If no settings are saved, save the default settings
     if (!savedSettings) {
-      if (import.meta.env.DEV) console.log(`Setting up default settings for "${key}"`);
+      if (import.meta.env.DEV)
+        console.log(`Setting up default settings for "${key}"`);
       saveData(defaultData);
     } else
       try {
@@ -37,7 +48,9 @@ export function useLocalStorage<T extends Record<string, unknown>>(key: string, 
       } catch (e) {
         // If parsing fails, reset to default settings
         if (import.meta.env.DEV)
-          console.error(`Could not parse settings from local storage for "${key}", resetting to default settings`);
+          console.error(
+            `Could not parse settings from local storage for "${key}", resetting to default settings`,
+          );
         saveData(defaultData);
       }
   }, [defaultData, key, schema, saveData]);
