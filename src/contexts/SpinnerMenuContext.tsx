@@ -12,14 +12,16 @@ import {
 import Spinner from "src/components/common/Spinner";
 
 import { type SpinnerOption } from "src/components/SpinningWheel";
+import { useBeforeUnload } from "src/hooks/useBeforeUnload";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
+import { AxiosError } from "axios";
 
-const TIMEOUT = 2500;
+const DEBOUNCE_TIMEOUT = 2500;
 const CONFIG_FILE_NAME = "config.json";
 
-const State = ["Loading", "Idle", "Waiting", "Uploading", "Dirty"] as const;
+const State = ["Loading", "Idle", "Dirty", "Uploading"] as const;
 
 const getDefaultConfig = async () => {
   const config = await import("src/data/DefaultConfig.json");
@@ -44,7 +46,10 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   const { fetchFile, fetchList, uploadFile, updateFile } = useGoogleDriveAPI();
   const [allMenuItems, setAllMenuItems] = useState<SpinnerOption[]>();
   const [state, setState] = useState<(typeof State)[number]>("Loading");
-  const [uploadTimeoutId, setUploadTimeoutId] = useState<NodeJS.Timeout>();
+  const [pendingUpload, setPendingUpload] = useState<{
+    timeoutId: NodeJS.Timeout;
+    controller: AbortController;
+  }>();
   const [configFileId, setConfigFileId] = useState<string>();
 
   const getImage = useCallback(
@@ -143,9 +148,9 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   );
 
   const updateConfigFile = useCallback(
-    async (contents: SpinnerOption[]) => {
+    async (signal: AbortSignal, contents: SpinnerOption[]) => {
       try {
-        if (!configFileId) throw new Error("No config file ID");
+        if (!configFileId) throw new Error("Error updating config file: no id");
 
         // Remove local image blob urls if the image has a file ID
         const contentsWithoutBlobs = contents.map((item) => {
@@ -156,21 +161,26 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
           };
         });
 
-        await updateFile({
-          id: configFileId,
-          file: new File(
-            [JSON.stringify(contentsWithoutBlobs)],
-            CONFIG_FILE_NAME,
-          ),
-          metadata: {
-            name: CONFIG_FILE_NAME,
-            mimeType: "application/json",
+        await updateFile(
+          {
+            id: configFileId,
+            file: new File(
+              [JSON.stringify(contentsWithoutBlobs)],
+              CONFIG_FILE_NAME,
+            ),
+            metadata: {
+              name: CONFIG_FILE_NAME,
+              mimeType: "application/json",
+            },
           },
-        });
+          {
+            signal,
+          },
+        );
 
         return true;
       } catch (error) {
-        console.error(error);
+        if (!(error instanceof AxiosError)) console.error(error);
         return false;
       }
     },
@@ -209,38 +219,28 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   );
 
   const triggerDelayedUpload = useCallback(
-    (timeout: number = TIMEOUT) => {
-      // Reset the timeout & set state to waiting
-      if (uploadTimeoutId) clearTimeout(uploadTimeoutId);
-      setState("Waiting");
+    (timeout: number) => {
+      // Reset the timeout if there is already one
+      if (pendingUpload) {
+        pendingUpload.controller.abort();
+        clearTimeout(pendingUpload.timeoutId);
+      }
 
-      const uploadFile = async () => {
-        // Upload the changes
-        // disable the timeout and toggle the flags
+      // Upload the config file after a certain amount of time using a timeout and controller
+      const controller = new AbortController();
+
+      const timeoutId = setTimeout(async () => {
         setState("Uploading");
-
-        await updateConfigFile(allMenuItems || []);
-
-        if (uploadTimeoutId) clearTimeout(uploadTimeoutId);
-        setUploadTimeoutId(undefined);
+        await updateConfigFile(controller.signal, allMenuItems || []);
         setState("Idle");
-      };
 
-      // Set the timeout
-      const timeoutId = setTimeout(() => {
-        uploadFile();
+        setPendingUpload(undefined);
       }, timeout);
-      setUploadTimeoutId(timeoutId);
+
+      setPendingUpload({ timeoutId, controller });
     },
-    [allMenuItems, updateConfigFile, uploadTimeoutId],
+    [allMenuItems, updateConfigFile, pendingUpload],
   );
-
-  // Upload the changes when dirty
-  useEffect(() => {
-    if (state !== "Dirty") return;
-
-    triggerDelayedUpload();
-  }, [state, triggerDelayedUpload]);
 
   // Get the config file or create it when drive is loaded
   useEffect(() => {
@@ -257,24 +257,13 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   }, [getConfigOrCreate, isDriveLoaded, state]);
 
   // Alert the user if there are unsaved changes
-  useEffect(() => {
-    const alertUser = (event: BeforeUnloadEvent) => {
-      // See: https://stackoverflow.com/a/69232120/13351497
-      event.preventDefault();
-      return (event.returnValue = t("There are unsaved changes"));
-    };
-
-    if (!window.onbeforeunload)
-      if (uploadTimeoutId || state !== "Idle")
-        window.addEventListener("beforeunload", alertUser);
-
-    return () => window.removeEventListener("beforeunload", alertUser);
-  }, [state, t, uploadTimeoutId]);
+  useBeforeUnload(state === "Dirty" || state === "Uploading");
 
   const isLoaded = useMemo(() => state !== "Loading", [state]);
 
   const markMenuDirty = () => {
     setState("Dirty");
+    triggerDelayedUpload(DEBOUNCE_TIMEOUT);
   };
 
   const enabledMenuItems = useMemo(
