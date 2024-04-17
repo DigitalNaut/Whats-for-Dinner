@@ -40,9 +40,9 @@ const DISCOVERY_DOC =
 
 export function GoogleDriveProvider({ children }: PropsWithChildren) {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [userTokens, setUserTokens] = useState<
-    TokenResponseSuccess & TokenInfo
-  >();
+  const [userTokens, setUserTokens] =
+    useState<GoogleDriveContextType["userTokens"]>();
+
   const hasScope = useMemo(() => {
     if (!userTokens) return false;
     return hasGrantedAllScopesGoogle(userTokens, scope);

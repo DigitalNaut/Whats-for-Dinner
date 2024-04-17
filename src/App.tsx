@@ -1,12 +1,11 @@
-import { lazy, Suspense } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { type PropsWithChildren, lazy, Suspense } from "react";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
 import { GoogleDriveProvider } from "src/contexts/GoogleDriveContext";
 import { PlainLayout, MenuLayout } from "src/components/Layouts";
 import { MenuHeader, TitleHeader } from "src/components/Headers";
 import { SpinnerMenuContextProvider } from "src/contexts/SpinnerMenuContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
-import NotFound from "src/pages/NotFound";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
 import Spinner from "src/components/common/Spinner";
 
@@ -16,16 +15,17 @@ const LazyMain = lazy(() => import("src/pages/Main"));
 const LazyLogin = lazy(() => import("src/pages/Login"));
 const LazyPrivacy = lazy(() => import("src/pages/Privacy"));
 const LazyTerms = lazy(() => import("src/pages/Terms"));
+const LazyNotFound = lazy(() => import("src/pages/NotFound"));
 
 // TODO: Remove
 const LazyTests = lazy(() => import("src/pages/Tests"));
 
-function MainLayout() {
+function MainLayout({ children }: PropsWithChildren) {
   const { t } = useLanguageContext();
 
   return (
-    <PlainLayout>
-      <TitleHeader>{t("Title")}</TitleHeader>
+    <PlainLayout header={<TitleHeader>{t("Title")}</TitleHeader>}>
+      {children}
     </PlainLayout>
   );
 }
@@ -33,91 +33,53 @@ function MainLayout() {
 const newRouter = createBrowserRouter([
   {
     path: "/",
-    element: <MainLayout />,
+    element: (
+      <MainLayout>
+        <Suspense fallback={<Spinner />}>
+          <Outlet />
+        </Suspense>
+      </MainLayout>
+    ),
     children: [
-      {
-        index: true,
-        element: (
-          <Suspense fallback={<Spinner />}>
-            <LazyLogin redirectTo="/main" />
-          </Suspense>
-        ),
-      },
-      {
-        path: "/privacy",
-        element: (
-          <Suspense fallback={<Spinner />}>
-            <LazyPrivacy />
-          </Suspense>
-        ),
-      },
-      {
-        path: "/terms",
-        element: (
-          <Suspense fallback={<Spinner />}>
-            <LazyTerms />
-          </Suspense>
-        ),
-      },
-      {
-        path: "*",
-        element: <NotFound />,
-      },
+      { index: true, element: <LazyLogin redirectTo="/main" /> },
+      { path: "/privacy", element: <LazyPrivacy /> },
+      { path: "/terms", element: <LazyTerms /> },
+      { path: "*", element: <LazyNotFound /> },
     ],
   },
   {
     element: (
       <GoogleDriveProvider>
         <SpinnerMenuContextProvider>
-          <ProtectedRoutes redirectTo="/" />
+          <ProtectedRoutes redirectTo="/">
+            <Outlet />
+          </ProtectedRoutes>
         </SpinnerMenuContextProvider>
       </GoogleDriveProvider>
     ),
     children: [
       {
-        element: <MainLayout />,
-        children: [
-          {
-            path: "/main",
-            element: (
-              <Suspense fallback={<Spinner />}>
-                <LazyMain />
-              </Suspense>
-            ),
-          },
-        ],
+        element: (
+          <MainLayout>
+            <Suspense fallback={<Spinner />}>
+              <Outlet />
+            </Suspense>
+          </MainLayout>
+        ),
+        children: [{ path: "/main", element: <LazyMain /> }],
       },
       {
         element: (
-          <MenuLayout>
-            <MenuHeader />
+          <MenuLayout header={<MenuHeader />}>
+            <Suspense fallback={<Spinner />}>
+              <Outlet />
+            </Suspense>
           </MenuLayout>
         ),
         children: [
-          {
-            path: "/menu",
-            element: (
-              <Suspense fallback={<Spinner />}>
-                <LazyEditMenu />
-              </Suspense>
-            ),
-          },
-          {
-            path: "/addItem",
-            element: (
-              <Suspense fallback={<Spinner />}>
-                <LazyAddItem />
-              </Suspense>
-            ),
-          },
-          {
-            path: "/test",
-            element: (
-              <Suspense fallback={<Spinner />}>
-                <LazyTests />
-              </Suspense>
-            ),
-          },
+          { path: "/menu", element: <LazyEditMenu /> },
+          { path: "/addItem", element: <LazyAddItem /> },
+          { path: "/test", element: <LazyTests /> },
         ],
       },
     ],
