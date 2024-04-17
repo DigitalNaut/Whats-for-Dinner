@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import LanguageSelect from "src/components/LanguageSelect";
 
@@ -14,11 +14,15 @@ export default function Login({ redirectTo }: LoginProps) {
   const { user } = useUser();
   const navigate = useNavigate();
   const { search } = useLocation();
-  const from = decodeURI(new URLSearchParams(search).get("redirectTo") || "");
+
+  const from = useMemo(
+    () => decodeURI(new URLSearchParams(search).get("redirectTo") || ""),
+    [search],
+  );
 
   useEffect(() => {
     if (user) navigate(from || redirectTo, { replace: true });
-  });
+  }, [from, navigate, redirectTo, user]);
 
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4">

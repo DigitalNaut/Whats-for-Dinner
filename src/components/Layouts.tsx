@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
 import { Outlet } from "react-router-dom";
 
-export function MainLayout({ children }: PropsWithChildren) {
+export function PlainLayout({ children }: PropsWithChildren) {
   return (
     <div className="h-full min-h-screen w-screen max-w-screen-md bg-gradient-to-br from-[#5B0B68] to-[#4C1D95] text-white shadow-2xl md:min-h-[calc(100vh-24px)] md:rounded-xl lg:min-h-[calc(100vh-48px)]">
       <div className="inset-0 grid size-full grid-cols-1 grid-rows-[auto,_1fr] bg-svg-abstract-shapes bg-top bg-repeat pt-6">

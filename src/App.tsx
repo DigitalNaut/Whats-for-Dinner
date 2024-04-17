@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import { GoogleDriveProvider } from "src/contexts/GoogleDriveContext";
-import { MainLayout, MenuLayout } from "src/components/Layouts";
+import { PlainLayout, MenuLayout } from "src/components/Layouts";
 import { MenuHeader, TitleHeader } from "src/components/Headers";
 import { SpinnerMenuContextProvider } from "src/contexts/SpinnerMenuContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
@@ -20,20 +20,20 @@ const LazyTerms = lazy(() => import("src/pages/Terms"));
 // TODO: Remove
 const LazyTests = lazy(() => import("src/pages/Tests"));
 
-function TitleLayout() {
+function MainLayout() {
   const { t } = useLanguageContext();
 
   return (
-    <MainLayout>
+    <PlainLayout>
       <TitleHeader>{t("Title")}</TitleHeader>
-    </MainLayout>
+    </PlainLayout>
   );
 }
 
 const newRouter = createBrowserRouter([
   {
     path: "/",
-    element: <TitleLayout />,
+    element: <MainLayout />,
     children: [
       {
         index: true,
@@ -75,7 +75,7 @@ const newRouter = createBrowserRouter([
     ),
     children: [
       {
-        element: <TitleLayout />,
+        element: <MainLayout />,
         children: [
           {
             path: "/main",
