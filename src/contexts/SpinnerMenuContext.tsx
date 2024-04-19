@@ -18,7 +18,7 @@ import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import { AxiosError } from "axios";
 
-const DEBOUNCE_TIMEOUT = 2500;
+const DEBOUNCE_DELAY = 2500;
 const CONFIG_FILE_NAME = "config.json";
 
 const State = ["Loading", "Idle", "Dirty", "Uploading"] as const;
@@ -263,7 +263,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
 
   const markMenuDirty = () => {
     setState("Dirty");
-    triggerDelayedUpload(DEBOUNCE_TIMEOUT);
+    triggerDelayedUpload(DEBOUNCE_DELAY);
   };
 
   const enabledMenuItems = useMemo(
