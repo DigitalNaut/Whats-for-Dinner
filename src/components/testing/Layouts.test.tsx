@@ -18,13 +18,13 @@ function Providers({ children }: PropsWithChildren) {
 }
 
 test("renders a main layout", () => {
-  render(<PlainLayout />, { wrapper: Providers });
+  render(<PlainLayout header={<></>} />, { wrapper: Providers });
   const mainLayout = screen.getByText(/content/i);
   expect(mainLayout).toBeInTheDocument();
 });
 
 test("renders a menu layout", () => {
-  render(<MenuLayout />, { wrapper: Providers });
+  render(<MenuLayout header={<></>} />, { wrapper: Providers });
   const menuLayout = screen.getByText(/content/i);
   expect(menuLayout).toBeInTheDocument();
 });

@@ -34,7 +34,6 @@ type SpinnerMenuContext = {
   isLoaded: boolean;
   setError: Dispatch<SetStateAction<string | undefined>>;
   setAllMenuItems: Dispatch<SetStateAction<SpinnerOption[] | undefined>>;
-  markMenuDirty: () => void;
 };
 
 const spinnerMenuContext = createContext<SpinnerMenuContext | null>(null);
@@ -218,30 +217,6 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     [getConfigFileMeta, createConfigFile, getConfigFile],
   );
 
-  const triggerDelayedUpload = useCallback(
-    (timeout: number) => {
-      // Reset the timeout if there is already one
-      if (pendingUpload) {
-        pendingUpload.controller.abort();
-        clearTimeout(pendingUpload.timeoutId);
-      }
-
-      // Upload the config file after a certain amount of time using a timeout and controller
-      const controller = new AbortController();
-
-      const timeoutId = setTimeout(async () => {
-        setState("Uploading");
-        await updateConfigFile(controller.signal, allMenuItems || []);
-        setState("Idle");
-
-        setPendingUpload(undefined);
-      }, timeout);
-
-      setPendingUpload({ timeoutId, controller });
-    },
-    [allMenuItems, updateConfigFile, pendingUpload],
-  );
-
   // Get the config file or create it when drive is loaded
   useEffect(() => {
     if (!isDriveLoaded || state !== "Loading") return undefined;
@@ -261,25 +236,55 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
 
   const isLoaded = useMemo(() => state !== "Loading", [state]);
 
-  const markMenuDirty = () => {
-    setState("Dirty");
-    triggerDelayedUpload(DEBOUNCE_DELAY);
-  };
-
   const enabledMenuItems = useMemo(
     () => allMenuItems?.filter(({ enabled }) => enabled),
     [allMenuItems],
   );
+
+  const triggerDelayedUpload = async (
+    newItems: SpinnerOption[] | undefined,
+    timeout: number,
+  ) => {
+    // Reset the timeout if there is already one
+    if (pendingUpload) {
+      pendingUpload.controller.abort();
+      clearTimeout(pendingUpload.timeoutId);
+    }
+
+    const controller = new AbortController();
+
+    await new Promise((resolve) => {
+      const timeoutId = setTimeout(resolve, timeout);
+      setPendingUpload({ timeoutId, controller });
+    });
+
+    setState("Uploading");
+    await updateConfigFile(controller.signal, newItems || []);
+    setState("Idle");
+
+    setPendingUpload(undefined);
+  };
+
+  const setAllMenuItemsWithDelayedUpload: SpinnerMenuContext["setAllMenuItems"] =
+    (items) => {
+      const newItems =
+        typeof items === "function" ? items(allMenuItems) : items;
+
+      setAllMenuItems(newItems);
+
+      setState("Dirty");
+
+      triggerDelayedUpload(newItems, DEBOUNCE_DELAY);
+    };
 
   return (
     <spinnerMenuContext.Provider
       value={{
         isLoaded,
         allMenuItems,
-        setAllMenuItems,
+        setAllMenuItems: setAllMenuItemsWithDelayedUpload,
         enabledMenuItems,
         setError,
-        markMenuDirty,
       }}
     >
       {children}

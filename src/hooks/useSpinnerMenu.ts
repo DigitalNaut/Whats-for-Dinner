@@ -6,23 +6,8 @@ import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 
 export function useSpinnerMenu() {
   const { t } = useLanguageContext();
-  const { allMenuItems, setAllMenuItems, markMenuDirty } =
-    useSpinnerMenuContext();
+  const { allMenuItems, setAllMenuItems } = useSpinnerMenuContext();
   const { deleteFile } = useGoogleDriveAPI();
-
-  const deleteImage = useCallback(
-    async (item: SpinnerOption) => {
-      try {
-        if (!item.fileId) return null;
-
-        return await deleteFile({ id: item.fileId });
-      } catch (error) {
-        console.error(error);
-        return null;
-      }
-    },
-    [deleteFile],
-  );
 
   const toggleMenuItems = useCallback(
     (indexes: number[], value?: boolean) => {
@@ -37,9 +22,8 @@ export function useSpinnerMenu() {
       });
 
       setAllMenuItems(newAllMenuItems);
-      markMenuDirty();
     },
-    [allMenuItems, markMenuDirty, setAllMenuItems],
+    [allMenuItems, setAllMenuItems],
   );
 
   const addMenuItem = useCallback(
@@ -47,9 +31,8 @@ export function useSpinnerMenu() {
       if (!allMenuItems) return;
 
       setAllMenuItems((prevItems) => prevItems && [...prevItems, item]);
-      markMenuDirty();
     },
-    [allMenuItems, markMenuDirty, setAllMenuItems],
+    [allMenuItems, setAllMenuItems],
   );
 
   const deleteMenuItems = useCallback(
@@ -65,25 +48,25 @@ export function useSpinnerMenu() {
       const itemsToDelete = indexes
         .map((index) => allMenuItems[index])
         .filter(Boolean);
-      itemsToDelete.forEach(async (item) => {
-        if (!item.fileId) return;
-        try {
-          const { status } = (await deleteImage(item)) || {};
 
-          if (status !== 200) throw new Error(t("Image could not be deleted"));
-        } catch (error) {
-          console.error(error);
+      try {
+        for (const item of itemsToDelete) {
+          if (!item.fileId) continue;
+          await deleteFile({ id: item.fileId });
         }
-      });
+      } catch (error) {
+        if (error instanceof Object && "message" in error)
+          console.error(error.message);
+        else console.error(error);
+      } finally {
+        const newItems = allMenuItems.filter(
+          (_, index) => !indexes.includes(index),
+        );
 
-      setAllMenuItems(
-        (prevItems) =>
-          prevItems &&
-          [...prevItems].filter((_, index) => !indexes.includes(index)),
-      );
-      markMenuDirty();
+        setAllMenuItems(newItems);
+      }
     },
-    [allMenuItems, deleteImage, markMenuDirty, setAllMenuItems, t],
+    [allMenuItems, deleteFile, setAllMenuItems, t],
   );
 
   return {
