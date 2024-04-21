@@ -1,20 +1,24 @@
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faEdit } from "@fortawesome/free-solid-svg-icons";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Floating from "src/components/common/Floating";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { t } from "i18next";
+// import { Link } from "react-router-dom";
+// import Floating from "src/components/common/Floating";
 
 import ImageList from "src/components/ImageList";
 import ImageUpload from "src/components/ImageUpload";
 import Spinner from "src/components/common/Spinner";
-import SpinningWheel from "src/components/SpinningWheel";
+// import SpinningWheel from "src/components/SpinningWheel";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
-import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
+// import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 
 function Tests() {
-  const { enabledMenuItems } = useSpinnerMenuContext();
+  // const { enabledMenuItems } = useSpinnerMenuContext();
   const { isLoaded } = useGoogleDriveContext();
-  const [refreshDate, setRefreshDate] = useState(Date.now());
+  const [refreshDate, setRefreshDate] = useState(() => Date.now());
 
   if (!isLoaded)
     return (
@@ -25,7 +29,11 @@ function Tests() {
 
   return (
     <>
-      <SpinningWheel choices={enabledMenuItems} />
+      {/* <SpinningWheel choices={enabledMenuItems} /> */}
+      <Link className="m-auto flex items-center gap-1 underline" to="/">
+        <FontAwesomeIcon icon={faChevronLeft} />
+        {t("Back to home")}
+      </Link>
       <form
         className="flex flex-col gap-8"
         onSubmit={(event) => event.preventDefault()}
@@ -41,20 +49,16 @@ function Tests() {
             <ImageList refreshDate={refreshDate} />
           </div>
         </div>
-
-        <button data-filled className="w-full">
-          Add
-        </button>
       </form>
 
-      <Floating>
+      {/* <Floating>
         <Link to="/menu" tabIndex={-1}>
           <button data-filled className="flex items-center gap-1">
             <FontAwesomeIcon icon={faEdit} />
             <span>Editar menú</span>
           </button>
         </Link>
-      </Floating>
+      </Floating> */}
     </>
   );
 }

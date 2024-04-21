@@ -5,10 +5,10 @@ import { createContext, useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { jwtDecode } from "jwt-decode";
-import { Link } from "react-router-dom";
 
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import LanguageSelect from "src/components/LanguageSelect";
+import LegalLinks from "src/components/LegalLinks";
 
 export function LoginButton() {
   const { onSignInSuccess, onSignInError } = useUser();
@@ -77,7 +77,6 @@ function UserCard() {
             <span className="text-base font-bold">{name}</span>
             <span>{email}</span>
           </div>
-
           <div className="flex w-max flex-col items-center gap-4 rounded-sm bg-slate-100 p-4">
             <a
               className="w-full text-blue-700 hover:underline"
@@ -98,14 +97,7 @@ function UserCard() {
             </div>
           </div>
 
-          <div className="flex w-full flex-col gap-1 text-center text-xs italic text-slate-800">
-            <Link to="/terms" className="hover:underline">
-              {t("Terms and Conditions")}
-            </Link>
-            <Link to="/privacy" className="hover:underline">
-              {t("Privacy Policy")}
-            </Link>
-          </div>
+          <LegalLinks className="text-xs italic text-slate-800" />
         </div>
       </div>
     </div>

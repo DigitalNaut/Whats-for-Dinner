@@ -25,6 +25,7 @@ import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 import Floating from "src/components/common/Floating";
 import Spinner from "src/components/common/Spinner";
 import Toggle from "src/components/common/Toggle";
+import { useSpinnerMenu } from "src/hooks/useSpinnerMenu";
 
 const Modes = ["Toggle", "Select"] as const;
 
@@ -36,6 +37,7 @@ function HeaderContextMenu({
   deleteSelections,
   toggleAllOn,
   toggleAllOff,
+  title,
 }: {
   showSelectionOptions?: boolean;
   enterSelectMode: () => void;
@@ -44,12 +46,13 @@ function HeaderContextMenu({
   deleteSelections: () => void;
   toggleAllOn: () => void;
   toggleAllOff: () => void;
+  title?: string;
 }) {
   const { t } = useLanguageContext();
   const menuStore = useMenuStore();
 
   return (
-    <div className="z-10">
+    <div className="z-10" title={title}>
       <ContextMenuButton store={menuStore} />
       <ContextMenu store={menuStore}>
         {showSelectionOptions || (
@@ -108,8 +111,8 @@ function HeaderContextMenu({
 export default function EditMenu() {
   const { t } = useLanguageContext();
   const { setHeaderProperties } = useHeaderContext();
-  const { isLoaded, allMenuItems, toggleMenuItems, deleteMenuItems } =
-    useSpinnerMenuContext();
+  const { isLoaded, allMenuItems } = useSpinnerMenuContext();
+  const { toggleMenuItems, deleteMenuItems } = useSpinnerMenu();
   const [mode, setMode] = useState<(typeof Modes)[number]>("Toggle");
   const [selected, setSelected] = useState<
     Map<string, { isSelected: boolean; index: number }>
@@ -182,15 +185,16 @@ export default function EditMenu() {
     [setAllSelected, setHeaderProperties],
   );
 
-  const contextMenu = useMemo(() => {
-    return (
+  const contextMenu = useMemo(
+    () => (
       <>
         {mode === "Select" && (
-          <button className="text-red-900" onClick={deleteSelected}>
+          <button onClick={deleteSelected} title={t("Delete")}>
             <FontAwesomeIcon icon={faTrash} />
           </button>
         )}
         <HeaderContextMenu
+          title={t("Edit menu")}
           showSelectionOptions={showSelectionOptions}
           enterSelectMode={() => setModeSelect(false)}
           selectAll={() => setModeSelect(true)}
@@ -200,8 +204,9 @@ export default function EditMenu() {
           toggleAllOff={() => toggleAll(false)}
         />
       </>
-    );
-  }, [deleteSelected, mode, setModeSelect, showSelectionOptions, toggleAll]);
+    ),
+    [deleteSelected, mode, setModeSelect, showSelectionOptions, t, toggleAll],
+  );
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -213,19 +218,14 @@ export default function EditMenu() {
     }));
   }, [altBackButton, contextMenu, isLoaded, setHeaderProperties]);
 
-  if (!isLoaded)
-    return (
-      <div className="flex h-full items-center justify-center">
-        <Spinner />
-      </div>
-    );
+  if (!isLoaded) return <Spinner cover />;
 
   return (
     <>
       <h2 className="text-center font-bangers text-4xl">{t("Menu")}</h2>
 
       <div className="flex flex-col gap-4">
-        {allMenuItems &&
+        {allMenuItems?.length ? (
           allMenuItems.map(({ label, imageUrl, key, enabled }, index) => (
             <div key={key} className="flex items-center gap-2">
               <img
@@ -259,7 +259,12 @@ export default function EditMenu() {
                 />
               )}
             </div>
-          ))}
+          ))
+        ) : (
+          <p className="p-6 text-center text-slate-300">
+            {t("No items yet. Add some dishes to get started.")}
+          </p>
+        )}
       </div>
 
       <Floating>

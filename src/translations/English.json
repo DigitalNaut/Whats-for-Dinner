@@ -26,6 +26,7 @@
   "Invalid image URL": "Invalid image URL",
   "Loading...": "Loading...",
   "Logged out": "Logged out",
+  "Login to get started": "Login to get started",
   "Menu": "Menu",
   "Must select image": "Please select an image",
   "No history yet": "No history yet",
@@ -48,7 +49,7 @@
   "Select": "Select",
   "Sign in with Google": "Sign in with Google",
   "Sign out": "Sign out",
-  "Terms and Conditions": "Terms and Conditions",
+  "Terms & Conditions": "Terms & Conditions",
   "There are unsaved changes": "There are unsaved changes",
   "Title": "What's for dinner?",
   "Toggle all off": "Toggle all off",
@@ -59,5 +60,6 @@
   "Upload": "Upload",
   "Uploading...": "Uploading...",
   "Use URL": "Use URL",
-  "User avatar": "User avatar"
+  "User avatar": "User avatar",
+  "Google account needed": "You need to sign in with your Google account to save your Drive preferences."
 }

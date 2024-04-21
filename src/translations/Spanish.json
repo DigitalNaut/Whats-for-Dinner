@@ -26,6 +26,7 @@
   "Invalid image URL": "URL de imagen inválida",
   "Loading...": "Cargando...",
   "Logged out": "Sesión cerrada",
+  "Login to get started": "Inicia sesión para comenzar",
   "Menu": "Menú",
   "Must select image": "Debe seleccionar una imagen",
   "No history yet": "Sin historial aún",
@@ -48,7 +49,7 @@
   "Select": "Seleccionar",
   "Sign in with Google": "Acceder con Google",
   "Sign out": "Cerrar sesión",
-  "Terms and Conditions": "Términos y Condiciones",
+  "Terms & Conditions": "Términos y Condiciones",
   "There are unsaved changes": "Aún hay cambios sin guardar",
   "Title": "¿Qué para comer?",
   "Toggle all off": "Desactivar todos",
@@ -59,5 +60,6 @@
   "Upload": "Subir",
   "Uploading...": "Subiendo...",
   "Use URL": "Usar URL",
-  "User avatar": "Avatar de usuario"
+  "User avatar": "Avatar de usuario",
+  "Google account needed": "Necesitas iniciar sesión con tu cuenta de Google para guardar tus preferencias en Drive."
 }

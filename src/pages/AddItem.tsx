@@ -7,7 +7,7 @@ import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
-import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
+import { useSpinnerMenu } from "src/hooks/useSpinnerMenu";
 import ImagePreview from "src/components/ImagePreview";
 import InputFile from "src/components/InputFile";
 import InputText from "src/components/InputText";
@@ -86,7 +86,7 @@ const errorReducer: Reducer<
 export default function AddItem() {
   const { t } = useLanguageContext();
   const navigate = useNavigate();
-  const { addMenuItem } = useSpinnerMenuContext();
+  const { addMenuItem } = useSpinnerMenu();
   const { hasScope } = useGoogleDriveContext();
   const { uploadFile } = useGoogleDriveAPI();
 
