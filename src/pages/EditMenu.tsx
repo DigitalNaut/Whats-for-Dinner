@@ -185,8 +185,8 @@ export default function EditMenu() {
     [setAllSelected, setHeaderProperties],
   );
 
-  const contextMenu = useMemo(() => {
-    return (
+  const contextMenu = useMemo(
+    () => (
       <>
         {mode === "Select" && (
           <button onClick={deleteSelected} title={t("Delete")}>
@@ -204,8 +204,9 @@ export default function EditMenu() {
           toggleAllOff={() => toggleAll(false)}
         />
       </>
-    );
-  }, [deleteSelected, mode, setModeSelect, showSelectionOptions, t, toggleAll]);
+    ),
+    [deleteSelected, mode, setModeSelect, showSelectionOptions, t, toggleAll],
+  );
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -217,12 +218,7 @@ export default function EditMenu() {
     }));
   }, [altBackButton, contextMenu, isLoaded, setHeaderProperties]);
 
-  if (!isLoaded)
-    return (
-      <div className="flex h-full items-center justify-center">
-        <Spinner />
-      </div>
-    );
+  if (!isLoaded) return <Spinner cover />;
 
   return (
     <>

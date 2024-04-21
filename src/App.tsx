@@ -2,10 +2,11 @@ import { type PropsWithChildren, lazy, Suspense } from "react";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
 import { GoogleDriveProvider } from "src/contexts/GoogleDriveContext";
-import { PlainLayout, MenuLayout } from "src/components/Layouts";
 import { MenuHeader, TitleHeader } from "src/components/Headers";
+import { PlainLayout, MenuLayout } from "src/components/Layouts";
 import { SpinnerMenuContextProvider } from "src/contexts/SpinnerMenuContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
+import BackButton from "src/components/common/BackButton";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
 import Spinner from "src/components/common/Spinner";
 
@@ -30,20 +31,39 @@ function MainLayout({ children }: PropsWithChildren) {
   );
 }
 
+function InfoWrapper({ children }: PropsWithChildren) {
+  return (
+    <div className="flex flex-col gap-4">
+      <BackButton className="text-amber-400" />
+      <div className="rounded-md bg-white p-6">{children}</div>
+      <BackButton className="text-amber-400" />
+    </div>
+  );
+}
+
 const newRouter = createBrowserRouter([
   {
     path: "/",
     element: (
       <MainLayout>
-        <Suspense fallback={<Spinner />}>
+        <Suspense fallback={<Spinner text="" cover />}>
           <Outlet />
         </Suspense>
       </MainLayout>
     ),
     children: [
       { index: true, element: <LazyLogin redirectTo="/main" /> },
-      { path: "/privacy", element: <LazyPrivacy /> },
-      { path: "/terms", element: <LazyTerms /> },
+      {
+        element: (
+          <InfoWrapper>
+            <Outlet />
+          </InfoWrapper>
+        ),
+        children: [
+          { path: "/privacy", element: <LazyPrivacy /> },
+          { path: "/terms", element: <LazyTerms /> },
+        ],
+      },
       { path: "*", element: <LazyNotFound /> },
     ],
   },
@@ -61,7 +81,7 @@ const newRouter = createBrowserRouter([
       {
         element: (
           <MainLayout>
-            <Suspense fallback={<Spinner />}>
+            <Suspense fallback={<Spinner text="" cover />}>
               <Outlet />
             </Suspense>
           </MainLayout>
@@ -71,7 +91,7 @@ const newRouter = createBrowserRouter([
       {
         element: (
           <MenuLayout header={<MenuHeader />}>
-            <Suspense fallback={<Spinner />}>
+            <Suspense fallback={<Spinner text="" cover />}>
               <Outlet />
             </Suspense>
           </MenuLayout>

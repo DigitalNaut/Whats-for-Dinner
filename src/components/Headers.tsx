@@ -1,11 +1,8 @@
 import type { PropsWithChildren } from "react";
-import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
-
 import { useHeaderContext } from "src/contexts/HeaderContext";
+
 import { useUser } from "src/contexts/UserContext";
-import { useLanguageContext } from "src/contexts/LanguageContext";
+import BackButton from "src/components/common/BackButton";
 
 import Chopsticks from "src/assets/chopsticks.svg?react";
 
@@ -26,8 +23,6 @@ export function TitleHeader({ children }: PropsWithChildren) {
 }
 
 export function MenuHeader() {
-  const { t } = useLanguageContext();
-  const navigate = useNavigate();
   const { headerProperties } = useHeaderContext();
   const { altBackButton, altColor, elements } = headerProperties;
   const { UserCard } = useUser();
@@ -38,16 +33,7 @@ export function MenuHeader() {
         altColor ? "bg-amber-600" : "bg-purple-800"
       } px-4 py-2 md:rounded-t-xl`}
     >
-      {altBackButton ?? (
-        <button
-          className="flex items-center gap-2"
-          aria-label={t("Back")}
-          onClick={() => navigate(-1)}
-        >
-          <FontAwesomeIcon icon={faChevronLeft} />
-          <span className="flex-1">{t("Back")}</span>
-        </button>
-      )}
+      {altBackButton ?? <BackButton className="text-white" />}
 
       <div className="flex gap-4">
         {elements}

@@ -1,9 +1,10 @@
 import { Suspense, lazy, useEffect, useMemo } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import LanguageSelect from "src/components/LanguageSelect";
 
 import { LoginButton, useUser } from "src/contexts/UserContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
+import LegalLinks from "src/components/LegalLinks";
 import Spinner from "src/components/common/Spinner";
 
 const LazyRoulettePreview = lazy(
@@ -48,21 +49,19 @@ export default function Login({ redirectTo }: LoginProps) {
           <LazyRoulettePreview lang={i18n.language} />
         </Suspense>
       </div>
+      <section className="flex max-w-screen-sm flex-col items-center gap-4 rounded-lg bg-white p-6 text-center">
+        <p className="text-lg font-bold text-amber-500">
+          {t("Login to get started")}
+        </p>
 
-      <p className="p-4 text-lg text-white">{t("Login to get started")}</p>
+        <p className="text-slate-900">{t("Google account needed")}</p>
 
-      <LoginButton />
+        <LoginButton />
+      </section>
 
       <LanguageSelect />
 
-      <div className="flex flex-col gap-1 text-center text-sm text-white">
-        <Link to="/terms" className="w-full hover:underline">
-          {t("Terms & Conditions")}
-        </Link>
-        <Link to="/privacy" className="w-full hover:underline">
-          {t("Privacy Policy")}
-        </Link>
-      </div>
+      <LegalLinks className="text-sm text-amber-400" />
     </div>
   );
 }
