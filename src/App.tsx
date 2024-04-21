@@ -19,7 +19,7 @@ const LazyTerms = lazy(() => import("src/pages/Terms"));
 const LazyNotFound = lazy(() => import("src/pages/NotFound"));
 
 // TODO: Remove
-const LazyTests = lazy(() => import("src/pages/Tests"));
+// const LazyTests = lazy(() => import("src/pages/Tests"));
 
 function MainLayout({ children }: PropsWithChildren) {
   const { t } = useLanguageContext();
@@ -99,7 +99,7 @@ const newRouter = createBrowserRouter([
         children: [
           { path: "/menu", element: <LazyEditMenu /> },
           { path: "/addItem", element: <LazyAddItem /> },
-          { path: "/test", element: <LazyTests /> },
+          // { path: "/test", element: <LazyTests /> },
         ],
       },
     ],
