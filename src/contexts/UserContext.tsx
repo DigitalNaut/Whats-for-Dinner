@@ -59,7 +59,7 @@ function UserCard() {
       />
       <div
         className="absolute right-0 top-0 z-50 flex flex-col justify-center
-          focus-within:gap-4 focus-within:rounded-md focus-within:bg-white focus-within:p-4 focus-within:text-black
+          focus-within:gap-4 focus-within:rounded-md focus-within:bg-white focus-within:px-6 focus-within:py-4 focus-within:text-black
           group-hover:gap-4 group-hover:rounded-md group-hover:bg-white group-hover:px-6 group-hover:py-4 group-hover:text-black"
       >
         <div className="flex w-full justify-center">
