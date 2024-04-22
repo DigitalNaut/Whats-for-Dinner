@@ -13,12 +13,12 @@
   "Dish name is required": "Dish name is required",
   "Dish name": "Dish name",
   "Download": "Download",
-  "Drive Preferences": "Drive Preferences",
   "Edit Menu": "Edit Menu",
   "Enter valid URL": "Please enter a valid URL",
   "Failed to sign in": "Failed to sign in",
   "File icon": "File icon",
   "File unavailable": "File unavailable",
+  "Google account needed": "You need to sign in with your Google account to save your Drive preferences.",
   "Grant permissions on screen": "Please grant the permissions on the screen",
   "Image could not be deleted": "Image could not be deleted",
   "Image upload failed": "Image upload failed",
@@ -32,7 +32,7 @@
   "No history yet": "No history yet",
   "No image file selected": "No image file selected",
   "No images found": "No images found",
-  "Open Google Drive preferences": "Open Google Drive preferences",
+  "Open Settings": "Open Settings",
   "Page not found": "Page not found",
   "Permission required to upload images": "Permission required to upload images",
   "Please allow access to your Google Drive account": "Please allow access to your Google Drive account",
@@ -61,5 +61,28 @@
   "Uploading...": "Uploading...",
   "Use URL": "Use URL",
   "User avatar": "User avatar",
-  "Google account needed": "You need to sign in with your Google account to save your Drive preferences."
+  "SettingsPage": {
+    "header": "Settings",
+    "Drive": {
+      "open": "Open Google Drive™ preferences",
+      "description": "You can manage your account data and permissions from Google Drive."
+    },
+    "language": {
+      "change": "Change language"
+    },
+    "moreOptions": {
+      "header": "More options"
+    },
+    "data": {
+      "manage": "Reset spinner data",
+      "reset": "Reset list",
+      "resetConfirmation": "The list will be reset to its default state and all images will be deleted."
+    },
+    "account": {
+      "header": "Account",
+      "revoke": "Revoke app access to your Google Account",
+      "disconnect": "Disconnect account",
+      "disconnected": "Account disconnected"
+    }
+  }
 }

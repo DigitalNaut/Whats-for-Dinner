@@ -5,7 +5,7 @@ type Languages = Record<string, { nativeName: string }>;
 
 const languages: Languages = {
   en: { nativeName: "English" },
-  es: { nativeName: "Spanish" },
+  es: { nativeName: "Español" },
 };
 
 type LanguageContext = {

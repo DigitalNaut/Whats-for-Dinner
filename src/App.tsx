@@ -14,12 +14,13 @@ const LazyAddItem = lazy(() => import("src/pages/AddItem"));
 const LazyEditMenu = lazy(() => import("src/pages/EditMenu"));
 const LazyMain = lazy(() => import("src/pages/Main"));
 const LazyLogin = lazy(() => import("src/pages/Login"));
+const LazySettings = lazy(() => import("src/pages/Settings"));
 const LazyPrivacy = lazy(() => import("src/pages/Privacy"));
 const LazyTerms = lazy(() => import("src/pages/Terms"));
 const LazyNotFound = lazy(() => import("src/pages/NotFound"));
 
 // TODO: Remove
-const LazyTests = lazy(() => import("src/pages/Tests"));
+// const LazyTests = lazy(() => import("src/pages/Tests"));
 
 function MainLayout({ children }: PropsWithChildren) {
   const { t } = useLanguageContext();
@@ -99,7 +100,8 @@ const newRouter = createBrowserRouter([
         children: [
           { path: "/menu", element: <LazyEditMenu /> },
           { path: "/addItem", element: <LazyAddItem /> },
-          { path: "/test", element: <LazyTests /> },
+          { path: "/settings", element: <LazySettings /> },
+          // { path: "/test", element: <LazyTests /> },
         ],
       },
     ],

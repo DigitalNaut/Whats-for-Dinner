@@ -1,5 +1,7 @@
 import type { FallbackProps } from "react-error-boundary";
 
+import ThemedButton from "src/components/common/ThemedButton";
+
 export default function ErrorFallback({
   error,
   resetErrorBoundary,
@@ -13,9 +15,7 @@ export default function ErrorFallback({
       <pre className="mb-2 rounded-md bg-white p-4 text-black">
         {error.message}
       </pre>
-      <button data-filled onClick={resetErrorBoundary}>
-        Try again
-      </button>
+      <ThemedButton onClick={resetErrorBoundary}>Try again</ThemedButton>
     </div>
   );
 }

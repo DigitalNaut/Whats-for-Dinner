@@ -21,11 +21,12 @@ import {
 } from "src/components/HeaderContextMenu";
 import { useHeaderContext } from "src/contexts/HeaderContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
+import { useSpinnerMenu } from "src/hooks/useSpinnerMenu";
 import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 import Floating from "src/components/common/Floating";
 import Spinner from "src/components/common/Spinner";
+import ThemedButton from "src/components/common/ThemedButton";
 import Toggle from "src/components/common/Toggle";
-import { useSpinnerMenu } from "src/hooks/useSpinnerMenu";
 
 const Modes = ["Toggle", "Select"] as const;
 
@@ -241,7 +242,7 @@ export default function EditMenu() {
                 />
               ) : (
                 <Checkbox
-                  className="size-6 rounded-sm border-2 border-purple-400 checked:border-none checked:bg-purple-400 focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-700"
+                  className="size-6 rounded-sm border-2 border-amber-400 checked:border-none checked:bg-amber-500 hover:bg-amber-400 checked:hover:bg-amber-400 focus:bg-amber-400 focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-gray-700 focus:checked:bg-amber-300 focus:hover:bg-amber-400 active:bg-amber-400 active:hover:bg-amber-400"
                   checked={selected.get(label)?.isSelected}
                   onChange={() => {
                     const newSelected = new Map(selected);
@@ -269,10 +270,7 @@ export default function EditMenu() {
 
       <Floating>
         <Link to="/addItem" tabIndex={-1}>
-          <button data-filled className="flex items-center gap-1">
-            <FontAwesomeIcon icon={faPlus} />
-            <span>{t("Add dish")}</span>
-          </button>
+          <ThemedButton icon={faPlus}>{t("Add dish")}</ThemedButton>
         </Link>
       </Floating>
     </>

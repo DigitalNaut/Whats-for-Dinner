@@ -7,6 +7,7 @@ import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import ProgressBar from "src/components/common/ProgressBar";
 import Spinner from "src/components/common/Spinner";
+import ThemedButton from "src/components/common/ThemedButton";
 
 export default function ImageUpload({ onUpload }: { onUpload(): void }) {
   const { t } = useLanguageContext();
@@ -135,11 +136,9 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
           />
           {uploadProgress && <ProgressBar progress={uploadProgress} />}
           <div className="flex gap-1">
-            <button
-              data-filled
+            <ThemedButton
               onClick={uploadFileHandler}
               disabled={Boolean(isUploadingFile)}
-              className="flex items-center gap-2"
             >
               {isUploadingFile ? (
                 <Spinner
@@ -155,16 +154,14 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
                   <span>{t("Upload")}</span>
                 </>
               )}
-            </button>
-            <button
-              data-filled
+            </ThemedButton>
+            <ThemedButton
               onClick={cancelUploadHandler}
               disabled={!isUploadingFile}
               className={isUploadingFile ? "" : "hidden"}
               title={t("Cancel")}
-            >
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
+              icon={faTimes}
+            />
           </div>
         </>
       )}

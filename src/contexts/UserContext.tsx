@@ -6,9 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { jwtDecode } from "jwt-decode";
 
+import { Link } from "react-router-dom";
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import LanguageSelect from "src/components/LanguageSelect";
 import LegalLinks from "src/components/LegalLinks";
+import ThemedButton from "src/components/common/ThemedButton";
 
 export function LoginButton() {
   const { onSignInSuccess, onSignInError } = useUser();
@@ -33,9 +35,9 @@ function LogoutButton({ onClick }: { onClick: () => void }) {
   const { t } = useLanguageContext();
 
   return (
-    <button data-filled className="g_id_signout" onClick={onClick}>
+    <ThemedButton className="g_id_signout w-max" onClick={onClick}>
       {t("Sign out")}
-    </button>
+    </ThemedButton>
   );
 }
 
@@ -59,7 +61,7 @@ function UserCard() {
       />
       <div
         className="absolute right-0 top-0 z-50 flex flex-col justify-center
-          focus-within:gap-4 focus-within:rounded-md focus-within:bg-white focus-within:p-4 focus-within:text-black
+          focus-within:gap-4 focus-within:rounded-md focus-within:bg-white focus-within:px-6 focus-within:py-4 focus-within:text-black
           group-hover:gap-4 group-hover:rounded-md group-hover:bg-white group-hover:px-6 group-hover:py-4 group-hover:text-black"
       >
         <div className="flex w-full justify-center">
@@ -77,24 +79,29 @@ function UserCard() {
             <span className="text-base font-bold">{name}</span>
             <span>{email}</span>
           </div>
-          <div className="flex w-max flex-col items-center gap-4 rounded-sm bg-slate-100 p-4">
-            <a
-              className="w-full text-blue-700 hover:underline"
-              href="https://drive.google.com/drive/settings"
-              target="_blank"
-              rel="noreferrer"
-              title={t("Open Google Drive preferences")}
+          <div className="flex w-full flex-col items-center gap-4 rounded-sm bg-slate-100 p-4">
+            <Link
+              className="text-blue-700 hover:underline"
+              to="/settings"
+              title={t("Open Settings")}
             >
-              {t("Drive Preferences")}
-            </a>
+              {t("Settings")}
+            </Link>
+
+            {/* TODO: Remove link before commit */}
+            {/* <Link
+              className="text-blue-700 hover:underline"
+              to="/test"
+              title={t("Open Settings")}
+            >
+              Testing
+            </Link> */}
 
             <LanguageSelect />
 
-            <div className="hidden w-full justify-center group-focus-within:flex group-hover:flex">
-              <LogoutButton
-                onClick={() => logout({ notification: t("Logged out") })}
-              />
-            </div>
+            <LogoutButton
+              onClick={() => logout({ notification: t("Logged out") })}
+            />
           </div>
 
           <LegalLinks className="text-xs italic text-slate-800" />

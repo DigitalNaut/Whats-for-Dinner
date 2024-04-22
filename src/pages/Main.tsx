@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 import { useLanguageContext } from "src/contexts/LanguageContext";
@@ -8,6 +7,7 @@ import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 import Floating from "src/components/common/Floating";
 import SpinningWheel from "src/components/SpinningWheel";
 import type { SpinnerOption } from "src/components/SpinningWheel";
+import ThemedButton from "src/components/common/ThemedButton";
 
 const maxHistory = 20;
 
@@ -57,10 +57,7 @@ export default function Main() {
 
       <Floating>
         <Link to="/menu" tabIndex={-1}>
-          <button data-filled className="flex items-center gap-1">
-            <FontAwesomeIcon icon={faEdit} />
-            <span>{t("Edit Menu")}</span>
-          </button>
+          <ThemedButton icon={faEdit}>{t("Edit Menu")}</ThemedButton>
         </Link>
       </Floating>
     </div>

@@ -13,12 +13,12 @@
   "Dish name is required": "El nombre del platillo es requerido",
   "Dish name": "Nombre del platillo",
   "Download": "Descargar",
-  "Drive Preferences": "Preferencias de Drive",
   "Edit Menu": "Editar menú",
   "Enter valid URL": "Debe introducir una URL válida",
   "Failed to sign in": "Fallo al iniciar sesión",
   "File icon": "Icono de archivo",
   "File unavailable": "Archivo no disponible",
+  "Google account needed": "Necesitas iniciar sesión con tu cuenta de Google para guardar tus preferencias en Drive.",
   "Grant permissions on screen": "Otorga los permisos que aparecen en pantalla para continuar",
   "Image could not be deleted": "No se pudo borrar la imagen",
   "Image upload failed": "Fallo al subir la imagen",
@@ -32,7 +32,7 @@
   "No history yet": "Sin historial aún",
   "No image file selected": "No hay archivo de imagen seleccionado",
   "No images found": "No se encontraron imágenes",
-  "Open Google Drive preferences": "Abrir preferencias de Google Drive",
+  "Open Settings": "Abrir Ajustes",
   "Page not found": "Página no encontrada",
   "Permission required to upload images": "Se requiere permiso para subir imágenes",
   "Please allow access to your Google Drive account": "Permita el acceso a su cuenta de Google Drive por favor",
@@ -61,5 +61,28 @@
   "Uploading...": "Subiendo...",
   "Use URL": "Usar URL",
   "User avatar": "Avatar de usuario",
-  "Google account needed": "Necesitas iniciar sesión con tu cuenta de Google para guardar tus preferencias en Drive."
+  "SettingsPage": {
+    "header": "Ajustes",
+    "Drive": {
+      "open": "Abrir ajustes de Google Drive™",
+      "description": "Puedes gestionar tus datos de cuenta y permisos desde Google Drive."
+    },
+    "language": {
+      "change": "Cambiar idioma"
+    },
+    "moreOptions": {
+      "header": "Opciones adicionales"
+    },
+    "data": {
+      "manage": "Restablecer datos de la lista",
+      "reset": "Restablecer lista",
+      "resetConfirmation": "La lista se restablecerá a su estado predeterminado y todas las imágenes se eliminarán."
+    },
+    "account": {
+      "header": "Cuenta",
+      "revoke": "Revocar acceso de la cuenta de Google",
+      "disconnect": "Desconectar cuenta",
+      "disconnected": "Cuenta desconectada"
+    }
+  }
 }

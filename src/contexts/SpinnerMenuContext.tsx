@@ -34,6 +34,7 @@ type SpinnerMenuContext = {
   isLoaded: boolean;
   setError: Dispatch<SetStateAction<string | undefined>>;
   setAllMenuItems: Dispatch<SetStateAction<SpinnerOption[] | undefined>>;
+  resetConfigFile: (signal?: AbortSignal) => Promise<void>;
 };
 
 const spinnerMenuContext = createContext<SpinnerMenuContext | null>(null);
@@ -186,6 +187,16 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     [configFileId, updateFile],
   );
 
+  const resetConfigFile = useCallback(
+    async (signal?: AbortSignal) => {
+      const defaultConfig = await getDefaultConfig();
+
+      await createConfigFile(signal, defaultConfig);
+      setAllMenuItems(defaultConfig);
+    },
+    [createConfigFile],
+  );
+
   const getConfigOrCreate = useCallback(
     async (signal: AbortSignal) => {
       try {
@@ -193,12 +204,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
 
         // List the files
         if (fileMeta) await getConfigFile(signal, fileMeta);
-        else {
-          const defaultConfig = await getDefaultConfig();
-
-          await createConfigFile(signal, defaultConfig);
-          setAllMenuItems(defaultConfig);
-        }
+        else await resetConfigFile(signal);
 
         setState("Idle");
       } catch (error) {
@@ -214,7 +220,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         console.error(error);
       }
     },
-    [getConfigFileMeta, createConfigFile, getConfigFile],
+    [getConfigFileMeta, getConfigFile, resetConfigFile],
   );
 
   // Get the config file or create it when drive is loaded
@@ -285,6 +291,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         setAllMenuItems: setAllMenuItemsWithDelayedUpload,
         enabledMenuItems,
         setError,
+        resetConfigFile,
       }}
     >
       {children}

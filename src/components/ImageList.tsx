@@ -15,6 +15,7 @@ import ImagePreview from "src/components/ImagePreview";
 import Kilobytes from "src/components/common/Kilobytes";
 import ProgressBar from "src/components/common/ProgressBar";
 import Spinner from "src/components/common/Spinner";
+import ThemedButton from "src/components/common/ThemedButton";
 
 type ImageListProps = {
   refreshDate: number;
@@ -225,9 +226,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
   if (!hasScope)
     return (
       <AwaitingPermissionsNotice>
-        <button data-filled onClick={() => listFiles()}>
-          {t("Retry")}
-        </button>
+        <ThemedButton onClick={() => listFiles()}>{t("Retry")}</ThemedButton>
       </AwaitingPermissionsNotice>
     );
 
@@ -249,23 +248,20 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         ))}
         {!driveFiles && <i>{t("No images found")}</i>}
       </div>
-      <button
-        data-filled
+      <ThemedButton
         onClick={() => listFiles()}
         disabled={loadingDriveFiles}
         title={t("Refresh list")}
         className="w-fit"
       >
         {loadingDriveFiles ? <Spinner /> : <FontAwesomeIcon icon={faSync} />}
-      </button>
+      </ThemedButton>
 
       <h3 className="text-lg">Imagen descargada</h3>
       {downloadProgress && (
         <>
           <ProgressBar progress={downloadProgress} />
-          <button data-filled onClick={cancelDownload}>
-            {t("Cancel")}
-          </button>
+          <ThemedButton onClick={cancelDownload}>{t("Cancel")}</ThemedButton>
         </>
       )}
       <ImagePreview

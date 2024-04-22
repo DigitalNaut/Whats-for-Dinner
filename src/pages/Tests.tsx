@@ -53,10 +53,7 @@ function Tests() {
 
       {/* <Floating>
         <Link to="/menu" tabIndex={-1}>
-          <button data-filled className="flex items-center gap-1">
-            <FontAwesomeIcon icon={faEdit} />
-            <span>Editar menú</span>
-          </button>
+          <Theme icon={faEdit}>Editar menú</ThemedButton>
         </Link>
       </Floating> */}
     </>
