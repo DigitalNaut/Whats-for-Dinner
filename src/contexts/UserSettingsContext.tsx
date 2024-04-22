@@ -10,9 +10,13 @@ import { z } from "zod";
 
 import { useLocalStorage } from "src/hooks/useLocalStorage";
 
-const userSettingsSchema = z.object({
-  preferredLanguage: z.string().default("en"),
-});
+const userSettingsSchema = z
+  .object({
+    preferredLanguage: z.string({
+      required_error: "preferredLanguage is required",
+    }),
+  })
+  .catch({ preferredLanguage: "en" });
 
 type UserSettings = z.infer<typeof userSettingsSchema>;
 
@@ -28,7 +32,7 @@ type UserSettingsContext = {
 };
 
 const userSettingsKey = "userSettings";
-const defaultUserSettings = userSettingsSchema.parse({});
+const defaultUserSettings: UserSettings = userSettingsSchema.parse({});
 const userSettingsContext = createContext<UserSettingsContext | null>(null);
 
 const reducer = (

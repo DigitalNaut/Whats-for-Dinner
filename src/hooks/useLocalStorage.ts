@@ -22,7 +22,7 @@ function saveSettingsToStorage<T extends Record<string, unknown>>(
 export function useLocalStorage<T extends Record<string, unknown>>(
   key: string,
   defaultData: T,
-  schema: z.Schema,
+  schema: z.Schema<T>,
 ) {
   const [data, setData] = useState<T>(defaultData);
 
