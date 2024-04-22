@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { jwtDecode } from "jwt-decode";
 
+import { Link } from "react-router-dom";
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import LanguageSelect from "src/components/LanguageSelect";
 import LegalLinks from "src/components/LegalLinks";
@@ -78,16 +79,23 @@ function UserCard() {
             <span className="text-base font-bold">{name}</span>
             <span>{email}</span>
           </div>
-          <div className="flex w-max flex-col items-center gap-4 rounded-sm bg-slate-100 p-4">
-            <a
-              className="w-full text-blue-700 hover:underline"
-              href="https://drive.google.com/drive/settings"
-              target="_blank"
-              rel="noreferrer"
-              title={t("Open Google Drive preferences")}
+          <div className="flex w-full flex-col items-center gap-4 rounded-sm bg-slate-100 p-4">
+            <Link
+              className="text-blue-700 hover:underline"
+              to="/settings"
+              title={t("Open Settings")}
             >
-              {t("Drive Preferences")}
-            </a>
+              {t("Settings")}
+            </Link>
+
+            {/* TODO: Remove link before commit */}
+            {/* <Link
+              className="text-blue-700 hover:underline"
+              to="/test"
+              title={t("Open Settings")}
+            >
+              Testing
+            </Link> */}
 
             <LanguageSelect />
 
