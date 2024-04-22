@@ -21,11 +21,12 @@ import {
 } from "src/components/HeaderContextMenu";
 import { useHeaderContext } from "src/contexts/HeaderContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
+import { useSpinnerMenu } from "src/hooks/useSpinnerMenu";
 import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 import Floating from "src/components/common/Floating";
 import Spinner from "src/components/common/Spinner";
+import ThemedButton from "src/components/common/ThemedButton";
 import Toggle from "src/components/common/Toggle";
-import { useSpinnerMenu } from "src/hooks/useSpinnerMenu";
 
 const Modes = ["Toggle", "Select"] as const;
 
@@ -269,10 +270,7 @@ export default function EditMenu() {
 
       <Floating>
         <Link to="/addItem" tabIndex={-1}>
-          <button data-filled className="flex items-center gap-1">
-            <FontAwesomeIcon icon={faPlus} />
-            <span>{t("Add dish")}</span>
-          </button>
+          <ThemedButton icon={faPlus}>{t("Add dish")}</ThemedButton>
         </Link>
       </Floating>
     </>

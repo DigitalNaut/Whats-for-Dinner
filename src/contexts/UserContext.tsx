@@ -9,6 +9,7 @@ import { jwtDecode } from "jwt-decode";
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import LanguageSelect from "src/components/LanguageSelect";
 import LegalLinks from "src/components/LegalLinks";
+import ThemedButton from "src/components/common/ThemedButton";
 
 export function LoginButton() {
   const { onSignInSuccess, onSignInError } = useUser();
@@ -33,9 +34,9 @@ function LogoutButton({ onClick }: { onClick: () => void }) {
   const { t } = useLanguageContext();
 
   return (
-    <button data-filled className="g_id_signout" onClick={onClick}>
+    <ThemedButton className="g_id_signout w-max" onClick={onClick}>
       {t("Sign out")}
-    </button>
+    </ThemedButton>
   );
 }
 
@@ -90,11 +91,9 @@ function UserCard() {
 
             <LanguageSelect />
 
-            <div className="hidden w-full justify-center group-focus-within:flex group-hover:flex">
-              <LogoutButton
-                onClick={() => logout({ notification: t("Logged out") })}
-              />
-            </div>
+            <LogoutButton
+              onClick={() => logout({ notification: t("Logged out") })}
+            />
           </div>
 
           <LegalLinks className="text-xs italic text-slate-800" />

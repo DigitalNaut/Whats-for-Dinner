@@ -15,6 +15,7 @@ import Kilobytes from "src/components/common/Kilobytes";
 import Spinner from "src/components/common/Spinner";
 import Switcher, { SwitcherState } from "src/components/common/Switcher";
 import type { FileInfo } from "src/components/InputFile";
+import ThemedButton from "src/components/common/ThemedButton";
 
 const StateActionType = ["setName", "setURL", "reset"] as const;
 
@@ -413,9 +414,9 @@ export default function AddItem() {
             ),
           }}
         />
-        <button type="submit" data-filled>
+        <ThemedButton className="w-full text-center" type="submit">
           {t("Add dish")}
-        </button>
+        </ThemedButton>
       </form>
     </div>
   );
