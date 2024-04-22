@@ -4,11 +4,6 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@9.0.5",
-  "pnpm": {
-    "overrides": {
-      "rollup": "4.15.0"
-    }
-  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
