@@ -296,7 +296,7 @@ export default function AddItem() {
               {fileInfo.size ? (
                 <Kilobytes className="text-xs" value={fileInfo.size} />
               ) : (
-                <span>Tamaño desconocido</span>
+                <span>{t("Unknown size")}</span>
               )}
             </div>
           )}
