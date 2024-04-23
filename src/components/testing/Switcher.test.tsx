@@ -2,12 +2,12 @@ import { expect, test, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import Switcher, { SwitcherState } from "src/components/common/Switcher";
+import Switcher from "src/components/common/Switcher";
 
 test("renders a switcher with two options", () => {
   render(
     <Switcher
-      initialState={SwitcherState.FirstOption}
+      initialState={"firstOption"}
       labels={["first", "second"]}
       renders={{
         firstOption: <p>left option</p>,
@@ -27,7 +27,7 @@ test("renders a switcher with two options", () => {
 test("renders the first option", async () => {
   render(
     <Switcher
-      initialState={SwitcherState.FirstOption}
+      initialState={"firstOption"}
       labels={["first option", "second option"]}
       renders={{
         firstOption: <p>cats</p>,
@@ -44,7 +44,7 @@ test("renders the first option", async () => {
 test("renders the second option", async () => {
   render(
     <Switcher
-      initialState={SwitcherState.SecondOption}
+      initialState={"secondOption"}
       labels={["first option", "second option"]}
       renders={{
         firstOption: <p>cats</p>,
@@ -63,7 +63,7 @@ test("switches display based on clicks", async () => {
 
   render(
     <Switcher
-      initialState={SwitcherState.FirstOption}
+      initialState={"firstOption"}
       labels={["first option", "second option"]}
       renders={{
         firstOption: <p>cats</p>,
@@ -82,14 +82,14 @@ test("switches display based on clicks", async () => {
   await userEvent.click(secondOption);
 
   expect(onChange).toHaveBeenCalledTimes(1);
-  expect(onChange).toHaveBeenCalledWith(SwitcherState.SecondOption);
+  expect(onChange).toHaveBeenCalledWith("secondOption");
   expect(await screen.findByText(/dogs/i)).toBeInTheDocument();
   expect(screen.queryByText(/cats/i)).not.toBeInTheDocument();
 
   await userEvent.click(firstOption);
 
   expect(onChange).toHaveBeenCalledTimes(2);
-  expect(onChange).toHaveBeenCalledWith(SwitcherState.FirstOption);
+  expect(onChange).toHaveBeenCalledWith("firstOption");
   expect(await screen.findByText(/cats/i)).toBeInTheDocument();
   expect(screen.queryByText(/dogs/i)).not.toBeInTheDocument();
 });

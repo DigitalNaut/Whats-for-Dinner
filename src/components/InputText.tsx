@@ -4,6 +4,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useLanguageContext } from "src/contexts/LanguageContext";
+import { twMerge } from "tailwind-merge";
 
 type InputTextProps = {
   name: string;
@@ -41,11 +42,12 @@ export default function InputText({
       <div className="relative">
         <label
           htmlFor={name}
-          className={`absolute left-4 -ml-0.5 h-fit -translate-y-1/2 px-0.5 leading-6 text-gray-400 transition-all ${
+          className={twMerge(
+            "absolute left-4 -ml-0.5 h-fit -translate-y-1/2 px-0.5 leading-6 text-gray-400 transition-all",
             isFocused || value
               ? "top-0 translate-y-0 text-xs leading-6"
-              : "inset-y-1/2"
-          }`}
+              : "inset-y-1/2",
+          )}
         >
           {label}
         </label>
@@ -55,9 +57,11 @@ export default function InputText({
           type="text"
           aria-describedby={name + "-hint"}
           defaultValue={value}
-          className={`w-full rounded-sm border-b-2 border-b-gray-400 bg-black/5 pb-2 pt-6 invalid:border-b-red-300 hover:bg-black/10 focus:border-b-white focus:bg-black/[15%] 
-            ${error ? "border-b-red-300" : ""}
-            ${onClear ? "pl-4 pr-7" : "px-4"}`}
+          className={twMerge(
+            "w-full rounded-sm border-b-2 border-b-gray-400 bg-black/5 pb-2 pt-6 invalid:border-b-red-300 hover:bg-black/10 focus:border-b-white focus:bg-black/[15%]",
+            error ? "border-b-red-300" : "",
+            onClear ? "pl-4 pr-7" : "px-4",
+          )}
           onFocus={onFocus}
           onBlur={onBlur}
           ref={inputRef}
@@ -79,7 +83,7 @@ export default function InputText({
       </div>
       <div
         id={name + "-hint"}
-        className={`pl-4 text-xs ${error ? "text-red-300" : ""}`}
+        className={twMerge("pl-4 text-xs", error ? "text-red-300" : "")}
       >
         {description}
       </div>

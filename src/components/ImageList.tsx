@@ -6,6 +6,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { twMerge } from "tailwind-merge";
 
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
@@ -43,15 +44,16 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
   return (
     <div
       key={file.id}
-      className={`group flex w-full items-center gap-2 rounded-sm p-2 hover:bg-white/20 ${
-        isDeleting ? "line-through opacity-50 grayscale" : ""
-      }`}
+      className={twMerge(
+        "group flex w-full items-center gap-2 rounded-sm p-2 hover:bg-white/20",
+        isDeleting ? "line-through opacity-50 grayscale" : "",
+      )}
     >
       {(file.thumbnailLink || file.iconLink) && (
         <img
           title={`MIME Type: "${file.mimeType}"`}
           src={file.thumbnailLink || file.iconLink}
-          className={`size-[20px] ${isDeleting ? "grayscale" : ""}`}
+          className={twMerge("size-[20px]", isDeleting ? "grayscale" : "")}
           alt={t("File icon")}
         />
       )}

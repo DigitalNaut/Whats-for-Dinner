@@ -14,7 +14,7 @@ import InputFile from "src/components/InputFile";
 import InputText from "src/components/InputText";
 import Kilobytes from "src/components/common/Kilobytes";
 import Spinner from "src/components/common/Spinner";
-import Switcher, { SwitcherState } from "src/components/common/Switcher";
+import Switcher from "src/components/common/Switcher";
 import ThemedButton from "src/components/common/ThemedButton";
 
 const StateActionType = ["setName", "setURL", "reset"] as const;
@@ -346,15 +346,15 @@ export default function AddItem() {
         />
 
         <Switcher
-          initialState={SwitcherState.FirstOption}
+          initialState={"firstOption"}
           onChange={(state) => {
             errorDispatch({ type: "reset", payload: "" });
 
             switch (state) {
-              case SwitcherState.FirstOption:
+              case "firstOption":
                 setUploadMode("File");
                 return "File";
-              case SwitcherState.SecondOption:
+              case "secondOption":
                 setUploadMode("URL");
                 fileInfo?.url && URL.revokeObjectURL(fileInfo.url);
                 setFileInfo(undefined);
