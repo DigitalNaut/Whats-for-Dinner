@@ -3,6 +3,7 @@ import { useState, useReducer, useRef } from "react";
 import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { type FileInfo } from "src/components/InputFile";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
@@ -14,7 +15,6 @@ import InputText from "src/components/InputText";
 import Kilobytes from "src/components/common/Kilobytes";
 import Spinner from "src/components/common/Spinner";
 import Switcher, { SwitcherState } from "src/components/common/Switcher";
-import type { FileInfo } from "src/components/InputFile";
 import ThemedButton from "src/components/common/ThemedButton";
 
 const StateActionType = ["setName", "setURL", "reset"] as const;
