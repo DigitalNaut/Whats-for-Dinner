@@ -27,8 +27,8 @@
     "axios": "^1.6.8",
     "i18next": "^23.11.2",
     "jwt-decode": "^4.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
     "react-error-boundary": "^4.0.13",
     "react-i18next": "^14.1.1",
     "react-router-dom": "^6.23.0",
@@ -50,14 +50,14 @@
     "@types/react-dom": "^18.2.25",
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@typescript-eslint/parser": "^7.7.1",
-    "@vitest/coverage-v8": "^1.5.1",
+    "@vitest/coverage-v8": "^1.5.2",
     "autoprefixer": "^10.4.19",
     "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-no-relative-import-paths": "^1.5.4",
     "eslint-plugin-react": "^7.34.1",
-    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-hooks": "^4.6.1",
     "eslint-plugin-tailwindcss": "^3.15.1",
     "jsdom": "^24.0.0",
     "npm-run-all": "^4.1.5",
@@ -69,6 +69,6 @@
     "typescript": "^5.4.5",
     "vite": "^5.2.10",
     "vite-plugin-svgr": "^4.2.0",
-    "vitest": "^1.5.1"
+    "vitest": "^1.5.2"
   }
 }
