@@ -12,18 +12,18 @@
     "netlify",
     "pnpx",
     "Pozole",
-    "Redimensionando",
-    "Reintentar",
+    "redimensionando",
+    "reintentar",
     "roboto",
-    "Roboto",
     "signin",
     "signout",
     "svgr",
     "tailwindcss",
+    "tsparticles",
     "TTFB",
     "typecheck",
     "webp",
-    "Xmark"
+    "xmark"
   ],
   "[javascript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
@@ -36,5 +36,8 @@
   },
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["(?:twMerge|twJoin)\\(([^;]*)[\\);]", "[`'\"`]([^'\"`;]*)[`'\"`]"]
+  ]
 }

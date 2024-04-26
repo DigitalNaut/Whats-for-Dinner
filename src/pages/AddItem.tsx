@@ -3,6 +3,7 @@ import { useState, useReducer, useRef } from "react";
 import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { type FileInfo } from "src/components/InputFile";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
@@ -13,8 +14,7 @@ import InputFile from "src/components/InputFile";
 import InputText from "src/components/InputText";
 import Kilobytes from "src/components/common/Kilobytes";
 import Spinner from "src/components/common/Spinner";
-import Switcher, { SwitcherState } from "src/components/common/Switcher";
-import type { FileInfo } from "src/components/InputFile";
+import Switcher from "src/components/common/Switcher";
 import ThemedButton from "src/components/common/ThemedButton";
 
 const StateActionType = ["setName", "setURL", "reset"] as const;
@@ -296,7 +296,7 @@ export default function AddItem() {
               {fileInfo.size ? (
                 <Kilobytes className="text-xs" value={fileInfo.size} />
               ) : (
-                <span>Tamaño desconocido</span>
+                <span>{t("Unknown size")}</span>
               )}
             </div>
           )}
@@ -346,15 +346,15 @@ export default function AddItem() {
         />
 
         <Switcher
-          initialState={SwitcherState.FirstOption}
+          initialState={"firstOption"}
           onChange={(state) => {
             errorDispatch({ type: "reset", payload: "" });
 
             switch (state) {
-              case SwitcherState.FirstOption:
+              case "firstOption":
                 setUploadMode("File");
                 return "File";
-              case SwitcherState.SecondOption:
+              case "secondOption":
                 setUploadMode("URL");
                 fileInfo?.url && URL.revokeObjectURL(fileInfo.url);
                 setFileInfo(undefined);

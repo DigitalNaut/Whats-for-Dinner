@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { type z } from "zod";
 
-function saveSettingsToStorage<T extends Record<string, unknown>>(
+function curriedSettingsToStorage<T extends Record<string, unknown>>(
   key: string,
   callback: (settings: T) => void,
 ) {
@@ -26,9 +26,14 @@ export function useLocalStorage<T extends Record<string, unknown>>(
 ) {
   const [data, setData] = useState<T>(defaultData);
 
-  const saveData = useCallback(
-    (newSettings: T) => saveSettingsToStorage<T>(key, setData)(newSettings),
+  const saveToStorage = useMemo(
+    () => curriedSettingsToStorage<T>(key, setData),
     [key],
+  );
+
+  const saveData = useCallback(
+    (newData: T) => saveToStorage(newData),
+    [saveToStorage],
   );
 
   useEffect(() => {
@@ -38,6 +43,7 @@ export function useLocalStorage<T extends Record<string, unknown>>(
     if (!savedSettings) {
       if (import.meta.env.DEV)
         console.log(`Setting up default settings for "${key}"`);
+
       saveData(defaultData);
     } else
       try {

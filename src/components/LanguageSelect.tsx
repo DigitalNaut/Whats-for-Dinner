@@ -1,4 +1,4 @@
-import { type ChangeEventHandler, useEffect } from "react";
+import { type ChangeEventHandler, useEffect, useCallback } from "react";
 
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import { useUserSettingsContext } from "src/contexts/UserSettingsContext";
@@ -7,16 +7,24 @@ export default function LanguageSelect() {
   const { languages, i18n } = useLanguageContext();
   const { userSettings, setUserSetting } = useUserSettingsContext();
 
+  const setLanguage = useCallback(
+    (language: string) => {
+      document.documentElement.lang = language;
+      i18n.changeLanguage(language);
+    },
+    [i18n],
+  );
+
   useEffect(() => {
-    i18n.changeLanguage(userSettings.preferredLanguage);
-  }, [i18n, userSettings.preferredLanguage]);
+    setLanguage(userSettings.preferredLanguage);
+  }, [i18n, setLanguage, userSettings.preferredLanguage]);
 
   const onClickLanguageChange: ChangeEventHandler<HTMLSelectElement> = (
     event,
   ) => {
-    const language = event.target.value;
-    i18n.changeLanguage(language); //change the language
-    setUserSetting({ preferredLanguage: language });
+    const preferredLanguage = event.target.value;
+    setLanguage(preferredLanguage);
+    setUserSetting({ preferredLanguage });
   };
 
   return (

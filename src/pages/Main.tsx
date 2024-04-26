@@ -2,11 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
+import { type SpinnerOption } from "src/components/SpinningWheel";
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 import Floating from "src/components/common/Floating";
 import SpinningWheel from "src/components/SpinningWheel";
-import type { SpinnerOption } from "src/components/SpinningWheel";
 import ThemedButton from "src/components/common/ThemedButton";
 
 const maxHistory = 20;
@@ -26,6 +26,10 @@ function Dish({ label, imageUrl }: DishProps) {
   );
 }
 
+const fireConfetti = () => {
+  confetti({ particleCount: 100, spread: 360, origin: { y: 0.4 } });
+};
+
 type HistoryItem = SpinnerOption & { timestamp: number };
 
 export default function Main() {
@@ -38,6 +42,8 @@ export default function Main() {
       { ...result, timestamp: Date.now() },
       ...currentHistory.slice(0, maxHistory - 1),
     ]);
+
+    fireConfetti();
   };
 
   return (

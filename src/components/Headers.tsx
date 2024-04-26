@@ -1,5 +1,6 @@
-import type { PropsWithChildren } from "react";
+import { type PropsWithChildren } from "react";
 import { useHeaderContext } from "src/contexts/HeaderContext";
+import { twMerge } from "tailwind-merge";
 
 import { useUser } from "src/contexts/UserContext";
 import BackButton from "src/components/common/BackButton";
@@ -29,9 +30,10 @@ export function MenuHeader() {
 
   return (
     <div
-      className={`relative flex w-full items-center justify-between ${
-        altColor ? "bg-amber-600" : "bg-purple-800"
-      } px-4 py-2 md:rounded-t-xl`}
+      className={twMerge(
+        "relative flex w-full h-12 items-center justify-between px-4 py-2 md:rounded-t-xl",
+        altColor ? "bg-amber-600" : "bg-purple-800",
+      )}
     >
       {altBackButton ?? <BackButton className="text-white" />}
 

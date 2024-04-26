@@ -1,3 +1,5 @@
+import { twMerge } from "tailwind-merge";
+
 import styles from "src/styles/ProgressBar.module.css";
 
 type LoadingBarProps = {
@@ -10,7 +12,10 @@ export default function ProgressBar({ progress }: LoadingBarProps) {
   return (
     <div className="h-1 w-full rounded-sm bg-white/20">
       <div
-        className={`${styles.stripes} h-full rounded-full transition-all duration-300 ease-out`}
+        className={twMerge(
+          styles.stripes,
+          "h-full rounded-full transition-all duration-300 ease-out",
+        )}
         style={{ width: `${percentage}%` }}
       />
     </div>

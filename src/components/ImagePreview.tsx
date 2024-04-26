@@ -6,6 +6,7 @@ import type {
 import { useState } from "react";
 import { faDownload, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { twMerge } from "tailwind-merge";
 
 import { useLanguageContext } from "src/contexts/LanguageContext";
 
@@ -46,9 +47,10 @@ export default function ImagePreview({
         src={fileUrl}
         title={fileName}
         alt={t("Preview")}
-        className={`size-[128px] rounded-md object-cover object-center ${
-          isInteractive ? "cursor-pointer bg-black" : ""
-        }`}
+        className={twMerge(
+          "size-[128px] rounded-md object-cover object-center",
+          isInteractive ? "cursor-pointer bg-black" : "",
+        )}
         width="128"
         height="128"
         onLoad={handleLoaded}

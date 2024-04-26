@@ -10,13 +10,13 @@ import { z } from "zod";
 
 import { useLocalStorage } from "src/hooks/useLocalStorage";
 
-const userSettingsSchema = z
-  .object({
-    preferredLanguage: z.string({
+const userSettingsSchema = z.object({
+  preferredLanguage: z
+    .string({
       required_error: "preferredLanguage is required",
-    }),
-  })
-  .catch({ preferredLanguage: "en" });
+    })
+    .default("en"),
+});
 
 type UserSettings = z.infer<typeof userSettingsSchema>;
 
@@ -53,11 +53,7 @@ const reducer = (
 
 export default function UserSettingsProvider({ children }: PropsWithChildren) {
   const { data: savedUserSettings, saveData: saveUserSettings } =
-    useLocalStorage<UserSettings>(
-      userSettingsKey,
-      defaultUserSettings,
-      userSettingsSchema,
-    );
+    useLocalStorage(userSettingsKey, defaultUserSettings, userSettingsSchema);
   const [userSettings, setUserSettings] = useReducer(
     reducer,
     defaultUserSettings,

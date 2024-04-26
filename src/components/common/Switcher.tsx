@@ -1,9 +1,7 @@
 import { useState } from "react";
+import { twMerge } from "tailwind-merge";
 
-export enum SwitcherState {
-  FirstOption,
-  SecondOption,
-}
+const SwitcherState = ["firstOption", "secondOption"] as const;
 
 type SwitcherProps = {
   labels: [string, string];
@@ -11,8 +9,8 @@ type SwitcherProps = {
     firstOption: JSX.Element;
     secondOption: JSX.Element;
   };
-  initialState: SwitcherState;
-  onChange: (value: SwitcherState) => void;
+  initialState: (typeof SwitcherState)[number];
+  onChange: (value: (typeof SwitcherState)[number]) => void;
 };
 
 export default function Switcher({
@@ -31,36 +29,34 @@ export default function Switcher({
       <div className="m-auto w-fit cursor-pointer select-none rounded-full bg-slate-600 text-slate-400">
         <button
           type="button"
-          className={`box-content inline-block rounded-full px-2 py-1 text-center ${
-            state === SwitcherState.FirstOption
-              ? "bg-slate-300 text-slate-600"
-              : ""
-          }`}
+          className={twMerge(
+            "box-content inline-block rounded-full px-2 py-1 text-center",
+            state === "firstOption" ? "bg-slate-300 text-slate-600" : "",
+          )}
           style={{ width: largestLabel + "ch" }}
           onClick={() => {
-            setState(SwitcherState.FirstOption);
-            onChange(SwitcherState.FirstOption);
+            setState("firstOption");
+            onChange("firstOption");
           }}
         >
           {firstLabel}
         </button>
         <button
           type="button"
-          className={`box-content inline-block rounded-full px-2 py-1 text-center ${
-            state === SwitcherState.SecondOption
-              ? "bg-slate-300 text-slate-600"
-              : ""
-          }`}
+          className={twMerge(
+            "box-content inline-block rounded-full px-2 py-1 text-center",
+            state === "secondOption" ? "bg-slate-300 text-slate-600" : "",
+          )}
           style={{ width: largestLabel + "ch" }}
           onClick={() => {
-            setState(SwitcherState.SecondOption);
-            onChange(SwitcherState.SecondOption);
+            setState("secondOption");
+            onChange("secondOption");
           }}
         >
           {secondLabel}
         </button>
       </div>
-      {state === SwitcherState.FirstOption ? firstOption : secondOption}
+      {state === "firstOption" ? firstOption : secondOption}
     </>
   );
 }

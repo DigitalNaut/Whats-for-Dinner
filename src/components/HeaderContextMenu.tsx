@@ -9,13 +9,15 @@ import {
 } from "@ariakit/react";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { twMerge } from "tailwind-merge";
 
 export function ContextMenuItem({ key, className, ...props }: MenuItemProps) {
   return (
     <MenuItem
-      className={`flex cursor-default scroll-m-2 items-center gap-2 rounded-sm bg-gray-50 p-2 text-gray-900 hover:bg-white hover:text-purple-800
-        focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600
-      active:bg-purple-600 active:text-white aria-disabled:opacity-25 ${className}`}
+      className={twMerge(
+        "flex cursor-default scroll-m-2 items-center gap-2 rounded-sm bg-gray-50 p-2 text-gray-900 hover:bg-white hover:text-purple-800 focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 active:bg-purple-600 active:text-white disabled:opacity-25",
+        className,
+      )}
       key={key}
       {...props}
     />

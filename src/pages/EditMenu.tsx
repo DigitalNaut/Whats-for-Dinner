@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useBlocker } from "react-router-dom";
 import { Checkbox, useMenuStore } from "@ariakit/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -218,6 +218,16 @@ export default function EditMenu() {
       elements: contextMenu,
     }));
   }, [altBackButton, contextMenu, isLoaded, setHeaderProperties]);
+
+  useBlocker(() => {
+    setHeaderProperties((prevProperties) => ({
+      ...prevProperties,
+      altColor: false,
+      altBackButton: undefined,
+      elements: undefined,
+    }));
+    return false;
+  });
 
   if (!isLoaded) return <Spinner cover />;
 
