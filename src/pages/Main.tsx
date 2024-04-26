@@ -26,6 +26,10 @@ function Dish({ label, imageUrl }: DishProps) {
   );
 }
 
+const fireConfetti = () => {
+  confetti({ particleCount: 100, spread: 360, origin: { y: 0.4 } });
+};
+
 type HistoryItem = SpinnerOption & { timestamp: number };
 
 export default function Main() {
@@ -39,11 +43,7 @@ export default function Main() {
       ...currentHistory.slice(0, maxHistory - 1),
     ]);
 
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.4 },
-    });
+    fireConfetti();
   };
 
   return (
