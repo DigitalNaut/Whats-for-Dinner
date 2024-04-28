@@ -94,7 +94,7 @@ test("renders a button to clear the input", async () => {
   await waitFor(() => expect(inputElement).toHaveValue("Test value"));
 
   const clearButton = await screen.findByRole("button", {
-    name: /borrar entrada/i,
+    name: /clear input/i,
   });
   expect(clearButton).toBeInTheDocument();
 
