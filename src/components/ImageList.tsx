@@ -1,17 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  faDownload,
-  faSync,
-  faTimes,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { twMerge } from "tailwind-merge";
 
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import AwaitingPermissionsNotice from "src/components/AwaitingPermissionsNotice";
+import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import ImagePreview from "src/components/ImagePreview";
 import Kilobytes from "src/components/common/Kilobytes";
 import ProgressBar from "src/components/common/ProgressBar";
@@ -36,7 +30,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
   if (!file.id)
     return (
       <div className="flex items-center gap-2">
-        <FontAwesomeIcon icon={faTimes} />
+        <FontAwesomeIcon className="fa-xmark" />
         <i>{t("File unavailable")}</i>
       </div>
     );
@@ -76,7 +70,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
             {isDownloading ? (
               <Spinner text="" />
             ) : (
-              <FontAwesomeIcon icon={faDownload} />
+              <FontAwesomeIcon className="fa-download" />
             )}
           </button>
           <button
@@ -93,7 +87,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
             {isDeleting ? (
               <Spinner text="" />
             ) : (
-              <FontAwesomeIcon icon={faTrash} />
+              <FontAwesomeIcon className="fa-trash" />
             )}
           </button>
         </>
@@ -257,7 +251,11 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         title={t("Refresh list")}
         className="w-fit"
       >
-        {loadingDriveFiles ? <Spinner /> : <FontAwesomeIcon icon={faSync} />}
+        {loadingDriveFiles ? (
+          <Spinner />
+        ) : (
+          <FontAwesomeIcon className="fa-rotate" />
+        )}
       </ThemedButton>
 
       <h3 className="text-lg">Imagen descargada</h3>

@@ -1,17 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useBlocker } from "react-router-dom";
 import { Checkbox, useMenuStore } from "@ariakit/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCheck,
-  faCheckDouble,
-  faPlus,
-  faTimes,
-  faToggleOff,
-  faToggleOn,
-  faTrash,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
 
 import {
   ContextMenu,
@@ -24,6 +13,7 @@ import { useLanguageContext } from "src/contexts/LanguageContext";
 import { useSpinnerMenu } from "src/hooks/useSpinnerMenu";
 import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 import Floating from "src/components/common/Floating";
+import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import Spinner from "src/components/common/Spinner";
 import ThemedButton from "src/components/common/ThemedButton";
 import Toggle from "src/components/common/Toggle";
@@ -58,20 +48,20 @@ function HeaderContextMenu({
       <ContextMenu store={menuStore}>
         {showSelectionOptions || (
           <ContextMenuItem onClick={enterSelectMode}>
-            <FontAwesomeIcon icon={faCheck} />
+            <FontAwesomeIcon className="fa-check" />
             <span>{t("Select")}</span>
           </ContextMenuItem>
         )}
 
         {showSelectionOptions && (
           <ContextMenuItem onClick={selectNone}>
-            <FontAwesomeIcon icon={faXmark} />
+            <FontAwesomeIcon className="fa-xmark" />
             <span>{t("Select none")}</span>
           </ContextMenuItem>
         )}
 
         <ContextMenuItem onClick={selectAll}>
-          <FontAwesomeIcon icon={faCheckDouble} />
+          <FontAwesomeIcon className="fa-check-double" />
           <span>{t("Select all")}</span>
         </ContextMenuItem>
 
@@ -83,7 +73,7 @@ function HeaderContextMenu({
               className="text-red-900"
               onClick={deleteSelections}
             >
-              <FontAwesomeIcon icon={faTrash} />
+              <FontAwesomeIcon className="fa-trash" />
               <span>{t("Delete")}</span>
             </ContextMenuItem>
           </>
@@ -94,12 +84,12 @@ function HeaderContextMenu({
             <ContextMenuSeparator />
 
             <ContextMenuItem onClick={toggleAllOn}>
-              <FontAwesomeIcon icon={faToggleOn} />
+              <FontAwesomeIcon className="fa-toggle-on" />
               <span>{t("Toggle all on")}</span>
             </ContextMenuItem>
 
             <ContextMenuItem onClick={toggleAllOff}>
-              <FontAwesomeIcon icon={faToggleOff} />
+              <FontAwesomeIcon className="fa-toggle-off" />
               <span>{t("Toggle all off")}</span>
             </ContextMenuItem>
           </>
@@ -165,7 +155,7 @@ export default function EditMenu() {
   const altBackButton = useMemo(() => {
     return mode === "Select" ? (
       <button onClick={setModeToggle}>
-        <FontAwesomeIcon icon={faTimes} />
+        <FontAwesomeIcon className="fa-xmark" />
       </button>
     ) : undefined;
   }, [mode, setModeToggle]);
@@ -191,7 +181,7 @@ export default function EditMenu() {
       <>
         {mode === "Select" && (
           <button onClick={deleteSelected} title={t("Delete")}>
-            <FontAwesomeIcon icon={faTrash} />
+            <FontAwesomeIcon className="fa-trash" />
           </button>
         )}
         <HeaderContextMenu
@@ -280,7 +270,7 @@ export default function EditMenu() {
 
       <Floating>
         <Link to="/addItem" tabIndex={-1}>
-          <ThemedButton icon={faPlus}>{t("Add dish")}</ThemedButton>
+          <ThemedButton iconStyle="fa-plus">{t("Add dish")}</ThemedButton>
         </Link>
       </Floating>
     </>

@@ -7,9 +7,9 @@ import {
   MenuSeparator,
   Menu,
 } from "@ariakit/react";
-import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { twMerge } from "tailwind-merge";
+
+import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 
 export function ContextMenuItem({ key, className, ...props }: MenuItemProps) {
   return (
@@ -58,7 +58,7 @@ export function ContextMenuButton({ store }: { store: MenuProps["store"] }) {
       className="flex flex-col overflow-auto rounded-lg p-2 shadow-lg outline-none
         focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
     >
-      <FontAwesomeIcon icon={faEllipsisV} />
+      <FontAwesomeIcon className="fa-ellipsis-v" />
     </MenuButton>
   );
 }

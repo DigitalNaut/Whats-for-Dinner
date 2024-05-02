@@ -4,11 +4,10 @@ import {
   createRef,
   useState,
 } from "react";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { twMerge } from "tailwind-merge";
 
 import { useLanguageContext } from "src/contexts/LanguageContext";
+import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 
 type InputTextProps = {
   name: string;
@@ -81,7 +80,7 @@ export default function InputText({
               onClear();
             }}
           >
-            <FontAwesomeIcon icon={faTimes} />
+            <FontAwesomeIcon className="fa-xmark" />
           </button>
         )}
       </div>

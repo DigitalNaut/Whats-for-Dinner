@@ -10,11 +10,10 @@ import {
   GoogleLogin,
   googleLogout,
 } from "@react-oauth/google";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { jwtDecode } from "jwt-decode";
 
 import { useLanguageContext } from "src/contexts/LanguageContext";
+import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import LanguageSelect from "src/components/LanguageSelect";
 import LegalLinks from "src/components/LegalLinks";
 import ThemedButton from "src/components/common/ThemedButton";
@@ -170,11 +169,11 @@ export function UserProvider({ children }: PropsWithChildren) {
         <div className="fixed left-0 top-0 flex w-full justify-center gap-2 bg-blue-400 p-1 text-white shadow-xl sm:p-2 md:p-4">
           <div className="flex w-full justify-between px-4 sm:max-w-sm sm:px-0 md:max-w-md lg:max-w-lg">
             <div className="flex items-center gap-2">
-              <FontAwesomeIcon icon={faInfoCircle} />
+              <FontAwesomeIcon className="fa-info-circle" />
               <span>{notification}</span>
             </div>
             <button onClick={() => setNotification(undefined)}>
-              <FontAwesomeIcon icon={faTimes} />
+              <FontAwesomeIcon className="fa-xmark" />
             </button>
           </div>
         </div>

@@ -11,15 +11,6 @@ importers:
       '@ariakit/react':
         specifier: ^0.4.6
         version: 0.4.6(react-dom@18.3.0(react@18.3.0))(react@18.3.0)
-      '@fortawesome/fontawesome-svg-core':
-        specifier: ^6.5.2
-        version: 6.5.2
-      '@fortawesome/free-solid-svg-icons':
-        specifier: ^6.5.2
-        version: 6.5.2
-      '@fortawesome/react-fontawesome':
-        specifier: ^0.2.0
-        version: 0.2.0(@fortawesome/fontawesome-svg-core@6.5.2)(react@18.3.0)
       '@react-oauth/google':
         specifier: ^0.12.1
         version: 0.12.1(react-dom@18.3.0(react@18.3.0))(react@18.3.0)
@@ -469,24 +460,6 @@ packages:
   '@floating-ui/utils@0.2.1':
     resolution: {integrity: sha512-9TANp6GPoMtYzQdt54kfAyMmz1+osLlXdg2ENroU7zzrtflTLrrC/lgrIfaSe+Wu0b89GKccT7vxXA0MoAIO+Q==}
 
-  '@fortawesome/fontawesome-common-types@6.5.2':
-    resolution: {integrity: sha512-gBxPg3aVO6J0kpfHNILc+NMhXnqHumFxOmjYCFfOiLZfwhnnfhtsdA2hfJlDnj+8PjAs6kKQPenOTKj3Rf7zHw==}
-    engines: {node: '>=6'}
-
-  '@fortawesome/fontawesome-svg-core@6.5.2':
-    resolution: {integrity: sha512-5CdaCBGl8Rh9ohNdxeeTMxIj8oc3KNBgIeLMvJosBMdslK/UnEB8rzyDRrbKdL1kDweqBPo4GT9wvnakHWucZw==}
-    engines: {node: '>=6'}
-
-  '@fortawesome/free-solid-svg-icons@6.5.2':
-    resolution: {integrity: sha512-QWFZYXFE7O1Gr1dTIp+D6UcFUF0qElOnZptpi7PBUMylJh+vFmIedVe1Ir6RM1t2tEQLLSV1k7bR4o92M+uqlw==}
-    engines: {node: '>=6'}
-
-  '@fortawesome/react-fontawesome@0.2.0':
-    resolution: {integrity: sha512-uHg75Rb/XORTtVt7OS9WoK8uM276Ufi7gCzshVWkUJbHhh3svsUUeqXerrM96Wm7fRiDzfKRwSoahhMIkGAYHw==}
-    peerDependencies:
-      '@fortawesome/fontawesome-svg-core': ~1 || ~6
-      react: '>=16.3'
-
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
     engines: {node: '>=10.10.0'}
@@ -535,8 +508,8 @@ packages:
   '@maxim_mazurok/gapi.client.discovery-v1@0.1.20200806':
     resolution: {integrity: sha512-Wl6UfmZVDdWbY3PUu8E2ULk9RPLjnMqp/iOA4tcK8Ne+U/GmlnWP/e34IaZNGArfl7iXJNOG+/3Rj9L9jQyF9Q==}
 
-  '@maxim_mazurok/gapi.client.drive-v3@0.0.20240422':
-    resolution: {integrity: sha512-icuJRgm+jySdgZCkfCsaiC2oUdgmOLv+rNZdybuJ+qHMCIK9qB+UJWM8CPdFryeA7gRPRFK7U1HEQgOyjhlpyg==}
+  '@maxim_mazurok/gapi.client.drive-v3@0.0.20240426':
+    resolution: {integrity: sha512-mloEtB7UonUQpC3+XNFnHKDzsL4ZU8VfE0vKat5uk5OCg2Sbp656fDRJr3CwqsUZsy4TQj87FzRBniOcEgIZ5A==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -3740,22 +3713,6 @@ snapshots:
 
   '@floating-ui/utils@0.2.1': {}
 
-  '@fortawesome/fontawesome-common-types@6.5.2': {}
-
-  '@fortawesome/fontawesome-svg-core@6.5.2':
-    dependencies:
-      '@fortawesome/fontawesome-common-types': 6.5.2
-
-  '@fortawesome/free-solid-svg-icons@6.5.2':
-    dependencies:
-      '@fortawesome/fontawesome-common-types': 6.5.2
-
-  '@fortawesome/react-fontawesome@0.2.0(@fortawesome/fontawesome-svg-core@6.5.2)(react@18.3.0)':
-    dependencies:
-      '@fortawesome/fontawesome-svg-core': 6.5.2
-      prop-types: 15.8.1
-      react: 18.3.0
-
   '@humanwhocodes/config-array@0.11.14':
     dependencies:
       '@humanwhocodes/object-schema': 2.0.3
@@ -3815,7 +3772,7 @@ snapshots:
       '@types/gapi.client': 1.0.8
       '@types/gapi.client.discovery-v1': 0.0.4
 
-  '@maxim_mazurok/gapi.client.drive-v3@0.0.20240422':
+  '@maxim_mazurok/gapi.client.drive-v3@0.0.20240426':
     dependencies:
       '@types/gapi.client': 1.0.8
       '@types/gapi.client.discovery-v1': 0.0.4
@@ -4108,7 +4065,7 @@ snapshots:
 
   '@types/gapi.client.drive-v3@0.0.4':
     dependencies:
-      '@maxim_mazurok/gapi.client.drive-v3': 0.0.20240422
+      '@maxim_mazurok/gapi.client.drive-v3': 0.0.20240426
 
   '@types/gapi.client@1.0.8': {}
 

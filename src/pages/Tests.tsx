@@ -1,13 +1,10 @@
-// import { faEdit } from "@fortawesome/free-solid-svg-icons";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { t } from "i18next";
 // import { Link } from "react-router-dom";
 // import Floating from "src/components/common/Floating";
 
+import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import ImageList from "src/components/ImageList";
 import ImageUpload from "src/components/ImageUpload";
 import Spinner from "src/components/common/Spinner";
@@ -31,7 +28,7 @@ function Tests() {
     <>
       {/* <SpinningWheel choices={enabledMenuItems} /> */}
       <Link className="m-auto flex items-center gap-1 underline" to="/">
-        <FontAwesomeIcon icon={faChevronLeft} />
+        <FontAwesomeIcon className="fa-chevron-left" />
         {t("Back to home")}
       </Link>
       <form
@@ -53,7 +50,7 @@ function Tests() {
 
       {/* <Floating>
         <Link to="/menu" tabIndex={-1}>
-          <Theme icon={faEdit}>Editar menú</ThemedButton>
+          <Theme className="fa-edit">Editar menú</ThemedButton>
         </Link>
       </Floating> */}
     </>

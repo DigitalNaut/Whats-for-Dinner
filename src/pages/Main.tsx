@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 import { type SpinnerOption } from "src/components/SpinningWheel";
 import { useLanguageContext } from "src/contexts/LanguageContext";
@@ -63,7 +62,9 @@ export default function Main() {
 
       <Floating>
         <Link to="/menu" tabIndex={-1}>
-          <ThemedButton icon={faEdit}>{t("Edit Menu")}</ThemedButton>
+          <ThemedButton iconStyle="fa-pen-to-square">
+            {t("Edit Menu")}
+          </ThemedButton>
         </Link>
       </Floating>
     </div>
