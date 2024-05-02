@@ -1,7 +1,7 @@
 import {
-  useState,
   type MouseEventHandler,
   type PropsWithChildren,
+  useState,
 } from "react";
 import {
   faArrowRotateLeft,
@@ -19,48 +19,75 @@ import LanguageSelect from "src/components/LanguageSelect";
 import Spinner from "src/components/common/Spinner";
 import ThemedButton from "src/components/common/ThemedButton";
 
-function Header({ children }: PropsWithChildren) {
-  return <h1 className="text-2xl">{children}</h1>;
-}
+async function executePromises<T>(
+  promises: Promise<T>[],
+  progressFn: (progress: number) => void,
+) {
+  const results: { id: number; result: T }[] = [];
+  const errors: { id: number; error: Error }[] = [];
 
-function Section({
-  children,
-  danger,
-}: PropsWithChildren<{
-  danger?: true;
-}>) {
-  return (
-    <div
-      className={twMerge(
-        "flex flex-col gap-2 rounded-md border border-gray-600 p-4",
-        danger && "border-red-500",
-      )}
-    >
-      {children}
-    </div>
-  );
+  return new Promise<[typeof results, typeof errors]>((resolve) => {
+    for (let id = 0; id < promises.length; id++) {
+      const promise = promises[id];
+      promise
+        .then((result) => {
+          results.push({ id, result });
+        })
+        .catch((error: Error) => {
+          errors.push({ id, error });
+        })
+        .finally(() => {
+          const processed = results.length + errors.length;
+          const progress = processed / promises.length;
+          progressFn(parseFloat(progress.toFixed(2)));
+
+          if (processed === promises.length) resolve([results, errors]);
+        });
+    }
+  });
 }
 
 function useGoogleDriveFilesCleaner() {
+  const [progress, setProgress] = useState<number>();
   const { fetchList, deleteFile } = useGoogleDriveAPI();
 
+  async function getDriveFileIds() {
+    const fileIds = new Set<string>();
+    let nextPageToken: string | undefined;
+
+    do {
+      const { status, data } = await fetchList({
+        params: { pageSize: 3, pageToken: nextPageToken },
+      });
+
+      if ("error" in data)
+        throw new AxiosError(
+          `Could not get files: (HTTP ${status}) ${data.error.message}`,
+        );
+
+      nextPageToken = data.nextPageToken;
+
+      for (const file of data.files || []) {
+        if (file.id) fileIds.add(file.id);
+      }
+    } while (nextPageToken);
+
+    return fileIds;
+  }
+
   const cleanGoogleDrive = async () => {
-    const { status, data: files } = await fetchList();
+    const fileIdSet = await getDriveFileIds();
+    const fileIds = Array.from(fileIdSet.values());
 
-    if (status !== 200 || files.error) {
-      throw new AxiosError(
-        `Could not get files: (HTTP ${status}) ${files.error.message || ""}`,
-      );
-    }
+    const [filesDeleted, deleteErrors] = await executePromises(
+      fileIds.map((id) => deleteFile({ id })),
+      setProgress,
+    );
 
-    const fileIds = files.files?.map((file) => file.id) || [];
-
-    for (const fileId of fileIds) {
-      await deleteFile({ id: fileId });
-    }
+    return { filesDeleted, deleteErrors };
   };
 
-  return cleanGoogleDrive;
+  return { cleanGoogleDrive, progress };
 }
 
 function useDisconnectAccount() {
@@ -88,6 +115,28 @@ function useDisconnectAccount() {
   return disconnectAccount;
 }
 
+function Header({ children }: PropsWithChildren) {
+  return <h1 className="text-2xl">{children}</h1>;
+}
+
+function Section({
+  children,
+  danger,
+}: PropsWithChildren<{
+  danger?: true;
+}>) {
+  return (
+    <div
+      className={twMerge(
+        "flex flex-col gap-2 rounded-md border border-gray-600 p-4",
+        danger && "border-red-500",
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function Settings() {
   const { t } = useLanguageContext();
   const { resetConfigFile } = useSpinnerMenuContext();
@@ -96,7 +145,8 @@ export default function Settings() {
     unlink?: boolean;
   }>();
   const { logout } = useUser();
-  const cleanGoogleDrive = useGoogleDriveFilesCleaner();
+  const { cleanGoogleDrive, progress: cleaningProgress } =
+    useGoogleDriveFilesCleaner();
   const disconnectAccount = useDisconnectAccount();
   const [error, setError] = useState<string>();
 
@@ -176,12 +226,14 @@ export default function Settings() {
       <Section>
         <div className="flex justify-between">
           {t("SettingsPage.data.manage")}
-          {isWorking?.reset && <Spinner />}
+          {isWorking?.reset && cleaningProgress !== undefined && (
+            <Spinner text={`Deleting files: ${cleaningProgress * 100}%`} />
+          )}
         </div>
         <ThemedButton
           className="w-max"
           icon={faArrowRotateLeft}
-          disabled={!!isWorking}
+          // disabled={!!isWorking}
           onClick={resetSpinnerMenu}
         >
           {t("SettingsPage.data.reset")}
@@ -193,12 +245,14 @@ export default function Settings() {
       <Section danger>
         <div className="flex justify-between">
           {t("SettingsPage.account.revoke")}
-          {isWorking?.unlink && <Spinner />}
+          {isWorking?.unlink && cleaningProgress !== undefined && (
+            <Spinner text={`Deleting files: ${cleaningProgress * 100}%`} />
+          )}
         </div>
         <ThemedButton
           danger
           className="w-max"
-          disabled={!!isWorking}
+          // disabled={!!isWorking}
           onClick={unlinkAccount}
         >
           {t("SettingsPage.account.disconnect")}
