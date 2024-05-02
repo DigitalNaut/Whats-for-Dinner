@@ -232,8 +232,7 @@ export default function Settings() {
         </div>
         <ThemedButton
           className="w-max"
-          icon={faArrowRotateLeft}
-          // disabled={!!isWorking}
+          disabled={!!isWorking}
           onClick={resetSpinnerMenu}
         >
           {t("SettingsPage.data.reset")}
@@ -252,7 +251,7 @@ export default function Settings() {
         <ThemedButton
           danger
           className="w-max"
-          // disabled={!!isWorking}
+          disabled={!!isWorking}
           onClick={unlinkAccount}
         >
           {t("SettingsPage.account.disconnect")}
