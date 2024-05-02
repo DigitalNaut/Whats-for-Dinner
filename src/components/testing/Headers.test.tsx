@@ -7,7 +7,6 @@ import {
   RouterProvider,
   createMemoryRouter,
 } from "react-router-dom";
-// import { debug } from "vitest-preview";
 
 import { MenuHeader, TitleHeader } from "src/components/Headers";
 import * as HeaderContextModule from "src/contexts/HeaderContext";
@@ -33,8 +32,6 @@ test("renders a title header with a chopstick svg", () => {
 
   expect(svg).toBeInTheDocument();
   expect(children).toBeInTheDocument();
-
-  // debug();
 });
 
 test("renders a menu header with a back button", async () => {
@@ -47,8 +44,6 @@ test("renders a menu header with a back button", async () => {
   expect(backButton).toHaveAttribute("aria-label", "Back");
   expect(svg).toBeInTheDocument();
   expect(menuButton).toBeUndefined();
-
-  // debug();
 });
 
 const router = createMemoryRouter(
@@ -91,8 +86,6 @@ test("expects the default back button navigation", async () => {
   const testElement = await screen.findByText(/test/i);
 
   expect(testElement).toBeInTheDocument();
-
-  // debug();
 });
 
 test("expects a custom back button behavior", async () => {
@@ -107,8 +100,6 @@ test("expects a custom back button behavior", async () => {
   const customBackButton = screen.getByText(/test button/i);
 
   expect(customBackButton).toBeInTheDocument();
-
-  // debug();
 });
 
 test("renders a menu header with a custom button from context elements", async () => {
@@ -124,8 +115,6 @@ test("renders a menu header with a custom button from context elements", async (
 
   expect(backButton).toBeInTheDocument();
   expect(menuButton).toBeInTheDocument();
-
-  // debug();
 });
 
 test("renders a menu header with an alternative color", () => {
@@ -154,6 +143,4 @@ test("renders a menu header with an alternative color", () => {
   });
 
   expect(postContainer.firstChild).toHaveClass("bg-amber-600");
-
-  // debug();
 });

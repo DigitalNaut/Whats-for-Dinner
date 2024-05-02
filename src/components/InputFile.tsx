@@ -1,5 +1,9 @@
-import type { ChangeEventHandler, InputHTMLAttributes } from "react";
-import { createRef, useState } from "react";
+import {
+  type ChangeEventHandler,
+  type InputHTMLAttributes,
+  createRef,
+  useState,
+} from "react";
 import { faCloudUpload, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 

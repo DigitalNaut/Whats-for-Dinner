@@ -1,8 +1,8 @@
 import { createRef, useEffect, useRef, useState } from "react";
 
-import SpinnerIcon from "src/components/common/Spinner";
-import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
+import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
+import SpinnerIcon from "src/components/common/Spinner";
 
 import Arrow from "src/assets/wedge.svg?react";
 

@@ -1,9 +1,9 @@
 import { Suspense, lazy, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import LanguageSelect from "src/components/LanguageSelect";
 
 import { LoginButton, useUser } from "src/contexts/UserContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
+import LanguageSelect from "src/components/LanguageSelect";
 import LegalLinks from "src/components/LegalLinks";
 import Spinner from "src/components/common/Spinner";
 

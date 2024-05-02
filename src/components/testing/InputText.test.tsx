@@ -1,9 +1,9 @@
+import { useState } from "react";
 import { expect, test } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/react";
 
 import InputText from "src/components/InputText";
-import { useState } from "react";
 
 test("renders a custom input element with a label", () => {
   render(<InputText name="input-test" label="test label" />);

@@ -1,10 +1,14 @@
-import type { FocusEventHandler, InputHTMLAttributes } from "react";
-import { createRef, useState } from "react";
+import {
+  type FocusEventHandler,
+  type InputHTMLAttributes,
+  createRef,
+  useState,
+} from "react";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { twMerge } from "tailwind-merge";
 
 import { useLanguageContext } from "src/contexts/LanguageContext";
-import { twMerge } from "tailwind-merge";
 
 type InputTextProps = {
   name: string;

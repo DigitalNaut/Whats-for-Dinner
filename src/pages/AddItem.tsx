@@ -1,13 +1,18 @@
-import type { FormEventHandler, Reducer } from "react";
-import { useState, useReducer, useRef } from "react";
+import {
+  type FormEventHandler,
+  type Reducer,
+  useState,
+  useReducer,
+  useRef,
+} from "react";
 import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useNavigate } from "react-router-dom";
 
 import { type FileInfo } from "src/components/InputFile";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
-import { useNavigate } from "react-router-dom";
 import { useSpinnerMenu } from "src/hooks/useSpinnerMenu";
 import ImagePreview from "src/components/ImagePreview";
 import InputFile from "src/components/InputFile";

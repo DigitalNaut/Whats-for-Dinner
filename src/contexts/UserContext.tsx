@@ -1,12 +1,19 @@
-import type { CredentialResponse } from "@react-oauth/google";
-import type { PropsWithChildren } from "react";
-import { GoogleLogin, googleLogout } from "@react-oauth/google";
-import { createContext, useContext, useState } from "react";
+import {
+  type PropsWithChildren,
+  createContext,
+  useContext,
+  useState,
+} from "react";
+import { Link } from "react-router-dom";
+import {
+  type CredentialResponse,
+  GoogleLogin,
+  googleLogout,
+} from "@react-oauth/google";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { jwtDecode } from "jwt-decode";
 
-import { Link } from "react-router-dom";
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import LanguageSelect from "src/components/LanguageSelect";
 import LegalLinks from "src/components/LegalLinks";

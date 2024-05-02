@@ -1,9 +1,9 @@
-import type {
-  DetailedHTMLProps,
-  ImgHTMLAttributes,
-  ReactEventHandler,
+import {
+  type DetailedHTMLProps,
+  type ImgHTMLAttributes,
+  type ReactEventHandler,
+  useState,
 } from "react";
-import { useState } from "react";
 import { faDownload, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { twMerge } from "tailwind-merge";
