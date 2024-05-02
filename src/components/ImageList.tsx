@@ -125,10 +125,11 @@ export default function ImageList({ refreshDate }: ImageListProps) {
       setLoadingDriveFiles(true);
       try {
         const { data } = await fetchList({ signal });
-        if (data.files?.length) setDriveFiles(data.files);
+        if ("files" in data && data.files?.length) setDriveFiles(data.files);
         else {
           setDriveFiles(undefined);
-          if (data.error) setError(`${data.error.code}: ${data.error.message}`);
+          if ("error" in data)
+            setError(`${data.error.code}: ${data.error.message}`);
         }
       } catch (error) {
         if (error === "Authorizing") return;
