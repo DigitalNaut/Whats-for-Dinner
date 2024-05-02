@@ -6,8 +6,11 @@ import {
   useMemo,
   useCallback,
 } from "react";
-import type { TokenResponse } from "@react-oauth/google";
-import { useGoogleLogin, hasGrantedAllScopesGoogle } from "@react-oauth/google";
+import {
+  type TokenResponse,
+  useGoogleLogin,
+  hasGrantedAllScopesGoogle,
+} from "@react-oauth/google";
 
 import { useScript } from "src/hooks/useScript";
 

@@ -9,14 +9,14 @@ import {
   createContext,
   useMemo,
 } from "react";
-import Spinner from "src/components/common/Spinner";
+import { AxiosError } from "axios";
 
 import { type SpinnerOption } from "src/components/SpinningWheel";
 import { useBeforeUnload } from "src/hooks/useBeforeUnload";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
-import { AxiosError } from "axios";
+import Spinner from "src/components/common/Spinner";
 
 const DEBOUNCE_DELAY = 2500;
 const CONFIG_FILE_NAME = "config.json";
@@ -85,7 +85,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
       if (status !== 200) throw new Error("Could not get config file");
       if (!data) return null;
 
-      if (!data.files?.length) return null;
+      if (!("files" in data) || !data.files?.length) return null;
 
       const [config] = data.files;
       setConfigFileId(config.id);

@@ -61,7 +61,7 @@ describe("InputFile", () => {
     await userEvent.upload(inputElement, testFile);
 
     let removeButtons = await screen.findAllByRole("button", {
-      name: /eliminar/i,
+      name: /remove/i,
     });
 
     expect(removeButtons).toHaveLength(2);
@@ -75,7 +75,7 @@ describe("InputFile", () => {
     expect(inputElement.files).toHaveLength(1);
 
     removeButtons = await screen.findAllByRole("button", {
-      name: /eliminar/i,
+      name: /remove/i,
     });
     await userEvent.click(removeButtons[1]);
 

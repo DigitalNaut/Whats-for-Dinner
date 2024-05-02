@@ -1,73 +1,57 @@
-import { expect, test, describe, afterEach, afterAll, vi } from "vitest";
+import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
+import { expect, test, describe, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { debug } from "vitest-preview";
 
-import type { PropsWithChildren } from "react";
-import { createContext } from "react";
 import * as UserContextModule from "src/contexts/UserContext";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-const { UserProvider, useUser } = UserContextModule;
 
-const fakedUserContext = createContext({});
-const FakedUserProvider = ({ children }: PropsWithChildren) => (
-  <fakedUserContext.Provider value={{ user: null }}>
-    {children}
-  </fakedUserContext.Provider>
-);
-const userProviderSpy = vi
-  .spyOn(UserContextModule, "UserProvider")
-  .mockImplementation(FakedUserProvider);
-const useUserSpy = vi
-  .spyOn(UserContextModule, "useUser")
-  .mockReturnValue({ user: { name: "John Doe" } } as ReturnType<
-    typeof useUser
-  >);
+const useUserSpy = vi.spyOn(UserContextModule, "useUser");
 
-afterEach(() => {
-  useUserSpy.mockReset();
-});
+const router = createBrowserRouter([
+  {
+    path: "/",
 
-afterAll(() => {
-  userProviderSpy.mockRestore();
-});
-
-function Providers({ children }: PropsWithChildren) {
-  return (
-    <UserProvider>
-      <BrowserRouter>{children}</BrowserRouter>
-    </UserProvider>
-  );
-}
-
-function TestRoutes() {
-  return (
-    <Routes>
-      <Route path="/" element={<ProtectedRoutes redirectTo="/redirected" />}>
-        <Route index element={<p>Protected</p>} />
-      </Route>
-      <Route path="/redirected" element={<p>Main</p>} />
-    </Routes>
-  );
-}
+    element: (
+      <ProtectedRoutes redirectTo="/redirected">{<Outlet />}</ProtectedRoutes>
+    ),
+    children: [
+      {
+        index: true,
+        element: <div>Protected</div>,
+      },
+    ],
+  },
+  {
+    path: "/redirected",
+    element: <div>Main</div>,
+  },
+]);
 
 describe("ProtectedRoutes", () => {
   test("renders a protected route if user exists", async () => {
-    useUserSpy.mockReturnValue({ user: { name: "John Doe" } } as ReturnType<
-      typeof useUser
-    >);
+    useUserSpy.mockReturnValue({
+      user: { name: "John Doe" },
+    } as ReturnType<typeof UserContextModule.useUser>);
 
-    render(<TestRoutes />, { wrapper: Providers });
+    render(<RouterProvider router={router} />);
+
     const protectedRoute = await screen.findByText(/protected/i);
-
     expect(protectedRoute).toBeInTheDocument();
+
+    debug();
   });
 
   test("redirects if user doesn't exists", async () => {
-    useUserSpy.mockReturnValue({} as ReturnType<typeof useUser>);
+    useUserSpy.mockReturnValue({ user: null } as ReturnType<
+      typeof UserContextModule.useUser
+    >);
 
-    render(<TestRoutes />, { wrapper: Providers });
-    const nonProtectedRoute = await screen.findByText(/main/i);
+    render(<RouterProvider router={router} />);
 
-    expect(nonProtectedRoute).toBeInTheDocument();
+    const unprotectedRoute = await screen.findByText(/main/i);
+    expect(unprotectedRoute).toBeInTheDocument();
+
+    // debug();
   });
 });

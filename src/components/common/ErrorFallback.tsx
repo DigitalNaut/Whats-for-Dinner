@@ -1,4 +1,4 @@
-import type { FallbackProps } from "react-error-boundary";
+import { type FallbackProps } from "react-error-boundary";
 
 import ThemedButton from "src/components/common/ThemedButton";
 

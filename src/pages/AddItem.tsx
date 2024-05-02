@@ -1,14 +1,18 @@
-import type { FormEventHandler, Reducer } from "react";
-import { useState, useReducer, useRef } from "react";
-import { faWarning } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  type FormEventHandler,
+  type Reducer,
+  useState,
+  useReducer,
+  useRef,
+} from "react";
+import { useNavigate } from "react-router-dom";
 
 import { type FileInfo } from "src/components/InputFile";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
-import { useNavigate } from "react-router-dom";
 import { useSpinnerMenu } from "src/hooks/useSpinnerMenu";
+import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import ImagePreview from "src/components/ImagePreview";
 import InputFile from "src/components/InputFile";
 import InputText from "src/components/InputText";
@@ -322,7 +326,7 @@ export default function AddItem() {
       <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
         {errorState.formError && (
           <div className="flex w-full items-center gap-1 rounded-sm bg-amber-600 p-2 text-white">
-            <FontAwesomeIcon icon={faWarning} />
+            <FontAwesomeIcon className="fa-warning" />
             {errorState.formError}
           </div>
         )}

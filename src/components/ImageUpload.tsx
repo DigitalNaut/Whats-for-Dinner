@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { faCloudArrowUp, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
 import { useLanguageContext } from "src/contexts/LanguageContext";
+import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import ProgressBar from "src/components/common/ProgressBar";
 import Spinner from "src/components/common/Spinner";
 import ThemedButton from "src/components/common/ThemedButton";
@@ -150,7 +149,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
                 />
               ) : (
                 <>
-                  <FontAwesomeIcon icon={faCloudArrowUp} />
+                  <FontAwesomeIcon className="fa-cloud-arrow-up" />
                   <span>{t("Upload")}</span>
                 </>
               )}
@@ -160,7 +159,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
               disabled={!isUploadingFile}
               className={isUploadingFile ? "" : "hidden"}
               title={t("Cancel")}
-              icon={faTimes}
+              iconStyle="fa-xmark"
             />
           </div>
         </>

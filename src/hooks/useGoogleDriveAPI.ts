@@ -18,47 +18,44 @@ type FileParams = {
 type FileUploadResponse = (FileUploadSuccess & GoogleDriveError) | false;
 
 type DownloadFileTypes =
-  | JSON
-  | Blob
-  | ArrayBuffer
-  | Document
   | string
+  | ArrayBuffer
+  | Blob
+  | Document
+  | JSON
   | ReadableStream;
 
 type FileDownloadResponse<T extends DownloadFileTypes> =
-  | T
+  | false
   | GoogleDriveError
-  | false;
+  | T;
 
 type FileDeletedResponse = GoogleDriveError | "";
-
-type FilesListResponse = {
-  files?: gapi.client.drive.File[];
-} & GoogleDriveError;
 
 type UploadFile = (
   { file, metadata }: Omit<FileParams, "id">,
   config?: AxiosRequestConfig,
-) => Promise<AxiosResponse<FileUploadResponse, unknown>>;
+) => Promise<AxiosResponse<FileUploadResponse>>;
 
 type UpdateFile = (
   { file, metadata }: FileParams,
   config?: AxiosRequestConfig,
-) => Promise<AxiosResponse<FileUploadResponse, unknown>>;
+) => Promise<AxiosResponse<FileUploadResponse>>;
 
 type FetchList = (
-  config?: AxiosRequestConfig,
-) => Promise<AxiosResponse<FilesListResponse, unknown>>;
+  config?: AxiosRequestConfig &
+    Parameters<gapi.client.drive.FilesResource["list"]>[0],
+) => Promise<AxiosResponse<gapi.client.drive.FileList | GoogleDriveError>>;
 
 type FetchFile = <T extends DownloadFileTypes>(
   file: gapi.client.drive.File,
   config?: AxiosRequestConfig<T>,
-) => Promise<AxiosResponse<FileDownloadResponse<T>, unknown>>;
+) => Promise<AxiosResponse<FileDownloadResponse<T>>>;
 
 type DeleteFile = (
   file: gapi.client.drive.File,
   config?: AxiosRequestConfig,
-) => Promise<AxiosResponse<FileDeletedResponse, unknown>>;
+) => Promise<AxiosResponse<FileDeletedResponse>>;
 
 const spaces = "appDataFolder";
 
@@ -132,9 +129,8 @@ export function useGoogleDriveAPI() {
 
       const request = axios.get("https://www.googleapis.com/drive/v3/files", {
         params: {
-          pageSize: 10,
           fields:
-            "files(id, name, mimeType, hasThumbnail, thumbnailLink, iconLink, size)",
+            "files(id, name, mimeType, hasThumbnail, thumbnailLink, iconLink, size), nextPageToken",
           spaces,
           oauth_token: userTokens?.access_token,
           ...params,

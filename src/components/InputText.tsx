@@ -1,10 +1,13 @@
-import type { FocusEventHandler, InputHTMLAttributes } from "react";
-import { createRef, useState } from "react";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  type FocusEventHandler,
+  type InputHTMLAttributes,
+  createRef,
+  useState,
+} from "react";
+import { twMerge } from "tailwind-merge";
 
 import { useLanguageContext } from "src/contexts/LanguageContext";
-import { twMerge } from "tailwind-merge";
+import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 
 type InputTextProps = {
   name: string;
@@ -77,7 +80,7 @@ export default function InputText({
               onClear();
             }}
           >
-            <FontAwesomeIcon icon={faTimes} />
+            <FontAwesomeIcon className="fa-xmark" />
           </button>
         )}
       </div>

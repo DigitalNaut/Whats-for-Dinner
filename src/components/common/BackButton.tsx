@@ -1,9 +1,8 @@
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
+import { twMerge } from "tailwind-merge";
 
 import { useLanguageContext } from "src/contexts/LanguageContext";
-import { twMerge } from "tailwind-merge";
+import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 
 type Props = {
   className?: string;
@@ -22,7 +21,7 @@ export default function BackButton({ className }: Props) {
       aria-label={t("Back")}
       onClick={() => navigate(-1)}
     >
-      <FontAwesomeIcon icon={faChevronLeft} /> <span>{t("Back")}</span>
+      <FontAwesomeIcon className="fa-chevron-left" /> <span>{t("Back")}</span>
     </button>
   );
 }

@@ -1,9 +1,9 @@
+import { useState } from "react";
 import { expect, test } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/react";
 
 import InputText from "src/components/InputText";
-import { useState } from "react";
 
 test("renders a custom input element with a label", () => {
   render(<InputText name="input-test" label="test label" />);
@@ -94,7 +94,7 @@ test("renders a button to clear the input", async () => {
   await waitFor(() => expect(inputElement).toHaveValue("Test value"));
 
   const clearButton = await screen.findByRole("button", {
-    name: /borrar entrada/i,
+    name: /clear input/i,
   });
   expect(clearButton).toBeInTheDocument();
 
