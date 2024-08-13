@@ -11,7 +11,7 @@ import {
 } from "react";
 import { AxiosError } from "axios";
 
-import { type SpinnerOption } from "src/components/SpinningWheel";
+import { type SpinnerEntry } from "src/components/SpinningWheel";
 import { useBeforeUnload } from "src/hooks/useBeforeUnload";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
@@ -21,7 +21,7 @@ import Spinner from "src/components/common/Spinner";
 const DEBOUNCE_DELAY = 2500;
 const CONFIG_FILE_NAME = "config.json";
 
-const State = ["Loading", "Idle", "Dirty", "Uploading"] as const;
+type State = "Loading" | "Idle" | "Dirty" | "Uploading";
 
 const getDefaultConfig = async () => {
   const config = await import("src/data/DefaultConfig.json");
@@ -29,11 +29,11 @@ const getDefaultConfig = async () => {
 };
 
 type SpinnerMenuContext = {
-  allMenuItems?: SpinnerOption[];
-  enabledMenuItems?: SpinnerOption[];
+  allMenuItems?: SpinnerEntry[];
+  enabledMenuItems?: SpinnerEntry[];
   isLoaded: boolean;
   setError: Dispatch<SetStateAction<string | undefined>>;
-  setAllMenuItems: Dispatch<SetStateAction<SpinnerOption[] | undefined>>;
+  setAllMenuItems: Dispatch<SetStateAction<SpinnerEntry[] | undefined>>;
   resetConfigFile: (signal?: AbortSignal) => Promise<void>;
 };
 
@@ -44,8 +44,8 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   const [error, setError] = useState<string>();
   const { isLoaded: isDriveLoaded } = useGoogleDriveContext();
   const { fetchFile, fetchList, uploadFile, updateFile } = useGoogleDriveAPI();
-  const [allMenuItems, setAllMenuItems] = useState<SpinnerOption[]>();
-  const [state, setState] = useState<(typeof State)[number]>("Loading");
+  const [allMenuItems, setAllMenuItems] = useState<SpinnerEntry[]>();
+  const [state, setState] = useState<State[number]>("Loading");
   const [pendingUpload, setPendingUpload] = useState<{
     timeoutId: NodeJS.Timeout;
     controller: AbortController;
@@ -53,7 +53,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   const [configFileId, setConfigFileId] = useState<string>();
 
   const getImage = useCallback(
-    async (item: SpinnerOption) => {
+    async (item: SpinnerEntry) => {
       try {
         const { data, status } = await fetchFile<Blob>(
           { id: item.fileId },
@@ -125,10 +125,10 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
 
       // Set the menu items
       if (config && Array.isArray(config)) {
-        const menuArray = config as SpinnerOption[];
+        const menuArray = config as SpinnerEntry[];
 
-        menuArray.forEach(async (item) => {
-          if (!item.fileId) return;
+        for (const item of menuArray) {
+          if (!item.fileId) continue;
 
           const url = await getImage(item);
 
@@ -136,10 +136,11 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
             if (!prev) return prev;
             const newMenu = [...prev];
             const index = newMenu.findIndex((i) => i.key === item.key);
+
             newMenu[index].imageUrl = url;
             return newMenu;
           });
-        });
+        }
 
         setAllMenuItems(config);
       }
@@ -148,7 +149,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   );
 
   const updateConfigFile = useCallback(
-    async (signal: AbortSignal, contents: SpinnerOption[]) => {
+    async (signal: AbortSignal, contents: SpinnerEntry[]) => {
       try {
         if (!configFileId) throw new Error("Error updating config file: no id");
 
@@ -230,7 +231,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    getConfigOrCreate(signal);
+    void getConfigOrCreate(signal);
 
     return () => {
       controller.abort();
@@ -248,7 +249,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   );
 
   const triggerDelayedUpload = async (
-    newItems: SpinnerOption[] | undefined,
+    newItems: SpinnerEntry[] | undefined,
     timeout: number,
   ) => {
     // Reset the timeout if there is already one
@@ -280,7 +281,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
 
       setState("Dirty");
 
-      triggerDelayedUpload(newItems, DEBOUNCE_DELAY);
+      void triggerDelayedUpload(newItems, DEBOUNCE_DELAY);
     };
 
   return (

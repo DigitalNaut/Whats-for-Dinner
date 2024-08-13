@@ -34,32 +34,31 @@ export default function InputFile({
   const labelRef = createRef<HTMLDivElement>();
   const inputRef = createRef<HTMLInputElement>();
 
-  const onChangeHandler: ChangeEventHandler<HTMLInputElement> = async (
-    event,
-  ) => {
-    const file = event.target.files?.item(0);
+  const onChangeHandler: ChangeEventHandler<HTMLInputElement> = (event) =>
+    void (async () => {
+      const file = event.target.files?.item(0);
 
-    if (!file) return;
+      if (!file) return;
 
-    setIsResizing(true);
-    const resizedImage = await resizeImage(file, {
-      maxWidth: 256,
-      maxHeight: 256,
-    });
-    setIsResizing(false);
-    setFile(resizedImage);
+      setIsResizing(true);
+      const resizedImage = await resizeImage(file, {
+        maxWidth: 256,
+        maxHeight: 256,
+      });
+      setIsResizing(false);
+      setFile(resizedImage);
 
-    if (fileUrl) URL.revokeObjectURL(fileUrl);
+      if (fileUrl) URL.revokeObjectURL(fileUrl);
 
-    const url = URL.createObjectURL(resizedImage);
-    setFileUrl(url);
-    onChange?.({
-      url,
-      name: resizedImage?.name,
-      size: resizedImage?.size,
-      file: resizedImage,
-    });
-  };
+      const url = URL.createObjectURL(resizedImage);
+      setFileUrl(url);
+      onChange?.({
+        url,
+        name: resizedImage?.name,
+        size: resizedImage?.size,
+        file: resizedImage,
+      });
+    })();
 
   const removeFileHandler = () => {
     setFile(undefined);
@@ -84,9 +83,7 @@ export default function InputFile({
         <div
           id={name + "-label"}
           ref={labelRef}
-          className="group relative size-32 cursor-pointer overflow-hidden rounded-full border border-gray-400 bg-gray-700 hover:bg-gray-800 peer-invalid:ring-2 
-            peer-invalid:ring-red-300 peer-invalid:ring-offset-2 peer-invalid:ring-offset-gray-700 peer-focus:ring-2 
-            peer-focus:ring-white peer-focus:ring-offset-2 peer-focus:ring-offset-blue-600"
+          className="group relative size-32 cursor-pointer overflow-hidden rounded-full border border-gray-400 bg-gray-700 hover:bg-gray-800 peer-invalid:ring-2 peer-invalid:ring-red-300 peer-invalid:ring-offset-2 peer-invalid:ring-offset-gray-700 peer-focus:ring-2 peer-focus:ring-white peer-focus:ring-offset-2 peer-focus:ring-offset-blue-600"
         >
           {fileUrl ? (
             <div className="group">

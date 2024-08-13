@@ -89,7 +89,7 @@ function TestElement() {
 test("renders a button to clear the input", async () => {
   render(<TestElement />);
   const inputElement = screen.getByRole("textbox", { name: /test textbox/i });
-  userEvent.type(inputElement, "Test value");
+  await userEvent.type(inputElement, "Test value");
 
   await waitFor(() => expect(inputElement).toHaveValue("Test value"));
 

@@ -48,10 +48,9 @@ export function useLocalStorage<T extends Record<string, unknown>>(
     } else
       try {
         // If settings are saved, try to parse them
-        const parsedSettings = JSON.parse(savedSettings);
-        const validatedSettings = schema.parse(parsedSettings);
+        const validatedSettings = schema.parse(JSON.parse(savedSettings));
         setData(validatedSettings);
-      } catch (e) {
+      } catch (_) {
         // If parsing fails, reset to default settings
         if (import.meta.env.DEV)
           console.error(

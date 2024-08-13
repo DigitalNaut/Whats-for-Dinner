@@ -31,7 +31,7 @@ export function MenuHeader() {
   return (
     <div
       className={twMerge(
-        "relative flex w-full h-12 items-center justify-between px-4 py-2 md:rounded-t-xl",
+        "relative flex h-12 w-full items-center justify-between px-4 py-2 md:rounded-t-xl",
         altColor ? "bg-amber-600" : "bg-purple-800",
       )}
     >

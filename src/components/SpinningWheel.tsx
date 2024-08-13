@@ -6,7 +6,7 @@ import SpinnerIcon from "src/components/common/Spinner";
 
 import Arrow from "src/assets/wedge.svg?react";
 
-export type SpinnerOption = {
+export type SpinnerEntry = {
   label: string;
   enabled: boolean;
   imageUrl?: string;
@@ -15,8 +15,8 @@ export type SpinnerOption = {
 };
 
 type SpinningWheelProps = {
-  choices?: SpinnerOption[];
-  onSpinEnd?: (result: SpinnerOption) => void;
+  entries?: SpinnerEntry[];
+  onSpinEnd?: (result: SpinnerEntry) => void;
 };
 
 const TAU = 2 * Math.PI;
@@ -105,10 +105,10 @@ class Spinner {
   private spinAngle = 0;
   private angleOffset = 0.5 * Math.PI;
   private readonly context: CanvasRenderingContext2D;
-  private cyclingChoices: SpinnerOption[];
-  private cyclingIndex;
-  private maxChoices;
-  private prevResult = 0;
+  private cyclingEntries: SpinnerEntry[];
+  private entryCyclingIndex;
+  private maxEntries;
+  private prevSwapIndex = 0;
 
   private wheelCanvas = document.createElement("canvas");
   private decorationsCanvas = document.createElement("canvas");
@@ -118,23 +118,23 @@ class Spinner {
     private readonly origin: { x: number; y: number },
     private readonly radius: number,
     private readonly margin: number,
-    private choices: SpinnerOption[],
+    private entries: SpinnerEntry[],
   ) {
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
     this.wedges = [];
-    this.maxChoices = Math.min(this.choices.length, colors.length);
-    this.cyclingChoices = this.choices.slice(0, this.maxChoices);
-    this.cyclingIndex = this.maxChoices;
+    this.maxEntries = Math.min(this.entries.length, colors.length);
+    this.cyclingEntries = this.entries.slice(0, this.maxEntries);
+    this.entryCyclingIndex = this.maxEntries;
 
     this.createWheel();
     this.createDecorations();
   }
 
   createWheel() {
-    const wedgeCount = Math.min(colors.length, this.choices.length);
+    const wedgeCount = Math.min(colors.length, this.entries.length);
     const wedgeAngle = TAU / wedgeCount;
 
-    for (let i = 0; i < this.maxChoices; i++) {
+    for (let i = 0; i < this.maxEntries; i++) {
       const wedgeColor = colors[i];
       const startAngle = i * wedgeAngle;
       const endAngle = startAngle + wedgeAngle;
@@ -201,7 +201,7 @@ class Spinner {
     offscreenContext.fill();
   }
 
-  draw(currentChoiceIndex?: number, velocity = 0) {
+  draw(currentEntryIndex?: number, velocity = 0) {
     if (velocity < 0.1)
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     else this.context.globalAlpha = 1 / (1 + velocity * 5);
@@ -214,17 +214,17 @@ class Spinner {
     this.context.drawImage(this.wheelCanvas, -this.origin.x, -this.origin.y);
     this.context.restore();
 
-    angle += Math.PI / this.maxChoices; // Offset text by half a wedge width
+    angle += Math.PI / this.maxEntries; // Offset text by half a wedge width
 
-    // TODO: Optimize this to update only when choices change and blit instead of redrawing
+    // TODO: Optimize this to update only when entries change and blit instead of redrawing
     this.wedges.forEach((wedge, index) => {
-      const { label } = this.cyclingChoices[index];
+      const { label } = this.cyclingEntries[index];
       wedge.drawText(
         this.context,
         label,
         this.radius * 0.75,
         angle,
-        index === currentChoiceIndex,
+        index === currentEntryIndex,
       );
     });
 
@@ -232,44 +232,48 @@ class Spinner {
     this.context.drawImage(this.decorationsCanvas, 0, 0);
   }
 
-  cycleChoices(insertIndex: number) {
-    const newChoice = this.choices.slice(
-      this.cyclingIndex,
-      this.cyclingIndex + 1,
-    )[0];
-    this.cyclingChoices.splice(insertIndex, 1, newChoice);
-    this.cyclingIndex = (this.cyclingIndex + 1) % this.choices.length;
+  getCurrentEntryIndex() {
+    const currentIndex =
+      (((Math.PI * 3 - this.spinAngle) % TAU) / TAU) * this.maxEntries;
+
+    return Math.floor(currentIndex);
   }
 
-  getCurrentOptionIndex() {
-    const index = Math.floor(
-      (((Math.PI * 3 - this.spinAngle) % TAU) / TAU) * this.maxChoices,
-    );
-    if (this.choices.length > this.wedges.length && index !== this.prevResult) {
-      // Calculate the choice at the opposite end of the wheel
-      this.prevResult = index;
-      const insertIndex =
-        (index + Math.floor(this.maxChoices * 0.5)) % this.maxChoices;
-      this.cycleChoices(insertIndex);
-    }
+  swapWheelEntries(index: number) {
+    if (
+      index === this.prevSwapIndex ||
+      this.entries.length <= this.wedges.length
+    )
+      return;
 
-    return index;
+    // Calculate the entry at the opposite end of the wheel
+    this.prevSwapIndex = index;
+    const insertIndex =
+      (index + Math.floor(this.maxEntries * 0.5)) % this.maxEntries;
+
+    // Swap the entry with one at the insert index
+    const newEntry = this.entries[this.entryCyclingIndex];
+    this.cyclingEntries.splice(insertIndex, 1, newEntry);
+    this.entryCyclingIndex = (this.entryCyclingIndex + 1) % this.entries.length;
   }
 
   spin(
     velocity: number,
-    onUpdate?: (result: SpinnerOption) => void,
-    onSpinEnd?: (result: SpinnerOption) => void,
+    onUpdate?: (result: SpinnerEntry) => void,
+    onSpinEnd?: (result: SpinnerEntry) => void,
   ) {
     this.spinAngle = (this.spinAngle + velocity) % TAU;
 
-    const currentOptionIndex = this.getCurrentOptionIndex();
-    const result = this.cyclingChoices[currentOptionIndex];
+    const currentEntryIndex = this.getCurrentEntryIndex();
 
-    if (velocity < 0.1) onUpdate?.(result);
-    this.draw(currentOptionIndex, velocity);
+    this.swapWheelEntries(currentEntryIndex);
 
-    velocity = velocity < 0.005 ? 0 : velocity * 0.99;
+    const result = this.cyclingEntries[currentEntryIndex];
+
+    if (velocity < 0.25) onUpdate?.(result);
+    this.draw(currentEntryIndex, velocity);
+
+    velocity = velocity < 0.005 ? 0 : velocity * 0.95;
 
     const animation = requestAnimationFrame(() => {
       if (velocity > 0) {
@@ -283,7 +287,7 @@ class Spinner {
 }
 
 export default function SpinningWheel({
-  choices,
+  entries,
   onSpinEnd,
 }: SpinningWheelProps) {
   const { t } = useLanguageContext();
@@ -291,13 +295,11 @@ export default function SpinningWheel({
   const canvasRef = createRef<HTMLCanvasElement>();
   const wheelRef = useRef<Spinner>();
   const [isSpinning, setIsSpinning] = useState(false);
-  const [result, setResult] = useState<SpinnerOption>();
-  const cannotSpin = isSpinning || (choices && choices.length <= 0);
+  const [result, setResult] = useState<SpinnerEntry>();
 
-  const setupSpinner = (
-    canvas: HTMLCanvasElement,
-    choices: SpinnerOption[],
-  ) => {
+  const cannotSpin = isSpinning || (entries && entries.length <= 0);
+
+  const setupSpinner = (canvas: HTMLCanvasElement, entries: SpinnerEntry[]) => {
     const { width, height } = canvas;
     wheelRef.current = new Spinner(
       canvas,
@@ -307,7 +309,7 @@ export default function SpinningWheel({
       },
       200,
       3,
-      choices,
+      entries,
     );
 
     wheelRef.current.draw();
@@ -323,7 +325,8 @@ export default function SpinningWheel({
     setIsSpinning(true);
     setResult(undefined);
 
-    const velocity = randomVelocity(100, 10);
+    const velocity = randomVelocity(200, 200);
+
     wheelRef.current?.spin(velocity, setResult, (result) => {
       setIsSpinning(false);
       onSpinEnd?.(result);
@@ -331,30 +334,30 @@ export default function SpinningWheel({
   };
 
   useEffect(() => {
-    if (canvasRef.current) setupSpinner(canvasRef.current, choices || []);
+    if (canvasRef.current) setupSpinner(canvasRef.current, entries || []);
     // The canvasRef is never going to change
     // Including it in the dependency array causes unnecessary re-renders & resets the spinner
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [choices]);
+  }, [entries]);
 
   return (
     <div className="w-full">
-      <div className="relative m-auto aspect-square w-96 max-w-full rounded-full bg-white shadow-xl">
-        <div className="absolute inset-0 m-auto flex aspect-square w-1/2 items-center justify-center overflow-hidden rounded-full bg-white p-1">
+      <div className="relative m-auto aspect-1 w-96 max-w-full rounded-full bg-white shadow-xl">
+        <div className="absolute inset-0 m-auto flex aspect-1 w-1/2 items-center justify-center overflow-hidden rounded-full bg-white p-1">
           {result ? (
             <img
-              className="aspect-square rounded-full object-cover"
+              className="aspect-1 rounded-full object-cover"
               src={result.imageUrl}
             />
           ) : (
-            <div className="grid aspect-square size-full items-center rounded-full bg-slate-700 text-center font-bangers text-8xl text-white">
+            <div className="grid aspect-1 size-full items-center rounded-full bg-slate-700 text-center font-bangers text-8xl text-white">
               {isLoaded ? "?" : <SpinnerIcon text="" />}
             </div>
           )}
         </div>
         <Arrow className="absolute -inset-y-4 inset-x-1/2 -translate-x-1/2 -translate-y-4" />
         <canvas
-          className="aspect-square size-full"
+          className="aspect-1 size-full"
           ref={canvasRef}
           width="400"
           height="400"

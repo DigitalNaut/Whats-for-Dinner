@@ -3,12 +3,13 @@ import { twMerge } from "tailwind-merge";
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 
-type SpinnerProps = {
+export default function Spinner({
+  text,
+  cover,
+}: {
   text?: string;
   cover?: true;
-};
-
-export default function Spinner({ text, cover }: SpinnerProps) {
+}) {
   const { t } = useLanguageContext();
 
   return (

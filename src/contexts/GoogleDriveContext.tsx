@@ -54,7 +54,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
   async function initGapiClient() {
     try {
       await gapi.client.init({
-        apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
+        apiKey: import.meta.env.VITE_GOOGLE_API_KEY as string,
         discoveryDocs: [DISCOVERY_DOC],
       });
 
@@ -65,7 +65,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
   }
 
   function handleGapiLoad() {
-    gapi.load("client", initGapiClient);
+    gapi.load("client", () => void initGapiClient());
   }
 
   useScript({
@@ -73,7 +73,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     onLoad: handleGapiLoad,
   });
 
-  const onSignInSuccess = async (tokenResponse: TokenResponseSuccess) => {
+  const onSignInSuccess = (tokenResponse: TokenResponseSuccess) => {
     const tokenExpiration = new Date(
       Date.now() + tokenResponse.expires_in * 1000,
     );
@@ -82,7 +82,8 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
 
   const onSignInError = (errorResponse: TokenResponseError) => {
     setUserTokens(undefined);
-    throw errorResponse.error;
+
+    throw new Error(errorResponse.error || "Unknown error");
   };
 
   const requestAccess = useGoogleLogin({
@@ -92,8 +93,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
   });
 
   const hasAuthorization = useCallback(() => {
-    if (!isLoaded)
-      throw new Error("Unauthorized", { cause: "Google Drive is not loaded" });
+    if (!isLoaded) throw new Error("Unauthorized: Google Drive is not loaded");
 
     if (userTokens === undefined) {
       requestAccess({ prompt: "" });
@@ -102,7 +102,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
 
     if (userTokens.tokenExpiration <= new Date()) {
       setUserTokens(undefined);
-      throw new Error("Unauthorized", { cause: "Session expired" });
+      throw new Error("Unauthorized: Session expired");
     }
 
     return "OK";

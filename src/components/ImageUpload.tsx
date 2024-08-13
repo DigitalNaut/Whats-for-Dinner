@@ -8,7 +8,7 @@ import ProgressBar from "src/components/common/ProgressBar";
 import Spinner from "src/components/common/Spinner";
 import ThemedButton from "src/components/common/ThemedButton";
 
-export default function ImageUpload({ onUpload }: { onUpload(): void }) {
+export default function ImageUpload({ onUpload }: { onUpload: () => void }) {
   const { t } = useLanguageContext();
   const { hasScope } = useGoogleDriveContext();
   const { uploadFile } = useGoogleDriveAPI();
@@ -24,7 +24,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
   const [error, setError] = useState<string>();
   const uploadController = useRef<AbortController>();
 
-  const handleImageInputChange = async (
+  const handleImageInputChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setError(undefined);
@@ -49,7 +49,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
 
     setUploadProgress(undefined);
 
-    imageFileToUpload?.url && URL.revokeObjectURL(imageFileToUpload.url);
+    if (imageFileToUpload?.url) URL.revokeObjectURL(imageFileToUpload.url);
     setImageFileToUpload({ file, url: URL.createObjectURL(file) });
   };
 
@@ -87,7 +87,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
     } catch (error) {
       if (error === "Authorizing") {
         setIsUpLoadingFile("Authorizing");
-        return Promise.reject(error);
+        return Promise.reject(new Error(error));
       }
 
       if (error instanceof Error) {
@@ -110,7 +110,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
 
   useEffect(() => {
     if (isUploadingFile !== "Authorizing") return;
-    if (hasScope) uploadFileHandler();
+    if (hasScope) void uploadFileHandler();
   }, [isUploadingFile, hasScope, uploadFileHandler]);
 
   return (
@@ -136,7 +136,7 @@ export default function ImageUpload({ onUpload }: { onUpload(): void }) {
           {uploadProgress && <ProgressBar progress={uploadProgress} />}
           <div className="flex gap-1">
             <ThemedButton
-              onClick={uploadFileHandler}
+              onClick={() => void uploadFileHandler()}
               disabled={Boolean(isUploadingFile)}
             >
               {isUploadingFile ? (

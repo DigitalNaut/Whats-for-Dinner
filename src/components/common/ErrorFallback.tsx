@@ -13,7 +13,9 @@ export default function ErrorFallback({
     >
       <h2 className="font-bold">Something went wrong:</h2>
       <pre className="mb-2 rounded-md bg-white p-4 text-black">
-        {error.message}
+        {error instanceof Error
+          ? error?.message
+          : JSON.stringify(error, null, 2)}
       </pre>
       <ThemedButton onClick={resetErrorBoundary}>Try again</ThemedButton>
     </div>

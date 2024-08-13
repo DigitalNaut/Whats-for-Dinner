@@ -18,7 +18,7 @@ export default function Toggle({ checked = false, onChange }: ToggleProps) {
     >
       <div
         className={twMerge(
-          "z-0 aspect-square h-4 rounded-full bg-gray-200 transition-transform hover:bg-white",
+          "z-0 aspect-1 h-4 rounded-full bg-gray-200 transition-transform hover:bg-white",
           checked ? "translate-x-full" : "translate-x-0",
         )}
       />

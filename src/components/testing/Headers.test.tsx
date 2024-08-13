@@ -34,7 +34,7 @@ test("renders a title header with a chopstick svg", () => {
   expect(children).toBeInTheDocument();
 });
 
-test("renders a menu header with a back button", async () => {
+test("renders a menu header with a back button", () => {
   const { container } = render(<MenuHeader />, { wrapper: MemoryRouter });
   const buttons = container.querySelectorAll("button");
   const [backButton, menuButton] = buttons;
@@ -88,7 +88,7 @@ test("expects the default back button navigation", async () => {
   expect(testElement).toBeInTheDocument();
 });
 
-test("expects a custom back button behavior", async () => {
+test("expects a custom back button behavior", () => {
   headerContextSpy.mockReturnValue({
     headerProperties: {
       altBackButton: <button>Test button</button>,

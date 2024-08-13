@@ -65,11 +65,7 @@ function UserCard() {
         height={32}
         referrerPolicy="no-referrer"
       />
-      <div
-        className="absolute right-0 top-0 z-50 flex flex-col justify-center
-          focus-within:gap-4 focus-within:rounded-md focus-within:bg-white focus-within:px-6 focus-within:py-4 focus-within:text-black
-          group-hover:gap-4 group-hover:rounded-md group-hover:bg-white group-hover:px-6 group-hover:py-4 group-hover:text-black"
-      >
+      <div className="absolute right-0 top-0 z-50 flex flex-col justify-center focus-within:gap-4 focus-within:rounded-md focus-within:bg-white focus-within:px-6 focus-within:py-4 focus-within:text-black group-hover:gap-4 group-hover:rounded-md group-hover:bg-white group-hover:px-6 group-hover:py-4 group-hover:text-black">
         <div className="flex w-full justify-center">
           <img
             className="size-8 rounded-full group-focus-within:size-16 group-hover:size-16"
@@ -121,8 +117,8 @@ type UserContext = {
   user?: GoogleUserCredential | null;
   onSignInSuccess: (credentialResponse: CredentialResponse) => void;
   onSignInError: () => void;
-  UserCard(): JSX.Element | null;
-  logout(options: { notification?: string }): void;
+  UserCard: () => JSX.Element | null;
+  logout: (options: { notification?: string }) => void;
 };
 
 const userContext = createContext<UserContext | null>(null);

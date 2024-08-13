@@ -21,9 +21,9 @@ export default function ThemedButton({
   return (
     <Button
       className={twMerge(
-        "bg-white text-purple-500 px-3 py-1 rounded-full hover:bg-gray-200 hover:text-purple-900 active:bg-gray-400 active:text-gray-700 disabled:bg-gray-500 disabled:text-gray-400 focus:ring flex items-center justify-center gap-1",
+        "flex items-center justify-center gap-1 rounded-full bg-white px-3 py-1 text-purple-500 hover:bg-gray-200 hover:text-purple-900 focus:ring active:bg-gray-400 active:text-gray-700 disabled:bg-gray-500 disabled:text-gray-400",
         danger &&
-          "bg-red-500 text-white hover:bg-red-600 active:bg-red-700 hover:text-white active:text-white",
+          "bg-red-500 text-white hover:bg-red-600 hover:text-white active:bg-red-700 active:text-white",
         className,
       )}
       {...props}

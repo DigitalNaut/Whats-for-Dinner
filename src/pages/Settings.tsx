@@ -147,7 +147,12 @@ export default function Settings() {
   const [error, setError] = useState<string>();
 
   const displayError = (error: unknown) => {
-    if (typeof error === "object" && error && "message" in error)
+    if (
+      typeof error === "object" &&
+      error &&
+      "message" in error &&
+      typeof error.message === "string"
+    )
       setError(`Could not reset files: ${error.message}`);
     else {
       setError("An unknown error ocurred");
@@ -157,35 +162,37 @@ export default function Settings() {
     setTimeout(() => setError(undefined), 3000);
   };
 
-  const resetSpinnerMenu: MouseEventHandler<HTMLButtonElement> = async () => {
-    // Show confirmation
-    if (!window.confirm(t("SettingsPage.data.resetConfirmation"))) return;
+  const resetSpinnerMenu: MouseEventHandler<HTMLButtonElement> = () =>
+    void (async () => {
+      // Show confirmation
+      if (!window.confirm(t("SettingsPage.data.resetConfirmation"))) return;
 
-    setIsWorking({ reset: true });
+      setIsWorking({ reset: true });
 
-    try {
-      await cleanGoogleDrive();
-      await resetConfigFile();
-    } catch (error) {
-      displayError(error);
-    } finally {
-      setIsWorking(undefined);
-    }
-  };
+      try {
+        await cleanGoogleDrive();
+        await resetConfigFile();
+      } catch (error) {
+        displayError(error);
+      } finally {
+        setIsWorking(undefined);
+      }
+    })();
 
-  const unlinkAccount: MouseEventHandler<HTMLButtonElement> = async () => {
-    setIsWorking({ unlink: true });
+  const unlinkAccount: MouseEventHandler<HTMLButtonElement> = () =>
+    void (async () => {
+      setIsWorking({ unlink: true });
 
-    try {
-      await cleanGoogleDrive();
-      await disconnectAccount();
-      logout({ notification: t("SettingsPage.account.disconnected") });
-    } catch (error) {
-      displayError(error);
-    } finally {
-      setIsWorking(undefined);
-    }
-  };
+      try {
+        await cleanGoogleDrive();
+        await disconnectAccount();
+        logout({ notification: t("SettingsPage.account.disconnected") });
+      } catch (error) {
+        displayError(error);
+      } finally {
+        setIsWorking(undefined);
+      }
+    })();
 
   return (
     <div className="flex flex-col gap-4 p-6">

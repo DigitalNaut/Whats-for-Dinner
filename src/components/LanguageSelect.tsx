@@ -10,7 +10,7 @@ export default function LanguageSelect() {
   const setLanguage = useCallback(
     (language: string) => {
       document.documentElement.lang = language;
-      i18n.changeLanguage(language);
+      void i18n.changeLanguage(language);
     },
     [i18n],
   );

@@ -40,12 +40,6 @@ export default function Login({ redirectTo }: LoginProps) {
             </div>
           }
         >
-          <div className="absolute inset-0 hidden items-center justify-center group-hover:flex">
-            <span className="pointer-events-none rounded-md bg-black/60 p-4 text-xl text-white">
-              {t("Preview")}
-            </span>
-          </div>
-
           <LazyRoulettePreview lang={i18n.language} />
         </Suspense>
       </div>

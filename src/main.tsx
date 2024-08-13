@@ -23,7 +23,7 @@ root.render(
       <LanguageContextProvider>
         <UserProvider>
           <GoogleOAuthProvider
-            clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ""}
+            clientId={(import.meta.env.VITE_GOOGLE_CLIENT_ID as string) || ""}
             onScriptLoadError={() => {
               throw new Error("Google OAuth script failed to load");
             }}

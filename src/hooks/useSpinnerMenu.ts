@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { type SpinnerOption } from "src/components/SpinningWheel";
+import { type SpinnerEntry } from "src/components/SpinningWheel";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useLanguageContext } from "src/contexts/LanguageContext";
 import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
@@ -28,7 +28,7 @@ export function useSpinnerMenu() {
   );
 
   const addMenuItem = useCallback(
-    (item: SpinnerOption) => {
+    (item: SpinnerEntry) => {
       if (!allMenuItems) return;
 
       setAllMenuItems((prevItems) => prevItems && [...prevItems, item]);

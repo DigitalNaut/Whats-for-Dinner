@@ -2,7 +2,7 @@ node_modules
 *-lock.yaml
 
 /build
-/public/build
+/public
 /coverage
 .env
 

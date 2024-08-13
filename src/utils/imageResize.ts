@@ -13,7 +13,7 @@ export function resizeImage(
         const ctx = canvas.getContext("2d");
 
         if (!ctx) {
-          reject("Could not obtain canvas context");
+          reject(new Error("Could not obtain canvas context"));
         } else {
           const ratio = Math.max(maxWidth / img.width, maxHeight / img.height);
           const width = img.width * ratio;
@@ -42,7 +42,7 @@ export function resizeImage(
                 });
                 resolve(newFile);
               } else {
-                reject("Could not obtain blob");
+                reject(new Error("Could not obtain blob"));
               }
             },
             "image/png",
@@ -50,10 +50,16 @@ export function resizeImage(
           );
         }
       };
-      img.onerror = (error) => reject(error);
+      img.onerror = (error) => {
+        if (typeof error === "string") reject(new Error(error));
+        reject(new Error("Could not load image"));
+      };
       img.src = event.target?.result as string;
     };
-    reader.onerror = (error) => reject(error);
+    reader.onerror = (error) => {
+      if (typeof error === "string") reject(new Error(error));
+      reject(new Error("Could not read image file"));
+    };
     reader.readAsDataURL(file);
   });
 }

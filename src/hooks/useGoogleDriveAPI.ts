@@ -65,7 +65,7 @@ export function useGoogleDriveAPI() {
   const uploadFile: UploadFile = useCallback(
     async ({ file, metadata }, config) => {
       const authStatus = hasAuthorization();
-      if (authStatus !== "OK") return Promise.reject(authStatus);
+      if (authStatus !== "OK") return Promise.reject(new Error(authStatus));
 
       metadata.parents = [spaces];
 
@@ -96,7 +96,7 @@ export function useGoogleDriveAPI() {
   const updateFile: UpdateFile = useCallback(
     async ({ id, file, metadata }, config) => {
       const authStatus = hasAuthorization();
-      if (authStatus !== "OK") return Promise.reject(authStatus);
+      if (authStatus !== "OK") return Promise.reject(new Error(authStatus));
 
       const body = new FormData();
       body.append(
@@ -125,9 +125,11 @@ export function useGoogleDriveAPI() {
   const fetchList: FetchList = useCallback(
     async ({ params, ...config }: AxiosRequestConfig = {}) => {
       const authStatus = hasAuthorization();
-      if (authStatus !== "OK") return Promise.reject(authStatus);
+
+      if (authStatus !== "OK") return Promise.reject(new Error(authStatus));
 
       const request = axios.get("https://www.googleapis.com/drive/v3/files", {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         params: {
           fields:
             "files(id, name, mimeType, hasThumbnail, thumbnailLink, iconLink, size), nextPageToken",
@@ -146,11 +148,12 @@ export function useGoogleDriveAPI() {
   const fetchFile: FetchFile = useCallback(
     async ({ id }, { params, ...config }: AxiosRequestConfig = {}) => {
       const authStatus = hasAuthorization();
-      if (authStatus !== "OK") return Promise.reject(authStatus);
+      if (authStatus !== "OK") return Promise.reject(new Error(authStatus));
 
       const request = axios.get(
         `https://www.googleapis.com/drive/v3/files/${id}`,
         {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           params: { alt: "media", ...params },
           responseType: "blob",
           headers: {
@@ -168,7 +171,7 @@ export function useGoogleDriveAPI() {
   const deleteFile: DeleteFile = useCallback(
     async ({ id }, config) => {
       const authStatus = hasAuthorization();
-      if (authStatus !== "OK") return Promise.reject(authStatus);
+      if (authStatus !== "OK") return Promise.reject(new Error(authStatus));
 
       const request = axios.delete(
         `https://www.googleapis.com/drive/v3/files/${id}`,

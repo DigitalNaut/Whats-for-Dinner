@@ -21,16 +21,15 @@ import Spinner from "src/components/common/Spinner";
 import Switcher from "src/components/common/Switcher";
 import ThemedButton from "src/components/common/ThemedButton";
 
-const StateActionType = ["setName", "setURL", "reset"] as const;
+type StateActionType = "setName" | "setURL" | "reset";
 
-const ErrorActionType = [
-  "formError",
-  "invalidImageURL",
-  "invalidImageFile",
-  "reset",
-] as const;
+type ErrorActionType =
+  | "formError"
+  | "invalidImageURL"
+  | "invalidImageFile"
+  | "reset";
 
-const UploadMode = ["File", "URL"] as const;
+type UploadMode = "File" | "URL";
 
 type Action<ActionType> = {
   type: ActionType;
@@ -43,7 +42,7 @@ const initialFormState = {
 };
 const stateReducer: Reducer<
   typeof initialFormState,
-  Action<(typeof StateActionType)[number]>
+  Action<StateActionType>
 > = (prevState, action) => {
   switch (action.type) {
     case "reset":
@@ -56,7 +55,7 @@ const stateReducer: Reducer<
       return { ...prevState, imageUrl: action.payload };
 
     default:
-      throw new Error("Invalid action type" + action.type);
+      throw new Error(`Invalid action type: ${JSON.stringify(action.type)}`);
   }
 };
 
@@ -68,7 +67,7 @@ const initialErrorState = {
 
 const errorReducer: Reducer<
   typeof initialErrorState,
-  Action<(typeof ErrorActionType)[number]>
+  Action<ErrorActionType>
 > = (prevState, action) => {
   switch (action.type) {
     case "reset":
@@ -84,7 +83,7 @@ const errorReducer: Reducer<
       return { ...prevState, invalidImageFile: action.payload };
 
     default:
-      throw new Error("Invalid action type" + action.type);
+      throw new Error(`Invalid action type: ${JSON.stringify(action.type)}`);
   }
 };
 
@@ -95,8 +94,7 @@ export default function AddItem() {
   const { hasScope } = useGoogleDriveContext();
   const { uploadFile } = useGoogleDriveAPI();
 
-  const [uploadMode, setUploadMode] =
-    useState<(typeof UploadMode)[number]>("File");
+  const [uploadMode, setUploadMode] = useState<UploadMode>("File");
   const [fileInfo, setFileInfo] = useState<FileInfo>();
   const uploadController = useRef<AbortController>();
   const [isUploadingFile, setIsUploadingFile] = useState(false);
@@ -210,53 +208,54 @@ export default function AddItem() {
     };
   };
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
-    event.preventDefault();
+  const handleSubmit: FormEventHandler<HTMLFormElement> = (event) =>
+    void (async () => {
+      event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
-    if (fileInfo?.file) formData.append("dishImage", fileInfo.file);
-    const validation = validateForm(formData);
+      const formData = new FormData(event.currentTarget);
+      if (fileInfo?.file) formData.append("dishImage", fileInfo.file);
+      const validation = validateForm(formData);
 
-    if (!validation) return;
+      if (!validation) return;
 
-    const { dishName, dishURL, dishImage } = validation;
+      const { dishName, dishURL, dishImage } = validation;
 
-    if (uploadMode === "URL" && dishURL) {
-      addMenuItem({
-        label: dishName,
-        imageUrl: dishURL,
-        enabled: true,
-        key: Date.now(),
-      });
-      navigate(-1);
-    }
-
-    if (uploadMode === "File" && dishImage) {
-      const imageId = await uploadFileHandler(dishImage);
-
-      if (!imageId) {
-        errorDispatch({
-          type: "formError",
-          payload: t("Image upload failed"),
+      if (uploadMode === "URL" && dishURL) {
+        addMenuItem({
+          label: dishName,
+          imageUrl: dishURL,
+          enabled: true,
+          key: Date.now(),
         });
-        return;
+        navigate(-1);
       }
 
-      addMenuItem({
-        label: dishName,
-        fileId: imageId,
-        imageUrl: URL.createObjectURL(dishImage),
-        enabled: true,
-        key: Date.now(),
-      });
+      if (uploadMode === "File" && dishImage) {
+        const imageId = await uploadFileHandler(dishImage);
 
-      navigate(-1);
-    } else
-      errorDispatch({
-        type: "formError",
-        payload: t("Please fill all fields"),
-      });
-  };
+        if (!imageId) {
+          errorDispatch({
+            type: "formError",
+            payload: t("Image upload failed"),
+          });
+          return;
+        }
+
+        addMenuItem({
+          label: dishName,
+          fileId: imageId,
+          imageUrl: URL.createObjectURL(dishImage),
+          enabled: true,
+          key: Date.now(),
+        });
+
+        navigate(-1);
+      } else
+        errorDispatch({
+          type: "formError",
+          payload: t("Please fill all fields"),
+        });
+    })();
 
   if (!hasScope)
     return (
@@ -360,7 +359,7 @@ export default function AddItem() {
                 return "File";
               case "secondOption":
                 setUploadMode("URL");
-                fileInfo?.url && URL.revokeObjectURL(fileInfo.url);
+                if (fileInfo?.url) URL.revokeObjectURL(fileInfo.url);
                 setFileInfo(undefined);
                 return "URL";
               default:

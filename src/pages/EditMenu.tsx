@@ -18,8 +18,6 @@ import Spinner from "src/components/common/Spinner";
 import ThemedButton from "src/components/common/ThemedButton";
 import Toggle from "src/components/common/Toggle";
 
-const Modes = ["Toggle", "Select"] as const;
-
 function HeaderContextMenu({
   showSelectionOptions,
   enterSelectMode,
@@ -104,7 +102,7 @@ export default function EditMenu() {
   const { setHeaderProperties } = useHeaderContext();
   const { isLoaded, allMenuItems } = useSpinnerMenuContext();
   const { toggleMenuItems, deleteMenuItems } = useSpinnerMenu();
-  const [mode, setMode] = useState<(typeof Modes)[number]>("Toggle");
+  const [mode, setMode] = useState<("toggle" | "select")[number]>("toggle");
   const [selected, setSelected] = useState<
     Map<string, { isSelected: boolean; index: number }>
   >(new Map());
@@ -117,7 +115,7 @@ export default function EditMenu() {
       altBackButton: undefined,
       altColor: false,
     }));
-    setMode("Toggle");
+    setMode("toggle");
   }, [setHeaderProperties]);
 
   const setAllSelected = useCallback(
@@ -136,14 +134,14 @@ export default function EditMenu() {
       .filter(({ isSelected }) => isSelected)
       .map(({ index }) => index);
 
-    deleteMenuItems(indexes);
+    void deleteMenuItems(indexes);
     setAllSelected(false);
     setModeToggle();
   }, [deleteMenuItems, selected, setAllSelected, setModeToggle]);
 
   const toggleAll = useCallback(
     (active: boolean) => {
-      allMenuItems &&
+      if (allMenuItems)
         toggleMenuItems(
           allMenuItems.map((_, index) => index),
           active,
@@ -153,7 +151,7 @@ export default function EditMenu() {
   );
 
   const altBackButton = useMemo(() => {
-    return mode === "Select" ? (
+    return mode === "select" ? (
       <button onClick={setModeToggle}>
         <FontAwesomeIcon className="fa-xmark" />
       </button>
@@ -169,9 +167,9 @@ export default function EditMenu() {
         altColor: true,
       }));
 
-      setMode("Select");
+      setMode("select");
 
-      allSelected !== undefined && setAllSelected(allSelected);
+      if (allSelected !== undefined) setAllSelected(allSelected);
     },
     [setAllSelected, setHeaderProperties],
   );
@@ -179,7 +177,7 @@ export default function EditMenu() {
   const contextMenu = useMemo(
     () => (
       <>
-        {mode === "Select" && (
+        {mode === "select" && (
           <button onClick={deleteSelected} title={t("Delete")}>
             <FontAwesomeIcon className="fa-trash" />
           </button>
@@ -235,7 +233,7 @@ export default function EditMenu() {
                 alt={label}
               />
               <p className="flex-1">{label}</p>
-              {mode === "Toggle" ? (
+              {mode === "toggle" ? (
                 <Toggle
                   checked={enabled}
                   onChange={(value) => toggleMenuItems([index], value)}

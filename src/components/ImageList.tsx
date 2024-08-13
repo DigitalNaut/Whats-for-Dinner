@@ -61,11 +61,13 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
             disabled={isDownloading || isDeleting}
             className="flex gap-2"
             title={t("Download")}
-            onClick={async () => {
-              setIsDownloading(true);
-              await downloadFile(file);
-              setIsDownloading(false);
-            }}
+            onClick={() =>
+              void (async () => {
+                setIsDownloading(true);
+                await downloadFile(file);
+                setIsDownloading(false);
+              })()
+            }
           >
             {isDownloading ? (
               <Spinner text="" />
@@ -77,12 +79,14 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
             disabled={isDownloading || isDeleting}
             className="flex gap-2"
             title={t("Delete")}
-            onClick={async () => {
-              setIsDeleting(true);
-              const wasDeleted = await removeFile(file);
-              await new Promise((resolve) => setTimeout(resolve, 500));
-              setIsDeleting(!wasDeleted);
-            }}
+            onClick={() =>
+              void (async () => {
+                setIsDeleting(true);
+                const wasDeleted = await removeFile(file);
+                await new Promise((resolve) => setTimeout(resolve, 500));
+                setIsDeleting(!wasDeleted);
+              })()
+            }
           >
             {isDeleting ? (
               <Spinner text="" />
@@ -154,7 +158,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
 
       if (data === false) setError("File download failed");
       else if (data instanceof Blob) {
-        driveFilePreview?.url && URL.revokeObjectURL(driveFilePreview.url);
+        if (driveFilePreview?.url) URL.revokeObjectURL(driveFilePreview.url);
 
         const file = new File([data], fileInfo.name || t("Unknown file"), {
           type: fileInfo.mimeType || "application/octet-stream",
@@ -187,7 +191,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
       const { data } = await deleteFile(fileInfo);
 
       if (data === "") {
-        listFiles();
+        await listFiles();
         return true;
       }
 
@@ -215,7 +219,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    listFiles(signal);
+    void listFiles(signal);
 
     return () => controller.abort();
   }, [listFiles, refreshDate]);
@@ -223,7 +227,9 @@ export default function ImageList({ refreshDate }: ImageListProps) {
   if (!hasScope)
     return (
       <AwaitingPermissionsNotice>
-        <ThemedButton onClick={() => listFiles()}>{t("Retry")}</ThemedButton>
+        <ThemedButton onClick={() => void listFiles()}>
+          {t("Retry")}
+        </ThemedButton>
       </AwaitingPermissionsNotice>
     );
 
@@ -246,7 +252,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         {!driveFiles && <i>{t("No images found")}</i>}
       </div>
       <ThemedButton
-        onClick={() => listFiles()}
+        onClick={() => void listFiles()}
         disabled={loadingDriveFiles}
         title={t("Refresh list")}
         className="w-fit"
