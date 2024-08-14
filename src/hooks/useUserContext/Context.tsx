@@ -1,9 +1,4 @@
-import {
-  type PropsWithChildren,
-  createContext,
-  useContext,
-  useState,
-} from "react";
+import { type PropsWithChildren, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   type CredentialResponse,
@@ -12,11 +7,14 @@ import {
 } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 
-import { useLanguageContext } from "src/contexts/LanguageContext";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
 import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import LanguageSelect from "src/components/LanguageSelect";
 import LegalLinks from "src/components/LegalLinks";
 import ThemedButton from "src/components/common/ThemedButton";
+
+import type { UserContext } from "./types";
+import { UserContextProvider, useUser } from ".";
 
 export function LoginButton() {
   const { onSignInSuccess, onSignInError } = useUser();
@@ -113,16 +111,6 @@ function UserCard() {
   );
 }
 
-type UserContext = {
-  user?: GoogleUserCredential | null;
-  onSignInSuccess: (credentialResponse: CredentialResponse) => void;
-  onSignInError: () => void;
-  UserCard: () => JSX.Element | null;
-  logout: (options: { notification?: string }) => void;
-};
-
-const userContext = createContext<UserContext | null>(null);
-
 export function UserProvider({ children }: PropsWithChildren) {
   const { t } = useLanguageContext();
   const [user, setUser] = useState<GoogleUserCredential | null>();
@@ -151,7 +139,7 @@ export function UserProvider({ children }: PropsWithChildren) {
   };
 
   return (
-    <userContext.Provider
+    <UserContextProvider
       value={{
         user,
         UserCard,
@@ -174,14 +162,6 @@ export function UserProvider({ children }: PropsWithChildren) {
           </div>
         </div>
       )}
-    </userContext.Provider>
+    </UserContextProvider>
   );
-}
-
-export function useUser() {
-  const context = useContext(userContext);
-
-  if (!context) throw new Error("useUser must be used within a UserProvider");
-
-  return context;
 }

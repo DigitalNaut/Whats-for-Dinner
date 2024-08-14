@@ -3,12 +3,12 @@ import ReactDOM from "react-dom/client";
 import { ErrorBoundary } from "react-error-boundary";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
-import { HeaderProvider } from "src/contexts/HeaderContext";
-import { LanguageContextProvider } from "src/contexts/LanguageContext";
-import { UserProvider } from "src/contexts/UserContext";
+import { HeaderProvider } from "src/hooks/useHeaderContext/Context";
+import { LanguageProvider } from "src/hooks/useLanguageContext/Context";
+import { UserProvider } from "src/hooks/useUserContext/Context";
 import App from "src/App";
 import ErrorFallback from "src/components/common/ErrorFallback";
-import UserSettingsProvider from "src/contexts/UserSettingsContext";
+import UserSettingsProvider from "src/hooks/useUserSettingsContext/Context";
 
 import "src/internationalization";
 import "src/index.css";
@@ -20,7 +20,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <LanguageContextProvider>
+      <LanguageProvider>
         <UserProvider>
           <GoogleOAuthProvider
             clientId={(import.meta.env.VITE_GOOGLE_CLIENT_ID as string) || ""}
@@ -35,7 +35,7 @@ root.render(
             </UserSettingsProvider>
           </GoogleOAuthProvider>
         </UserProvider>
-      </LanguageContextProvider>
+      </LanguageProvider>
     </ErrorBoundary>
   </React.StrictMode>,
 );

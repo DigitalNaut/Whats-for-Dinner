@@ -1,8 +1,8 @@
 import { type PropsWithChildren } from "react";
-import { useHeaderContext } from "src/contexts/HeaderContext";
+import { useHeaderContext } from "src/hooks/useHeaderContext";
 import { twMerge } from "tailwind-merge";
 
-import { useUser } from "src/contexts/UserContext";
+import { useUser } from "src/hooks/useUserContext";
 import BackButton from "src/components/common/BackButton";
 
 import Chopsticks from "src/assets/chopsticks.svg?react";

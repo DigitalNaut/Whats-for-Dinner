@@ -1,12 +1,8 @@
 import {
-  type Dispatch,
   type PropsWithChildren,
-  type SetStateAction,
   useCallback,
   useEffect,
   useState,
-  useContext,
-  createContext,
   useMemo,
 } from "react";
 import { AxiosError } from "axios";
@@ -14,9 +10,12 @@ import { AxiosError } from "axios";
 import { type SpinnerEntry } from "src/components/SpinningWheel";
 import { useBeforeUnload } from "src/hooks/useBeforeUnload";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
-import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
-import { useLanguageContext } from "src/contexts/LanguageContext";
+import { useGoogleDriveContext } from "src/hooks/useGoogleDriveContext";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
 import Spinner from "src/components/common/Spinner";
+
+import { SpinnerMenuContext } from "./types";
+import { SpinnerMenuProvider } from ".";
 
 const DEBOUNCE_DELAY = 2500;
 const CONFIG_FILE_NAME = "config.json";
@@ -27,17 +26,6 @@ const getDefaultConfig = async () => {
   const config = await import("src/data/DefaultConfig.json");
   return config.default;
 };
-
-type SpinnerMenuContext = {
-  allMenuItems?: SpinnerEntry[];
-  enabledMenuItems?: SpinnerEntry[];
-  isLoaded: boolean;
-  setError: Dispatch<SetStateAction<string | undefined>>;
-  setAllMenuItems: Dispatch<SetStateAction<SpinnerEntry[] | undefined>>;
-  resetConfigFile: (signal?: AbortSignal) => Promise<void>;
-};
-
-const spinnerMenuContext = createContext<SpinnerMenuContext | null>(null);
 
 export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   const { t } = useLanguageContext();
@@ -209,7 +197,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
 
         setState("Idle");
       } catch (error) {
-        if (error === "Authorizing") return;
+        console.log(`The error:`, error);
 
         if (error instanceof Error) {
           if (error.name === "CanceledError") return;
@@ -285,7 +273,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     };
 
   return (
-    <spinnerMenuContext.Provider
+    <SpinnerMenuProvider
       value={{
         isLoaded,
         allMenuItems,
@@ -297,7 +285,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     >
       {children}
       {error && (
-        <div className="fixed left-0 top-0 rounded-sm bg-red-500 p-2 text-white">
+        <div className="fixed left-0 top-0 rounded-sm bg-orange-500 p-2 text-white">
           {error}
         </div>
       )}
@@ -306,17 +294,6 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
           <Spinner text={t("Saving...")} />
         </div>
       )}
-    </spinnerMenuContext.Provider>
+    </SpinnerMenuProvider>
   );
-}
-
-export function useSpinnerMenuContext() {
-  const context = useContext(spinnerMenuContext);
-
-  if (!context)
-    throw new Error(
-      "useSpinnerMenuContext must be used within a SpinnerMenuContextProvider",
-    );
-
-  return context;
 }

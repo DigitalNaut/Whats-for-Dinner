@@ -8,10 +8,10 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
 } from "src/components/HeaderContextMenu";
-import { useHeaderContext } from "src/contexts/HeaderContext";
-import { useLanguageContext } from "src/contexts/LanguageContext";
+import { useHeaderContext } from "src/hooks/useHeaderContext";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
 import { useSpinnerMenu } from "src/hooks/useSpinnerMenu";
-import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
+import { useSpinnerMenuContext } from "src/hooks/useSpinnerMenuContext";
 import Floating from "src/components/common/Floating";
 import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import Spinner from "src/components/common/Spinner";

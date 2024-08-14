@@ -2,8 +2,8 @@ import { useCallback } from "react";
 
 import { type SpinnerEntry } from "src/components/SpinningWheel";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
-import { useLanguageContext } from "src/contexts/LanguageContext";
-import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
+import { useSpinnerMenuContext } from "src/hooks/useSpinnerMenuContext";
 
 export function useSpinnerMenu() {
   const { t } = useLanguageContext();

@@ -1,7 +1,7 @@
 import { type ChangeEventHandler, useEffect, useCallback } from "react";
 
-import { useLanguageContext } from "src/contexts/LanguageContext";
-import { useUserSettingsContext } from "src/contexts/UserSettingsContext";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
+import { useUserSettingsContext } from "src/hooks/useUserSettingsContext";
 
 export default function LanguageSelect() {
   const { languages, i18n } = useLanguageContext();

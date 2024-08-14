@@ -9,7 +9,7 @@ import ImageList from "src/components/ImageList";
 import ImageUpload from "src/components/ImageUpload";
 import Spinner from "src/components/common/Spinner";
 // import SpinningWheel from "src/components/SpinningWheel";
-import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
+import { useGoogleDriveContext } from "src/hooks/useGoogleDriveContext";
 // import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
 
 function Tests() {

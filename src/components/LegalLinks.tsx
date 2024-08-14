@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 
-import { useLanguageContext } from "src/contexts/LanguageContext";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
 
 type Props = {
   className?: string;

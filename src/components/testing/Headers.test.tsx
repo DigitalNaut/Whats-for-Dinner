@@ -9,8 +9,8 @@ import {
 } from "react-router-dom";
 
 import { MenuHeader, TitleHeader } from "src/components/Headers";
-import * as HeaderContextModule from "src/contexts/HeaderContext";
-import * as UserContextModule from "src/contexts/UserContext";
+import * as HeaderContextModule from "src/hooks/useHeaderContext";
+import * as UserContextModule from "src/hooks/useUserContext";
 
 vi.spyOn(UserContextModule, "useUser").mockReturnValue({
   user: { name: "John Doe" },

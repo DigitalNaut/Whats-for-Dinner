@@ -6,7 +6,7 @@ import {
 } from "react";
 import { twMerge } from "tailwind-merge";
 
-import { useLanguageContext } from "src/contexts/LanguageContext";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
 import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 
 type ImagePreviewProps = {

@@ -7,9 +7,9 @@ import { AxiosError } from "axios";
 import { twMerge } from "tailwind-merge";
 
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
-import { useLanguageContext } from "src/contexts/LanguageContext";
-import { useSpinnerMenuContext } from "src/contexts/SpinnerMenuContext";
-import { useUser } from "src/contexts/UserContext";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
+import { useSpinnerMenuContext } from "src/hooks/useSpinnerMenuContext";
+import { useUser } from "src/hooks/useUserContext";
 import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import LanguageSelect from "src/components/LanguageSelect";
 import Spinner from "src/components/common/Spinner";
@@ -197,7 +197,7 @@ export default function Settings() {
   return (
     <div className="flex flex-col gap-4 p-6">
       {error && (
-        <div className="fixed left-0 top-0 rounded-sm bg-red-500 p-2 text-white">
+        <div className="fixed left-0 top-0 rounded-sm bg-yellow-500 p-2 text-white">
           {error}
         </div>
       )}

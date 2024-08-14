@@ -1,8 +1,8 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
-import { type useLanguageContext } from "src/contexts/LanguageContext";
-import * as LanguageContextModule from "src/contexts/LanguageContext";
+import { type useLanguageContext } from "src/hooks/useLanguageContext";
+import * as LanguageContextModule from "src/hooks/useLanguageContext";
 
 vi.spyOn(LanguageContextModule, "useLanguageContext").mockReturnValue({
   t: (key: string) => key,

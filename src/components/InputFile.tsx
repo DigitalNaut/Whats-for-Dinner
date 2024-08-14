@@ -6,7 +6,7 @@ import {
 } from "react";
 
 import { resizeImage } from "src/utils/imageResize";
-import { useLanguageContext } from "src/contexts/LanguageContext";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
 import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import Kilobytes from "src/components/common/Kilobytes";
 import Spinner from "src/components/common/Spinner";

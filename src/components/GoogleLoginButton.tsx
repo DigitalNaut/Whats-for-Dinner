@@ -1,7 +1,7 @@
 import { type ButtonHTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
 
-import { useLanguageContext } from "src/contexts/LanguageContext";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
 
 import GoogleLogo from "src/assets/google-logo.svg?react";
 

@@ -1,39 +1,12 @@
-import {
-  type PropsWithChildren,
-  type Dispatch,
-  createContext,
-  useContext,
-  useReducer,
-  useEffect,
-} from "react";
-import { z } from "zod";
+import { type PropsWithChildren, useReducer, useEffect } from "react";
 
 import { useLocalStorage } from "src/hooks/useLocalStorage";
 
-const userSettingsSchema = z.object({
-  preferredLanguage: z
-    .string({
-      required_error: "preferredLanguage is required",
-    })
-    .default("en"),
-});
-
-type UserSettings = z.infer<typeof userSettingsSchema>;
-
-type ActionType = {
-  type: "set" | "reset";
-  payload: Partial<UserSettings>;
-};
-
-type UserSettingsContext = {
-  userSettings: UserSettings;
-  setUserSetting: Dispatch<Partial<UserSettings>>;
-  resetUserSettings: () => void;
-};
+import { ActionType, UserSettings } from "./types";
+import { UserSettingsContextProvider, userSettingsSchema } from ".";
 
 const userSettingsKey = "userSettings";
 const defaultUserSettings: UserSettings = userSettingsSchema.parse({});
-const userSettingsContext = createContext<UserSettingsContext | null>(null);
 
 const reducer = (
   state: UserSettings,
@@ -76,7 +49,7 @@ export default function UserSettingsProvider({ children }: PropsWithChildren) {
   }, [savedUserSettings]);
 
   return (
-    <userSettingsContext.Provider
+    <UserSettingsContextProvider
       value={{
         userSettings,
         setUserSetting,
@@ -84,16 +57,6 @@ export default function UserSettingsProvider({ children }: PropsWithChildren) {
       }}
     >
       {children}
-    </userSettingsContext.Provider>
+    </UserSettingsContextProvider>
   );
-}
-
-export function useUserSettingsContext() {
-  const context = useContext(userSettingsContext);
-  if (!context)
-    throw new Error(
-      "useUserSettingsContext must be used within a UserSettingsProvider",
-    );
-
-  return context;
 }

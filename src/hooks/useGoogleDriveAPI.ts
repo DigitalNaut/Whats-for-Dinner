@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 
-import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
+import { useGoogleDriveContext } from "src/hooks/useGoogleDriveContext";
 
 type MetadataType = {
   name: string;
@@ -126,6 +126,7 @@ export function useGoogleDriveAPI() {
     async ({ params, ...config }: AxiosRequestConfig = {}) => {
       const authStatus = hasAuthorization();
 
+      console.log(`Throwing new error: ${authStatus}`, new Error(authStatus));
       if (authStatus !== "OK") return Promise.reject(new Error(authStatus));
 
       const request = axios.get("https://www.googleapis.com/drive/v3/files", {

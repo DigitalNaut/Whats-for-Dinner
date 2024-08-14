@@ -1,41 +1,14 @@
-import {
-  type PropsWithChildren,
-  useState,
-  createContext,
-  useContext,
-  useMemo,
-  useCallback,
-} from "react";
-import {
-  type TokenResponse,
-  useGoogleLogin,
-  hasGrantedAllScopesGoogle,
-} from "@react-oauth/google";
+import { type PropsWithChildren, useState, useMemo, useCallback } from "react";
+import { useGoogleLogin, hasGrantedAllScopesGoogle } from "@react-oauth/google";
 
 import { useScript } from "src/hooks/useScript";
 
-type TokenResponseSuccess = Omit<
-  TokenResponse,
-  "error" | "error_description" | "error_uri"
->;
-
-type TokenResponseError = Pick<
-  TokenResponse,
-  "error" | "error_description" | "error_uri"
->;
-
-type TokenInfo = {
-  tokenExpiration: Date;
-};
-
-type GoogleDriveContextType = {
-  hasScope: boolean;
-  hasAuthorization: () => "Authorizing" | "OK";
-  isLoaded: boolean;
-  userTokens?: TokenResponseSuccess & TokenInfo;
-};
-
-const googleDriveContext = createContext<GoogleDriveContextType | null>(null);
+import type {
+  TokenResponseSuccess,
+  GoogleDriveContextType,
+  TokenResponseError,
+} from "./types";
+import { GoogleDriveContextProvider } from ".";
 
 const scope = "https://www.googleapis.com/auth/drive.appdata";
 const DISCOVERY_DOC =
@@ -109,7 +82,7 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
   }, [isLoaded, requestAccess, userTokens]);
 
   return (
-    <googleDriveContext.Provider
+    <GoogleDriveContextProvider
       value={{
         hasScope,
         hasAuthorization,
@@ -118,15 +91,6 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
       }}
     >
       {children}
-    </googleDriveContext.Provider>
+    </GoogleDriveContextProvider>
   );
-}
-
-export function useGoogleDriveContext() {
-  const context = useContext(googleDriveContext);
-
-  if (!context)
-    throw new Error("useGoogleDrive must be used within a GoogleDriveContext");
-
-  return context;
 }

@@ -9,8 +9,8 @@ import { useNavigate } from "react-router-dom";
 
 import { type FileInfo } from "src/components/InputFile";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
-import { useGoogleDriveContext } from "src/contexts/GoogleDriveContext";
-import { useLanguageContext } from "src/contexts/LanguageContext";
+import { useGoogleDriveContext } from "src/hooks/useGoogleDriveContext";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
 import { useSpinnerMenu } from "src/hooks/useSpinnerMenu";
 import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import ImagePreview from "src/components/ImagePreview";

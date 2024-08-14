@@ -3,7 +3,7 @@ import { expect, test, describe, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { debug } from "vitest-preview";
 
-import * as UserContextModule from "src/contexts/UserContext";
+import * as UserContextModule from "src/hooks/useUserContext";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
 
 const useUserSpy = vi.spyOn(UserContextModule, "useUser");

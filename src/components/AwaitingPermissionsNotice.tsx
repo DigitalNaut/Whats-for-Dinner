@@ -1,6 +1,6 @@
 import { type PropsWithChildren } from "react";
 
-import { useLanguageContext } from "src/contexts/LanguageContext";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
 
 export default function AwaitingPermissionsNotice({
   children,

@@ -1,11 +1,11 @@
 import { type PropsWithChildren, lazy, Suspense } from "react";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
-import { GoogleDriveProvider } from "src/contexts/GoogleDriveContext";
+import { GoogleDriveProvider } from "src/hooks/useGoogleDriveContext/Context";
 import { MenuHeader, TitleHeader } from "src/components/Headers";
 import { PlainLayout, MenuLayout } from "src/components/Layouts";
-import { SpinnerMenuContextProvider } from "src/contexts/SpinnerMenuContext";
-import { useLanguageContext } from "src/contexts/LanguageContext";
+import { SpinnerMenuContextProvider } from "src/hooks/useSpinnerMenuContext/Context";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
 import BackButton from "src/components/common/BackButton";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
 import Spinner from "src/components/common/Spinner";

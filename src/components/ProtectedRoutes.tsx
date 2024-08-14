@@ -1,7 +1,7 @@
 import { type PropsWithChildren, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useUser } from "src/contexts/UserContext";
+import { useUser } from "src/hooks/useUserContext";
 
 type ProtectedRoutesProps = {
   redirectTo: string;
