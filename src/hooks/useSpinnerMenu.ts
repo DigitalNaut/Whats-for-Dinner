@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { type SpinnerEntry } from "src/types/SpinnerMenu";
+import { type SpinnerEntry } from "src/hooks/useSpinnerMenuContext/types";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useLanguageContext } from "src/hooks/useLanguageContext";
 import { useSpinnerMenuContext } from "src/hooks/useSpinnerMenuContext";

@@ -7,14 +7,17 @@ import {
 } from "react";
 import { AxiosError } from "axios";
 
-import { spinnerEntriesSchema, type SpinnerEntry } from "src/types/SpinnerMenu";
 import { useBeforeUnload } from "src/hooks/useBeforeUnload";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/hooks/useGoogleDriveContext";
 import { useLanguageContext } from "src/hooks/useLanguageContext";
 import Spinner from "src/components/common/Spinner";
 
-import { SpinnerMenuContext } from "./types";
+import {
+  spinnerEntriesSchema,
+  SpinnerEntry,
+  SpinnerMenuContext,
+} from "./types";
 import { SpinnerMenuProvider } from ".";
 
 const DEBOUNCE_DELAY = 2500;

@@ -1,6 +1,6 @@
 import { createRef, useEffect, useRef, useState } from "react";
 
-import type { SpinnerEntry } from "src/types/SpinnerMenu";
+import { type SpinnerEntry } from "src/hooks/useSpinnerMenuContext/types";
 import { useLanguageContext } from "src/hooks/useLanguageContext";
 import { useSpinnerMenuContext } from "src/hooks/useSpinnerMenuContext";
 import SpinnerIcon from "src/components/common/Spinner";
