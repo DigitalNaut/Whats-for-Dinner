@@ -7,7 +7,7 @@ import {
 } from "react";
 import { AxiosError } from "axios";
 
-import { type SpinnerEntry } from "src/components/SpinningWheel";
+import { spinnerEntriesSchema, type SpinnerEntry } from "src/types/SpinnerMenu";
 import { useBeforeUnload } from "src/hooks/useBeforeUnload";
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useGoogleDriveContext } from "src/hooks/useGoogleDriveContext";
@@ -18,13 +18,13 @@ import { SpinnerMenuContext } from "./types";
 import { SpinnerMenuProvider } from ".";
 
 const DEBOUNCE_DELAY = 2500;
-const CONFIG_FILE_NAME = "config.json";
+const CONFIG_FILE_NAME = "menuItems.json";
 
-type State = "Loading" | "Idle" | "Dirty" | "Uploading";
+type State = "loading" | "idle" | "dirty" | "uploading";
 
-const getDefaultConfig = async () => {
-  const config = await import("src/data/DefaultConfig.json");
-  return config.default;
+const getDefaultMenu = async () => {
+  const defaultMenu = await import("src/data/DefaultMenu.json");
+  return defaultMenu.default;
 };
 
 export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
@@ -32,18 +32,18 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
   const [error, setError] = useState<string>();
   const { isLoaded: isDriveLoaded } = useGoogleDriveContext();
   const { fetchFile, fetchList, uploadFile, updateFile } = useGoogleDriveAPI();
-  const [allMenuItems, setAllMenuItems] = useState<SpinnerEntry[]>();
-  const [state, setState] = useState<State[number]>("Loading");
+  const [menuItems, setMenuItems] = useState<SpinnerEntry[]>();
+  const [state, setState] = useState<State>("loading");
   const [pendingUpload, setPendingUpload] = useState<{
     timeoutId: NodeJS.Timeout;
     controller: AbortController;
   }>();
-  const [configFileId, setConfigFileId] = useState<string>();
+  const [menuFileId, setMenuFileId] = useState<string>();
 
-  const getImage = useCallback(
+  const getImageUrl = useCallback(
     async (item: SpinnerEntry) => {
       try {
-        const { data, status } = await fetchFile<Blob>(
+        const { status, data } = await fetchFile<Blob>(
           { id: item.fileId },
           { responseType: "blob" },
         );
@@ -54,6 +54,8 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
 
         const url = URL.createObjectURL(data);
 
+        console.log(`Created URL for ${item.key}`, url);
+
         return url;
       } catch (error) {
         console.error(error);
@@ -63,7 +65,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
     [fetchFile],
   );
 
-  const getConfigFileMeta = useCallback(
+  const getMenuFileMeta = useCallback(
     async (signal?: AbortSignal) => {
       const { data, status } = await fetchList({
         signal,
@@ -76,13 +78,13 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
       if (!("files" in data) || !data.files?.length) return null;
 
       const [config] = data.files;
-      setConfigFileId(config.id);
+      setMenuFileId(config.id);
       return config;
     },
     [fetchList],
   );
 
-  const createConfigFile = useCallback(
+  const createMenuFile = useCallback(
     async (signal?: AbortSignal, fileContents?: unknown) => {
       const { data, status } = await uploadFile(
         {
@@ -98,48 +100,53 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
       if (status !== 200) throw new Error("Could not create config file");
       if (!data) return null;
 
-      setConfigFileId(data.id);
+      setMenuFileId(data.id);
       return data;
     },
     [uploadFile],
   );
 
-  const getConfigFile = useCallback(
+  const getMenuFile = useCallback(
     async (signal: AbortSignal, fileMeta: gapi.client.drive.File) => {
-      const { data: config } = await fetchFile(fileMeta, {
+      const { status, data } = await fetchFile(fileMeta, {
         signal,
         responseType: "json",
       });
 
-      // Set the menu items
-      if (config && Array.isArray(config)) {
-        const menuArray = config as SpinnerEntry[];
+      if (status !== 200) throw new Error("Could not get menu data file");
 
-        for (const item of menuArray) {
-          if (!item.fileId) continue;
+      // Parse the menu data
+      const parsedData = spinnerEntriesSchema.safeParse(data);
+      if (!parsedData.success) throw new Error("Could not parse menu data");
+      else if (!parsedData.data) throw new Error("No data in menu data");
 
-          const url = await getImage(item);
+      const menuItems = parsedData.data;
 
-          setAllMenuItems((prev) => {
-            if (!prev) return prev;
-            const newMenu = [...prev];
-            const index = newMenu.findIndex((i) => i.key === item.key);
+      // Set the image urls
+      for (const item of menuItems) {
+        console.log(`Setting image url for ${item?.key}...`);
 
-            newMenu[index].imageUrl = url;
-            return newMenu;
-          });
-        }
+        if (!item.fileId) continue;
 
-        setAllMenuItems(config);
+        const url = await getImageUrl(item);
+
+        console.log(`Set image url for ${item?.key} to ${url}`);
+
+        const index = menuItems.findIndex((i) => i.key === item.key);
+
+        menuItems[index].imageUrl = url;
       }
+
+      setMenuItems(menuItems);
     },
-    [fetchFile, getImage],
+    [fetchFile, getImageUrl],
   );
 
-  const updateConfigFile = useCallback(
+  const updateMenuFile = useCallback(
     async (signal: AbortSignal, contents: SpinnerEntry[]) => {
       try {
-        if (!configFileId) throw new Error("Error updating config file: no id");
+        if (!menuFileId)
+          throw new Error("Error updating config file: no file id");
 
         // Remove local image blob urls if the image has a file ID
         const contentsWithoutBlobs = contents.map((item) => {
@@ -152,7 +159,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
 
         await updateFile(
           {
-            id: configFileId,
+            id: menuFileId,
             file: new File(
               [JSON.stringify(contentsWithoutBlobs)],
               CONFIG_FILE_NAME,
@@ -173,34 +180,33 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         return false;
       }
     },
-    [configFileId, updateFile],
+    [menuFileId, updateFile],
   );
 
-  const resetConfigFile = useCallback(
+  const resetMenuFile = useCallback(
     async (signal?: AbortSignal) => {
-      const defaultConfig = await getDefaultConfig();
+      const defaultConfig = await getDefaultMenu();
 
-      await createConfigFile(signal, defaultConfig);
-      setAllMenuItems(defaultConfig);
+      await createMenuFile(signal, defaultConfig);
+      setMenuItems(defaultConfig);
     },
-    [createConfigFile],
+    [createMenuFile],
   );
 
-  const getConfigOrCreate = useCallback(
+  const getMenuOrCreate = useCallback(
     async (signal: AbortSignal) => {
       try {
-        const fileMeta = await getConfigFileMeta();
+        const fileMeta = await getMenuFileMeta();
 
         // List the files
-        if (fileMeta) await getConfigFile(signal, fileMeta);
-        else await resetConfigFile(signal);
+        if (fileMeta) await getMenuFile(signal, fileMeta);
+        else await resetMenuFile(signal);
 
-        setState("Idle");
+        setState("idle");
       } catch (error) {
-        console.log(`The error:`, error);
-
         if (error instanceof Error) {
           if (error.name === "CanceledError") return;
+          if (error.message === "Authorizing") return;
           setError(`${error.name}: ${error.message}`);
         } else {
           setError("An unknown error ocurred");
@@ -209,34 +215,34 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
         console.error(error);
       }
     },
-    [getConfigFileMeta, getConfigFile, resetConfigFile],
+    [getMenuFileMeta, getMenuFile, resetMenuFile],
   );
 
   // Get the config file or create it when drive is loaded
   useEffect(() => {
-    if (!isDriveLoaded || state !== "Loading") return undefined;
+    if (!isDriveLoaded || state !== "loading") return;
 
     const controller = new AbortController();
     const signal = controller.signal;
 
-    void getConfigOrCreate(signal);
+    void getMenuOrCreate(signal);
 
     return () => {
       controller.abort();
     };
-  }, [getConfigOrCreate, isDriveLoaded, state]);
+  }, [getMenuOrCreate, isDriveLoaded, state]);
 
   // Alert the user if there are unsaved changes
-  useBeforeUnload(state === "Dirty" || state === "Uploading");
+  useBeforeUnload(state === "dirty" || state === "uploading");
 
-  const isLoaded = useMemo(() => state !== "Loading", [state]);
+  const isLoaded = useMemo(() => state !== "loading", [state]);
 
   const enabledMenuItems = useMemo(
-    () => allMenuItems?.filter(({ enabled }) => enabled),
-    [allMenuItems],
+    () => menuItems?.filter(({ enabled }) => enabled),
+    [menuItems],
   );
 
-  const triggerDelayedUpload = async (
+  const debounceMenuUpload = async (
     newItems: SpinnerEntry[] | undefined,
     timeout: number,
   ) => {
@@ -253,34 +259,34 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
       setPendingUpload({ timeoutId, controller });
     });
 
-    setState("Uploading");
-    await updateConfigFile(controller.signal, newItems || []);
-    setState("Idle");
+    setState("uploading");
+    await updateMenuFile(controller.signal, newItems || []);
+    setState("idle");
 
     setPendingUpload(undefined);
   };
 
-  const setAllMenuItemsWithDelayedUpload: SpinnerMenuContext["setAllMenuItems"] =
-    (items) => {
-      const newItems =
-        typeof items === "function" ? items(allMenuItems) : items;
+  const setAllMenuItemsWithUpload: SpinnerMenuContext["setAllMenuItems"] = (
+    items,
+  ) => {
+    const newItems = typeof items === "function" ? items(menuItems) : items;
 
-      setAllMenuItems(newItems);
+    setMenuItems(newItems);
 
-      setState("Dirty");
+    setState("dirty");
 
-      void triggerDelayedUpload(newItems, DEBOUNCE_DELAY);
-    };
+    void debounceMenuUpload(newItems, DEBOUNCE_DELAY);
+  };
 
   return (
     <SpinnerMenuProvider
       value={{
         isLoaded,
-        allMenuItems,
-        setAllMenuItems: setAllMenuItemsWithDelayedUpload,
+        allMenuItems: menuItems,
+        setAllMenuItems: setAllMenuItemsWithUpload,
         enabledMenuItems,
         setError,
-        resetConfigFile,
+        resetMenuFile,
       }}
     >
       {children}
@@ -289,7 +295,7 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
           {error}
         </div>
       )}
-      {state === "Uploading" && (
+      {state === "uploading" && (
         <div className="fixed inset-x-1/2 top-2 w-fit -translate-x-1/2 rounded-lg bg-emerald-700 p-2 text-white">
           <Spinner text={t("Saving...")} />
         </div>

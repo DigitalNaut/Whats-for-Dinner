@@ -135,7 +135,7 @@ function Section({
 
 export default function Settings() {
   const { t } = useLanguageContext();
-  const { resetConfigFile } = useSpinnerMenuContext();
+  const { resetMenuFile } = useSpinnerMenuContext();
   const [isWorking, setIsWorking] = useState<{
     reset?: boolean;
     unlink?: boolean;
@@ -171,7 +171,7 @@ export default function Settings() {
 
       try {
         await cleanGoogleDrive();
-        await resetConfigFile();
+        await resetMenuFile();
       } catch (error) {
         displayError(error);
       } finally {

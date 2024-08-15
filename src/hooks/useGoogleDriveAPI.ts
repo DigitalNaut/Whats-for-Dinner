@@ -17,7 +17,7 @@ type FileParams = {
 
 type FileUploadResponse = (FileUploadSuccess & GoogleDriveError) | false;
 
-type DownloadFileTypes =
+type DownloadFileType =
   | string
   | ArrayBuffer
   | Blob
@@ -25,7 +25,7 @@ type DownloadFileTypes =
   | JSON
   | ReadableStream;
 
-type FileDownloadResponse<T extends DownloadFileTypes> =
+type FileDownloadResponse<T extends DownloadFileType> =
   | false
   | GoogleDriveError
   | T;
@@ -47,7 +47,7 @@ type FetchList = (
     Parameters<gapi.client.drive.FilesResource["list"]>[0],
 ) => Promise<AxiosResponse<gapi.client.drive.FileList | GoogleDriveError>>;
 
-type FetchFile = <T extends DownloadFileTypes>(
+type FetchFile = <T extends DownloadFileType>(
   file: gapi.client.drive.File,
   config?: AxiosRequestConfig<T>,
 ) => Promise<AxiosResponse<FileDownloadResponse<T>>>;
@@ -126,7 +126,6 @@ export function useGoogleDriveAPI() {
     async ({ params, ...config }: AxiosRequestConfig = {}) => {
       const authStatus = hasAuthorization();
 
-      console.log(`Throwing new error: ${authStatus}`, new Error(authStatus));
       if (authStatus !== "OK") return Promise.reject(new Error(authStatus));
 
       const request = axios.get("https://www.googleapis.com/drive/v3/files", {

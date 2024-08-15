@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import { type SpinnerEntry } from "src/components/SpinningWheel";
+import type { SpinnerEntry } from "src/types/SpinnerMenu";
 import { useLanguageContext } from "src/hooks/useLanguageContext";
 import { useSpinnerMenuContext } from "src/hooks/useSpinnerMenuContext";
 import Floating from "src/components/common/Floating";

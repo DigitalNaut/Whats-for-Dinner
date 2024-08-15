@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { SpinnerEntry } from "src/components/SpinningWheel";
+
+import type { SpinnerEntry } from "src/types/SpinnerMenu";
 
 export type SpinnerMenuContext = {
   allMenuItems?: SpinnerEntry[];
@@ -7,5 +8,5 @@ export type SpinnerMenuContext = {
   isLoaded: boolean;
   setError: Dispatch<SetStateAction<string | undefined>>;
   setAllMenuItems: Dispatch<SetStateAction<SpinnerEntry[] | undefined>>;
-  resetConfigFile: (signal?: AbortSignal) => Promise<void>;
+  resetMenuFile: (signal?: AbortSignal) => Promise<void>;
 };

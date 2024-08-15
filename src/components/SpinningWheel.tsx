@@ -1,18 +1,11 @@
 import { createRef, useEffect, useRef, useState } from "react";
 
+import type { SpinnerEntry } from "src/types/SpinnerMenu";
 import { useLanguageContext } from "src/hooks/useLanguageContext";
 import { useSpinnerMenuContext } from "src/hooks/useSpinnerMenuContext";
 import SpinnerIcon from "src/components/common/Spinner";
 
 import Arrow from "src/assets/wedge.svg?react";
-
-export type SpinnerEntry = {
-  label: string;
-  enabled: boolean;
-  imageUrl?: string;
-  fileId?: string;
-  key: number;
-};
 
 type SpinningWheelProps = {
   entries?: SpinnerEntry[];
