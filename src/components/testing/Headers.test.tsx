@@ -7,6 +7,7 @@ import {
   RouterProvider,
   createMemoryRouter,
 } from "react-router-dom";
+import { debug } from "vitest-preview";
 
 import { MenuHeader, TitleHeader } from "src/components/Headers";
 import * as HeaderContextModule from "src/hooks/useHeaderContext";
@@ -36,13 +37,16 @@ test("renders a title header with a chopstick svg", () => {
 
 test("renders a menu header with a back button", () => {
   const { container } = render(<MenuHeader />, { wrapper: MemoryRouter });
+  debug();
   const buttons = container.querySelectorAll("button");
   const [backButton, menuButton] = buttons;
-  const svg = backButton.querySelector("svg");
+
+  const icon = backButton.querySelector("i");
 
   expect(backButton).toBeInTheDocument();
   expect(backButton).toHaveAttribute("aria-label", "Back");
-  expect(svg).toBeInTheDocument();
+  expect(icon).toBeInTheDocument();
+  expect(icon).toHaveClass("fa-chevron-left");
   expect(menuButton).toBeUndefined();
 });
 
