@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/aspect-ratio";
+@plugin "@tailwindcss/container-queries";
 
 @layer components {
   input[type="file"] {
@@ -8,4 +12,23 @@
   input[type="text"] {
     @apply border-x-0 border-t-0 focus:border-x-0 focus:border-t-0 focus:ring-0;
   }
+}
+
+@theme {
+  --svg-abstract-shapes: url("/src/assets/transparent-geometry.svg");
+  --gradient-radial-overlay: radial-gradient(
+    50% 50% at 50% 50%,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+
+  --font-bangers: "Bangers", cursive;
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-roboto: "Roboto", sans-serif;
+
+  --breakpoint-xs: 360px;
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 976px;
+  --breakpoint-xl: 1440px;
 }
