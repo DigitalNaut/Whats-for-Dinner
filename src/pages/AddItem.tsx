@@ -36,10 +36,17 @@ type Action<ActionType> = {
   payload: string;
 };
 
+const inputFields = {
+  DISH_NAME: "dishName",
+  DISH_URL: "imageUrl",
+  DISH_IMAGE: "imageImage",
+};
+
 const initialFormState = {
   imageName: "",
   imageUrl: "",
 };
+
 const stateReducer: Reducer<
   typeof initialFormState,
   Action<StateActionType>
@@ -87,6 +94,16 @@ const errorReducer: Reducer<
   }
 };
 
+function getStringField(formData: FormData, key: string): string | null {
+  const val = formData.get(key);
+  return typeof val === "string" && val.length > 0 ? val : null;
+}
+
+function getFileField(formData: FormData, key: string): File | null {
+  const val = formData.get(key);
+  return val instanceof File && val.size > 0 ? val : null;
+}
+
 export default function AddItem() {
   const { t } = useLanguageContext();
   const navigate = useNavigate();
@@ -96,7 +113,7 @@ export default function AddItem() {
 
   const [uploadMode, setUploadMode] = useState<UploadMode>("File");
   const [fileInfo, setFileInfo] = useState<FileInfo>();
-  const uploadController = useRef<AbortController>();
+  const uploadController = useRef<AbortController>(null);
   const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number>();
   const [formState, formDispatch] = useReducer(stateReducer, initialFormState);
@@ -170,55 +187,59 @@ export default function AddItem() {
         type: "formError",
         payload: errorState.invalidImageURL,
       });
-      return null;
+      return false;
     }
 
-    const dishName = formData.get("dishName")?.toString().trim();
-    const dishURL = formData.get("dishURL")?.toString().trim();
-    const dishImage: File | null = formData.get("dishImage") as File;
+    const dishName = formData.get(inputFields.DISH_NAME);
 
     if (!dishName) {
       errorDispatch({
         type: "formError",
         payload: t("Dish name is required"),
       });
-      return null;
+      return false;
     }
+
+    const dishURL = formData.get(inputFields.DISH_URL);
 
     if (uploadMode === "URL" && !dishURL) {
       errorDispatch({
         type: "formError",
         payload: t("Enter valid URL"),
       });
-      return null;
+      return false;
     }
+
+    const dishImage: File | null = formData.get(inputFields.DISH_IMAGE) as File;
 
     if (uploadMode === "File" && !dishImage) {
       errorDispatch({
         type: "formError",
         payload: t("Must select an image"),
       });
-      return null;
+      return false;
     }
 
-    return {
-      dishName,
-      dishURL,
-      dishImage,
-    };
+    return true;
   };
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = (event) =>
+  // TODO: Add error handling
+  const handleSubmitForm: FormEventHandler<HTMLFormElement> = (event) =>
     void (async () => {
       event.preventDefault();
 
       const formData = new FormData(event.currentTarget);
-      if (fileInfo?.file) formData.append("dishImage", fileInfo.file);
-      const validation = validateForm(formData);
 
-      if (!validation) return;
+      if (fileInfo?.file)
+        formData.append(inputFields.DISH_IMAGE, fileInfo.file);
 
-      const { dishName, dishURL, dishImage } = validation;
+      if (!validateForm(formData)) return;
+
+      const dishName = getStringField(formData, inputFields.DISH_NAME);
+      const dishURL = getStringField(formData, inputFields.DISH_URL);
+      const dishImage = getFileField(formData, inputFields.DISH_IMAGE);
+
+      if (!dishName) return;
 
       if (uploadMode === "URL" && dishURL) {
         addMenuItem({
@@ -227,7 +248,7 @@ export default function AddItem() {
           enabled: true,
           key: Date.now(),
         });
-        navigate(-1);
+        await navigate(-1);
       }
 
       if (uploadMode === "File" && dishImage) {
@@ -249,7 +270,7 @@ export default function AddItem() {
           key: Date.now(),
         });
 
-        navigate(-1);
+        await navigate(-1);
       } else
         errorDispatch({
           type: "formError",
@@ -294,7 +315,7 @@ export default function AddItem() {
             </div>
           </div>
           {fileInfo && (
-            <div className="flex min-w-0 max-w-md flex-col flex-nowrap gap-0.5 overflow-hidden text-center">
+            <div className="flex max-w-md min-w-0 flex-col flex-nowrap gap-0.5 overflow-hidden text-center">
               <span className="w-full truncate">{fileInfo.name}</span>
               {fileInfo.size ? (
                 <Kilobytes className="text-xs" value={fileInfo.size} />
@@ -322,7 +343,7 @@ export default function AddItem() {
     <div className="flex flex-col gap-4 p-6">
       <h2 className="text-center text-2xl">{t("Add dish")}</h2>
       <p>{t("Add dish details")}</p>
-      <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+      <form className="flex flex-col gap-6" onSubmit={handleSubmitForm}>
         {errorState.formError && (
           <div className="flex w-full items-center gap-1 rounded-sm bg-amber-600 p-2 text-white">
             <FontAwesomeIcon className="fa-warning" />
@@ -331,7 +352,7 @@ export default function AddItem() {
         )}
         <InputText
           required
-          name="dishName"
+          name={inputFields.DISH_NAME}
           label={t("Dish name")}
           value={formState.imageName}
           onChange={({ target: { value: payload } }) => {
@@ -371,7 +392,7 @@ export default function AddItem() {
             firstOption: (
               <InputFile
                 required
-                name="dishImage"
+                name={inputFields.DISH_IMAGE}
                 onChange={(info) => {
                   setFileInfo(info);
                 }}
@@ -381,7 +402,7 @@ export default function AddItem() {
               <>
                 <InputText
                   required
-                  name="dishURL"
+                  name={inputFields.DISH_URL}
                   label={t("Image URL")}
                   value={formState.imageUrl}
                   error={errorState.invalidImageURL}

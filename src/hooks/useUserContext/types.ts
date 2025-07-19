@@ -1,4 +1,5 @@
-import { type CredentialResponse } from "@react-oauth/google";
+import type { JSX } from "react";
+import type { CredentialResponse } from "@react-oauth/google";
 
 export type UserContext = {
   user?: GoogleUserCredential | null;

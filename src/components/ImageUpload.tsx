@@ -22,7 +22,7 @@ export default function ImageUpload({ onUpload }: { onUpload: () => void }) {
   >(false);
   const [uploadProgress, setUploadProgress] = useState<number>();
   const [error, setError] = useState<string>();
-  const uploadController = useRef<AbortController>();
+  const uploadController = useRef<AbortController>(null);
 
   const handleImageInputChange = (
     event: React.ChangeEvent<HTMLInputElement>,

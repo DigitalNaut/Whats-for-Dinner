@@ -114,7 +114,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
     url: string;
   }>();
   const [downloadProgress, setDownloadProgress] = useState<number>();
-  const downloadController = useRef<AbortController>();
+  const downloadController = useRef<AbortController>(null);
 
   const [loadingDriveFiles, setLoadingDriveFiles] = useState(false);
 

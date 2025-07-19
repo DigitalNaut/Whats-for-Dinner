@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -26,7 +27,7 @@ export default function Switcher({
 
   return (
     <>
-      <div className="m-auto w-fit cursor-pointer select-none rounded-full bg-slate-600 text-slate-400">
+      <div className="m-auto w-fit cursor-pointer rounded-full bg-slate-600 text-slate-400 select-none">
         <button
           type="button"
           className={twMerge(

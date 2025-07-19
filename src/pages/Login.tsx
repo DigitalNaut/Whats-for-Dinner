@@ -28,7 +28,7 @@ export default function Login({ redirectTo }: LoginProps) {
   );
 
   useEffect(() => {
-    if (user) navigate(from || redirectTo, { replace: true });
+    if (user) void navigate(from || redirectTo, { replace: true });
   }, [from, navigate, redirectTo, user]);
 
   return (

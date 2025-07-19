@@ -19,7 +19,7 @@ export default function BackButton({ className }: Props) {
         className,
       )}
       aria-label={t("Back")}
-      onClick={() => navigate(-1)}
+      onClick={() => void navigate(-1)}
     >
       <FontAwesomeIcon className="fa-chevron-left" /> <span>{t("Back")}</span>
     </button>

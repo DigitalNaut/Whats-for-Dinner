@@ -6,7 +6,7 @@ import { UserSettingsContext } from "./types";
 export const userSettingsSchema = z.object({
   preferredLanguage: z
     .string({
-      required_error: "preferredLanguage is required",
+      error: "preferredLanguage is required",
     })
     .default("en"),
 });

@@ -21,7 +21,7 @@ export default function ProtectedRoutes({
   );
 
   useEffect(() => {
-    if (!user) navigate(redirectTo + from);
+    if (!user) void navigate(redirectTo + from);
   }, [user, navigate, redirectTo, from]);
 
   return user ? children : null;

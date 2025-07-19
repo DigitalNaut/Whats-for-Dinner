@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from "react";
+import type { JSX, Dispatch, SetStateAction } from "react";
 
 export type HeaderProps = {
   showMenuButton?: boolean;

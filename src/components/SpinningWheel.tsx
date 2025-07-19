@@ -286,7 +286,7 @@ export default function SpinningWheel({
   const { t } = useLanguageContext();
   const { isLoaded } = useSpinnerMenuContext();
   const canvasRef = createRef<HTMLCanvasElement>();
-  const wheelRef = useRef<Spinner>();
+  const wheelRef = useRef<Spinner>(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState<SpinnerEntry>();
 
@@ -335,20 +335,20 @@ export default function SpinningWheel({
 
   return (
     <div className="w-full">
-      <div className="relative m-auto aspect-1 w-96 max-w-full rounded-full bg-white shadow-xl">
-        <div className="absolute inset-0 m-auto flex aspect-1 w-1/2 items-center justify-center overflow-hidden rounded-full bg-white p-1">
+      <div className="aspect-1 relative m-auto w-96 max-w-full rounded-full bg-white shadow-xl">
+        <div className="aspect-1 absolute inset-0 m-auto flex w-1/2 items-center justify-center overflow-hidden rounded-full bg-white p-1">
           {result ? (
             <img
               className="aspect-1 rounded-full object-cover"
               src={result.imageUrl}
             />
           ) : (
-            <div className="grid aspect-1 size-full items-center rounded-full bg-slate-700 text-center font-bangers text-8xl text-white">
+            <div className="aspect-1 font-bangers grid size-full items-center rounded-full bg-slate-700 text-center text-8xl text-white">
               {isLoaded ? "?" : <SpinnerIcon text="" />}
             </div>
           )}
         </div>
-        <Arrow className="absolute -inset-y-4 inset-x-1/2 -translate-x-1/2 -translate-y-4" />
+        <Arrow className="absolute inset-x-1/2 -inset-y-4 -translate-x-1/2 -translate-y-4" />
         <canvas
           className="aspect-1 size-full"
           ref={canvasRef}
@@ -356,7 +356,7 @@ export default function SpinningWheel({
           height="400"
         />
         <button
-          className="absolute inset-x-1/2 bottom-2 size-fit -translate-x-1/2 -translate-y-1/2 cursor-pointer whitespace-nowrap rounded-full bg-red-700 px-4 py-2 font-bangers text-2xl hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-400"
+          className="font-bangers absolute inset-x-1/2 bottom-2 size-fit -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-red-700 px-4 py-2 text-2xl whitespace-nowrap hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-400"
           disabled={cannotSpin}
           onClick={spinTheWheel}
         >
