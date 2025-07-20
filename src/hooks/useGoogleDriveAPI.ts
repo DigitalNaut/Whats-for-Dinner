@@ -129,7 +129,7 @@ export function useGoogleDriveAPI() {
       if (authStatus !== "OK") return Promise.reject(new Error(authStatus));
 
       const request = axios.get("https://www.googleapis.com/drive/v3/files", {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+         
         params: {
           fields:
             "files(id, name, mimeType, hasThumbnail, thumbnailLink, iconLink, size), nextPageToken",
@@ -153,7 +153,7 @@ export function useGoogleDriveAPI() {
       const request = axios.get(
         `https://www.googleapis.com/drive/v3/files/${id}`,
         {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+           
           params: { alt: "media", ...params },
           responseType: "blob",
           headers: {

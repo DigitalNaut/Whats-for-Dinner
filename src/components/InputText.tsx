@@ -61,7 +61,7 @@ export default function InputText({
           aria-describedby={name + "-hint"}
           defaultValue={value}
           className={twMerge(
-            "w-full rounded-sm border-b-2 border-b-gray-400 bg-black/5 pb-2 pt-6 invalid:border-b-red-300 hover:bg-black/10 focus:border-b-white focus:bg-black/[15%]",
+            "w-full rounded-sm border-b-2 border-b-gray-400 bg-black/5 pb-2 pt-6 invalid:border-b-red-300 hover:bg-black/10 focus:border-b-white focus:bg-black/15",
             error ? "border-b-red-300" : "",
             onClear ? "pl-4 pr-7" : "px-4",
           )}
@@ -74,7 +74,7 @@ export default function InputText({
           <button
             aria-label={t("Clear input")}
             type="button"
-            className="absolute bottom-2 right-2"
+            className="absolute right-2 bottom-2"
             onClick={() => {
               if (inputRef.current) inputRef.current.value = "";
               onClear();

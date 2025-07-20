@@ -44,7 +44,7 @@ export default function Login({ redirectTo }: LoginProps) {
           <LazyRoulettePreview lang={i18n.language} />
         </Suspense>
       </div>
-      <section className="flex max-w-screen-sm flex-col items-center gap-4 rounded-lg bg-white p-6 text-center shadow-lg">
+      <section className="flex max-w-(--breakpoint-sm) flex-col items-center gap-4 rounded-lg bg-white p-6 text-center shadow-lg">
         <p className="font-bold text-amber-500">{t("Login to get started")}</p>
 
         <p className="text-sm text-slate-900">{t("Google account needed")}</p>

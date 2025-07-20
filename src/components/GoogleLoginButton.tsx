@@ -14,7 +14,7 @@ export default function GoogleLoginButton({
   return (
     <button
       className={twMerge(
-        "h-10 rounded-full bg-white py-0 pl-3 pr-4 font-roboto text-sm font-medium text-[#3c4043]",
+        "font-roboto h-10 rounded-full bg-white py-0 pr-4 pl-3 text-sm font-medium text-[#3c4043]",
         className,
       )}
       {...props}

@@ -15,7 +15,7 @@ export function TitleHeader({ children }: PropsWithChildren) {
       <div className="absolute -top-2 right-2">
         <UserCard />
       </div>
-      <h1 className="text-center font-bangers text-4xl [text-shadow:1px_2px_0px_rgba(245,158,11,1)] sm:text-5xl md:text-6xl">
+      <h1 className="font-bangers text-center text-4xl [text-shadow:1px_2px_0px_rgba(245,158,11,1)] sm:text-5xl md:text-6xl">
         {children}
       </h1>
       <Chopsticks className="w-full" />

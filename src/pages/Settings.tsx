@@ -197,7 +197,7 @@ export default function Settings() {
   return (
     <div className="flex flex-col gap-4 p-6">
       {error && (
-        <div className="fixed left-0 top-0 rounded-sm bg-yellow-500 p-2 text-white">
+        <div className="fixed top-0 left-0 rounded-sm bg-yellow-500 p-2 text-white">
           {error}
         </div>
       )}

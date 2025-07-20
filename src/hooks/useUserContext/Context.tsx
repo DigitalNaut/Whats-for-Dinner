@@ -54,7 +54,7 @@ function UserCard() {
   const { name, picture, email } = user;
 
   return (
-    <div className="group relative w-fit lg:fixed lg:right-2 lg:top-2">
+    <div className="group relative w-fit lg:fixed lg:top-2 lg:right-2">
       <img
         className="size-8 rounded-full"
         src={picture}
@@ -63,7 +63,7 @@ function UserCard() {
         height={32}
         referrerPolicy="no-referrer"
       />
-      <div className="absolute right-0 top-0 z-50 flex flex-col justify-center focus-within:gap-4 focus-within:rounded-md focus-within:bg-white focus-within:px-6 focus-within:py-4 focus-within:text-black group-hover:gap-4 group-hover:rounded-md group-hover:bg-white group-hover:px-6 group-hover:py-4 group-hover:text-black">
+      <div className="absolute top-0 right-0 z-50 flex flex-col justify-center group-hover:gap-4 group-hover:rounded-md group-hover:bg-white group-hover:px-6 group-hover:py-4 group-hover:text-black focus-within:gap-4 focus-within:rounded-md focus-within:bg-white focus-within:px-6 focus-within:py-4 focus-within:text-black">
         <div className="flex w-full justify-center">
           <img
             className="size-8 rounded-full group-focus-within:size-16 group-hover:size-16"
@@ -104,7 +104,7 @@ function UserCard() {
             />
           </div>
 
-          <LegalLinks className="text-xs italic text-slate-800" />
+          <LegalLinks className="text-xs text-slate-800 italic" />
         </div>
       </div>
     </div>
@@ -150,7 +150,7 @@ export function UserProvider({ children }: PropsWithChildren) {
     >
       {children}
       {notification && (
-        <div className="fixed left-0 top-0 flex w-full justify-center gap-2 bg-blue-400 p-1 text-white shadow-xl sm:p-2 md:p-4">
+        <div className="fixed top-0 left-0 flex w-full justify-center gap-2 bg-blue-400 p-1 text-white shadow-xl sm:p-2 md:p-4">
           <div className="flex w-full justify-between px-4 sm:max-w-sm sm:px-0 md:max-w-md lg:max-w-lg">
             <div className="flex items-center gap-2">
               <FontAwesomeIcon className="fa-info-circle" />

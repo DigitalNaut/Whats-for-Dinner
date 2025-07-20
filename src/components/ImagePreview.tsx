@@ -57,7 +57,7 @@ export default function ImagePreview({
         {...props}
       />
       {error && (
-        <div className="absolute left-0 top-0 flex size-full items-center justify-center bg-black/50 text-center">
+        <div className="absolute top-0 left-0 flex size-full items-center justify-center bg-black/50 text-center">
           <span className="text-white">{error}</span>
         </div>
       )}

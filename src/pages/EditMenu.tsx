@@ -221,7 +221,7 @@ export default function EditMenu() {
 
   return (
     <>
-      <h2 className="text-center font-bangers text-4xl">{t("Menu")}</h2>
+      <h2 className="font-bangers text-center text-4xl">{t("Menu")}</h2>
 
       <div className="flex flex-col gap-4">
         {allMenuItems?.length ? (

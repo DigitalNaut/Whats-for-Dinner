@@ -83,7 +83,7 @@ export default function InputFile({
         <div
           id={name + "-label"}
           ref={labelRef}
-          className="group relative size-32 cursor-pointer overflow-hidden rounded-full border border-gray-400 bg-gray-700 hover:bg-gray-800 peer-invalid:ring-2 peer-invalid:ring-red-300 peer-invalid:ring-offset-2 peer-invalid:ring-offset-gray-700 peer-focus:ring-2 peer-focus:ring-white peer-focus:ring-offset-2 peer-focus:ring-offset-blue-600"
+          className="group relative size-32 cursor-pointer overflow-hidden rounded-full border border-gray-400 bg-gray-700 peer-invalid:ring-2 peer-invalid:ring-red-300 peer-invalid:ring-offset-2 peer-invalid:ring-offset-gray-700 peer-focus:ring-2 peer-focus:ring-white peer-focus:ring-offset-2 peer-focus:ring-offset-blue-600 hover:bg-gray-800"
         >
           {fileUrl ? (
             <div className="group">
@@ -125,8 +125,8 @@ export default function InputFile({
           )}
         </div>
         {file ? (
-          <div className="flex max-w-[70%] items-center gap-4 overflow-hidden text-ellipsis p-2">
-            <div className="flex min-w-0 max-w-full flex-col flex-nowrap gap-0.5">
+          <div className="flex max-w-[70%] items-center gap-4 overflow-hidden p-2 text-ellipsis">
+            <div className="flex max-w-full min-w-0 flex-col flex-nowrap gap-0.5">
               <span className="w-full truncate">{file.name}</span>
               <Kilobytes className="text-xs" value={file.size} />
             </div>

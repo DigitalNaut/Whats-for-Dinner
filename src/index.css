@@ -15,16 +15,15 @@
 }
 
 @theme {
-  --svg-abstract-shapes: url("/src/assets/transparent-geometry.svg");
   --gradient-radial-overlay: radial-gradient(
     50% 50% at 50% 50%,
     rgba(255, 255, 255, 0.6) 0%,
     rgba(255, 255, 255, 0) 100%
   );
 
-  --font-bangers: "Bangers", cursive;
-  --font-montserrat: "Montserrat", sans-serif;
-  --font-roboto: "Roboto", sans-serif;
+  --font-bangers: Bangers, cursive;
+  --font-montserrat: Montserrat, sans-serif;
+  --font-roboto: Roboto, sans-serif;
 
   --breakpoint-xs: 360px;
   --breakpoint-sm: 480px;
