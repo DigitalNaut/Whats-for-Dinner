@@ -1,21 +1,19 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { ErrorBoundary } from "react-error-boundary";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { ErrorBoundary } from "react-error-boundary";
 
+import App from "src/App";
+import ErrorFallback from "src/components/common/ErrorFallback";
 import { HeaderProvider } from "src/hooks/useHeaderContext/Context";
 import { LanguageProvider } from "src/hooks/useLanguageContext/Context";
 import { UserProvider } from "src/hooks/useUserContext/Context";
-import App from "src/App";
-import ErrorFallback from "src/components/common/ErrorFallback";
 import UserSettingsProvider from "src/hooks/useUserSettingsContext/Context";
 
-import "src/internationalization";
 import "src/index.css";
+import "src/internationalization";
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement,
-);
+const root = createRoot(document.getElementById("root") as HTMLElement);
 
 root.render(
   <React.StrictMode>
