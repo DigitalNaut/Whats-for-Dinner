@@ -10,7 +10,7 @@ import { globalIgnores } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
-// TODO: Remove when eslint-plugin-tailwindcss@beta doesn't require empty Tailwind JS config file
+// TODO: Remove when eslint-plugin-tailwindcss@beta doesn't require an empty Tailwind JS config file
 import { resolve } from "path";
 
 export default tseslint.config([
