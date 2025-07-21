@@ -13,7 +13,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @plugin "@tailwindcss/forms";
-@plugin "@tailwindcss/aspect-ratio";
 @plugin "@tailwindcss/container-queries";
 
 @layer components {

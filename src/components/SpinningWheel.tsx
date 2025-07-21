@@ -335,22 +335,22 @@ export default function SpinningWheel({
 
   return (
     <div className="w-full">
-      <div className="aspect-1 relative m-auto w-96 max-w-full rounded-full bg-white shadow-xl">
-        <div className="aspect-1 absolute inset-0 m-auto flex w-1/2 items-center justify-center overflow-hidden rounded-full bg-white p-1">
+      <div className="relative m-auto aspect-square w-96 max-w-full rounded-full bg-white shadow-xl">
+        <div className="absolute inset-0 m-auto flex aspect-square w-1/2 items-center justify-center overflow-hidden rounded-full bg-white p-1">
           {result ? (
             <img
-              className="aspect-1 rounded-full object-cover"
+              className="aspect-square rounded-full object-cover"
               src={result.imageUrl}
             />
           ) : (
-            <div className="aspect-1 font-bangers grid size-full items-center rounded-full bg-slate-700 text-center text-8xl text-white">
+            <div className="font-bangers grid aspect-square size-full items-center rounded-full bg-slate-700 text-center text-8xl text-white">
               {isLoaded ? "?" : <SpinnerIcon text="" />}
             </div>
           )}
         </div>
         <Arrow className="absolute inset-x-1/2 -inset-y-4 -translate-x-1/2 -translate-y-4" />
         <canvas
-          className="aspect-1 size-full"
+          className="aspect-square size-full"
           ref={canvasRef}
           width="400"
           height="400"
