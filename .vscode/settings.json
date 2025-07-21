@@ -40,6 +40,12 @@
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "commandOnAllFiles.commands": {
+    "Organize All Imports": {
+      "command": "multiCommand.sortImports",
+      "includeFileExtensions": [".ts", ".tsx"]
+    }
+  },
   // See: https://github.com/paolotiu/tailwind-intellisense-regex-list#tailwind-merge
   "tailwindCSS.experimental.classRegex": [
     ["(?:twMerge|twJoin)\\(([^;]*)[\\);]", "[`'\"`]([^'\"`;]*)[`'\"`]"]
