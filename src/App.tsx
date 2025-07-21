@@ -4,7 +4,7 @@ import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import BackButton from "src/components/common/BackButton";
 import Spinner from "src/components/common/Spinner";
 import { MenuHeader, TitleHeader } from "src/components/Headers";
-import { MenuLayout, PlainLayout } from "src/components/Layouts";
+import { MenuLayout, BaseAppLayout } from "src/components/Layouts";
 import ProtectedRoutes from "src/components/ProtectedRoutes";
 import { GoogleDriveProvider } from "src/hooks/useGoogleDriveContext/Context";
 import { useLanguageContext } from "src/hooks/useLanguageContext";
@@ -26,9 +26,9 @@ function MainLayout({ children }: PropsWithChildren) {
   const { t } = useLanguageContext();
 
   return (
-    <PlainLayout header={<TitleHeader>{t("Title")}</TitleHeader>}>
+    <BaseAppLayout header={<TitleHeader>{t("Title")}</TitleHeader>}>
       {children}
-    </PlainLayout>
+    </BaseAppLayout>
   );
 }
 
@@ -42,6 +42,10 @@ function InfoWrapper({ children }: PropsWithChildren) {
   );
 }
 
+/*
+ * The Data Router is necessary for the `useBlocker` hook to work.
+ * See: https://reactrouter.com/api/hooks/useBlocker
+ */
 const newRouter = createBrowserRouter([
   {
     path: "/",

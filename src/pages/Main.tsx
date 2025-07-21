@@ -8,8 +8,15 @@ import Floating from "src/components/common/Floating";
 import SpinningWheel from "src/components/SpinningWheel";
 import ThemedButton from "src/components/common/ThemedButton";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const maxHistory = 20;
+const defaults = {
+  MAX_HISTORY: 40,
+};
+
+const fireConfetti = () => {
+  confetti({ particleCount: 30, spread: 360, origin: { y: 0.4 } });
+};
 
 type DishProps = { label: string; imageUrl: string | undefined };
 
@@ -40,7 +47,7 @@ export default function Main() {
   const handleSpinEnd = (result: SpinnerEntry) => {
     setResultHistory((currentHistory) => [
       { ...result, timestamp: Date.now() },
-      ...currentHistory.slice(0, maxHistory - 1),
+      ...currentHistory.slice(0, defaults.MAX_HISTORY - 1),
     ]);
 
     fireConfetti();

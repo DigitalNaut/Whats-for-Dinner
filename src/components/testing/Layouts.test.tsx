@@ -3,7 +3,7 @@ import { test, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 
-import { PlainLayout, MenuLayout } from "src/components/Layouts";
+import { BaseAppLayout, MenuLayout } from "src/components/Layouts";
 
 function TestRoutes({ children }: PropsWithChildren) {
   return (
@@ -28,9 +28,9 @@ function TestRoutes({ children }: PropsWithChildren) {
 test("renders a main layout", () => {
   render(
     <TestRoutes>
-      <PlainLayout header={<div>Header</div>}>
+      <BaseAppLayout header={<div>Header</div>}>
         <Outlet />
-      </PlainLayout>
+      </BaseAppLayout>
     </TestRoutes>,
   );
 
