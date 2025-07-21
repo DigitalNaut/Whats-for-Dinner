@@ -1,7 +1,8 @@
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { twMerge } from "tailwind-merge";
 
 import { useLanguageContext } from "src/hooks/useLanguageContext";
-import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 
 export default function Spinner({
   text,
@@ -19,7 +20,7 @@ export default function Spinner({
         cover && "flex h-full items-center justify-center",
       )}
     >
-      <FontAwesomeIcon className="fa-spinner fa-spin" />
+      <FontAwesomeIcon className="fa-spin" icon={faSpinner} />
       {text ?? t("Loading...")}
     </div>
   );

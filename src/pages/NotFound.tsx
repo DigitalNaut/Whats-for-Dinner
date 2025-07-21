@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 
 import { useLanguageContext } from "src/hooks/useLanguageContext";
-import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 
 export default function NotFound() {
   const { t } = useLanguageContext();
@@ -11,7 +12,7 @@ export default function NotFound() {
       <h2 className="text-6xl">404</h2>
       <h3 className="text-2xl">{t("Page not found")}</h3>
       <Link className="m-auto flex items-center gap-1 underline" to="/">
-        <FontAwesomeIcon className="fa-chevron-left" />
+        <FontAwesomeIcon icon={faChevronLeft} />
         {t("Back to home")}
       </Link>
     </div>

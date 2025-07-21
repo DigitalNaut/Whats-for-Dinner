@@ -1,15 +1,15 @@
-import { type PropsWithChildren } from "react";
 import {
   type MenuItemProps,
   type MenuProps,
+  Menu,
   MenuButton,
   MenuItem,
   MenuSeparator,
-  Menu,
 } from "@ariakit/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import { type PropsWithChildren } from "react";
 import { twMerge } from "tailwind-merge";
-
-import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 
 export function ContextMenuItem({ key, className, ...props }: MenuItemProps) {
   return (
@@ -57,7 +57,7 @@ export function ContextMenuButton({ store }: { store: MenuProps["store"] }) {
       store={store}
       className="flex flex-col overflow-auto rounded-lg p-2 shadow-lg outline-none focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
     >
-      <FontAwesomeIcon className="fa-ellipsis-v" />
+      <FontAwesomeIcon icon={faEllipsisV} />
     </MenuButton>
   );
 }

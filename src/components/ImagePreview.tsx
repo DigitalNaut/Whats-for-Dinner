@@ -1,13 +1,14 @@
-import {
-  type DetailedHTMLProps,
-  type ImgHTMLAttributes,
-  type ReactEventHandler,
-  useState,
+import { faDownload, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type {
+  DetailedHTMLProps,
+  ImgHTMLAttributes,
+  ReactEventHandler,
 } from "react";
+import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { useLanguageContext } from "src/hooks/useLanguageContext";
-import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 
 type ImagePreviewProps = {
   fileName?: string;
@@ -65,7 +66,7 @@ export default function ImagePreview({
         <>
           <div className="pointer-events-none absolute inset-0 z-10 grid size-full place-items-center group-hover:bg-black/50">
             <span className="invisible inset-x-full inset-y-0 group-hover:visible">
-              <FontAwesomeIcon className="fa-xmark" />
+              <FontAwesomeIcon icon={faXmark} />
             </span>
           </div>
           {showDownloadLink && (
@@ -74,7 +75,7 @@ export default function ImagePreview({
               className="absolute inset-x-0 bottom-0 z-10 rounded-bl-md bg-black/50 p-2"
               download
             >
-              Download <FontAwesomeIcon className="fa-download" />
+              Download <FontAwesomeIcon icon={faDownload} />
             </a>
           )}
         </>

@@ -7,12 +7,13 @@ import { useSpinnerMenuContext } from "src/hooks/useSpinnerMenuContext";
 import Floating from "src/components/common/Floating";
 import SpinningWheel from "src/components/SpinningWheel";
 import ThemedButton from "src/components/common/ThemedButton";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 
 const maxHistory = 20;
 
-type DishProps = { label: string; imageUrl: string };
+type DishProps = { label: string; imageUrl: string | undefined };
 
-function Dish({ label, imageUrl }: DishProps) {
+function DishThumb({ label, imageUrl }: DishProps) {
   return (
     <div className="group">
       <div className="aspect-1 relative w-16 overflow-hidden rounded-lg bg-gray-700 md:w-24 lg:w-28">
@@ -26,7 +27,7 @@ function Dish({ label, imageUrl }: DishProps) {
 }
 
 const fireConfetti = () => {
-  confetti({ particleCount: 100, spread: 360, origin: { y: 0.4 } });
+  confetti({ particleCount: 30, spread: 360, origin: { y: 0.4 } });
 };
 
 type HistoryItem = SpinnerEntry & { timestamp: number };
@@ -56,13 +57,13 @@ export default function Main() {
           </div>
         )}
         {resultHistory.map(({ timestamp, imageUrl, label }) => (
-          <Dish key={timestamp} imageUrl={imageUrl || ""} label={label} />
+          <DishThumb key={timestamp} imageUrl={imageUrl} label={label} />
         ))}
       </div>
 
       <Floating>
         <Link to="/menu" tabIndex={-1}>
-          <ThemedButton iconStyle="fa-pen-to-square">
+          <ThemedButton iconStyle={faPenToSquare}>
             {t("Edit Menu")}
           </ThemedButton>
         </Link>

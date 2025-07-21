@@ -1,12 +1,13 @@
+import { faCloudArrowUp, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
-import { useGoogleDriveContext } from "src/hooks/useGoogleDriveContext";
-import { useLanguageContext } from "src/hooks/useLanguageContext";
-import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import ProgressBar from "src/components/common/ProgressBar";
 import Spinner from "src/components/common/Spinner";
 import ThemedButton from "src/components/common/ThemedButton";
+import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
+import { useGoogleDriveContext } from "src/hooks/useGoogleDriveContext";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
 
 export default function ImageUpload({ onUpload }: { onUpload: () => void }) {
   const { t } = useLanguageContext();
@@ -149,7 +150,7 @@ export default function ImageUpload({ onUpload }: { onUpload: () => void }) {
                 />
               ) : (
                 <>
-                  <FontAwesomeIcon className="fa-cloud-arrow-up" />
+                  <FontAwesomeIcon icon={faCloudArrowUp} />
                   <span>{t("Upload")}</span>
                 </>
               )}
@@ -159,7 +160,7 @@ export default function ImageUpload({ onUpload }: { onUpload: () => void }) {
               disabled={!isUploadingFile}
               className={isUploadingFile ? "" : "hidden"}
               title={t("Cancel")}
-              iconStyle="fa-xmark"
+              iconStyle={faXmark}
             />
           </div>
         </>

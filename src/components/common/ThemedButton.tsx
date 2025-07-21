@@ -1,11 +1,12 @@
-import { type PropsWithChildren } from "react";
+import type { ButtonProps } from "@ariakit/react";
+import { Button } from "@ariakit/react";
+import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { PropsWithChildren } from "react";
 import { twMerge } from "tailwind-merge";
-import { type ButtonProps, Button } from "@ariakit/react";
-
-import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 
 type Props = PropsWithChildren<{
-  iconStyle?: string;
+  iconStyle?: IconDefinition;
   className?: string;
   danger?: true;
 }> &
@@ -28,7 +29,7 @@ export default function ThemedButton({
       )}
       {...props}
     >
-      {iconStyle && <FontAwesomeIcon className={iconStyle} />}
+      {iconStyle && <FontAwesomeIcon icon={iconStyle} />}
       <span>{children}</span>
     </Button>
   );

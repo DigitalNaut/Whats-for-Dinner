@@ -5,12 +5,16 @@ import {
 } from "react";
 import { AxiosError } from "axios";
 import { twMerge } from "tailwind-merge";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowRotateLeft,
+  faExternalLink,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
 import { useLanguageContext } from "src/hooks/useLanguageContext";
 import { useSpinnerMenuContext } from "src/hooks/useSpinnerMenuContext";
 import { useUser } from "src/hooks/useUserContext";
-import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import LanguageSelect from "src/components/LanguageSelect";
 import Spinner from "src/components/common/Spinner";
 import ThemedButton from "src/components/common/ThemedButton";
@@ -212,7 +216,7 @@ export default function Settings() {
           rel="noreferrer"
         >
           <span>{t("SettingsPage.Drive.open")}</span>
-          <FontAwesomeIcon className="fa-external-link" />
+          <FontAwesomeIcon icon={faExternalLink} />
         </a>
         <p className="text-sm text-slate-300">
           {t("SettingsPage.Drive.description")}
@@ -234,7 +238,7 @@ export default function Settings() {
           )}
         </div>
         <ThemedButton
-          iconStyle="fa-arrow-rotate-left"
+          iconStyle={faArrowRotateLeft}
           className="w-max"
           disabled={!!isWorking}
           onClick={resetSpinnerMenu}

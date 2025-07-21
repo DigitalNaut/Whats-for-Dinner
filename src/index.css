@@ -1,3 +1,15 @@
+/* 
+ * We load FontAwesome with a higher priority layer
+ * to prevent Tailwind from overwriting the styles.
+ * 
+ * See:
+ * Explanation - https://github.com/tailwindlabs/tailwindcss/discussions/15870#discussioncomment-12318987 
+ * Implementation - https://gihub.com/tailwindlabs/tailwindcss/discussions/15870#discussioncomment-13381245
+ * Cascade Layers - https://developer.mozilla.org/en-US/docs/Web/CSS/@layer#description
+*/
+@layer vendor;
+@import "@fortawesome/fontawesome-svg-core/styles.css" layer(vendor);
+
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @plugin "@tailwindcss/forms";

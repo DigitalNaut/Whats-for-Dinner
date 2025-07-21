@@ -1,3 +1,5 @@
+import { faCloudUpload, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   type ChangeEventHandler,
   type InputHTMLAttributes,
@@ -5,11 +7,10 @@ import {
   useState,
 } from "react";
 
-import { resizeImage } from "src/utils/imageResize";
-import { useLanguageContext } from "src/hooks/useLanguageContext";
-import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import Kilobytes from "src/components/common/Kilobytes";
 import Spinner from "src/components/common/Spinner";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
+import { resizeImage } from "src/utils/imageResize";
 
 export type FileInfo = Partial<Pick<File, "name" | "size">> & {
   url?: string;
@@ -99,7 +100,7 @@ export default function InputFile({
                 role="button"
                 onClick={removeFileHandler}
               >
-                <FontAwesomeIcon className="fa-xmark text-2xl" />
+                <FontAwesomeIcon icon={faXmark} size="2xl" />
                 <span className="text-sm">{t("Remove")}</span>
               </button>
             </div>
@@ -115,7 +116,7 @@ export default function InputFile({
                 </>
               ) : (
                 <>
-                  <FontAwesomeIcon className="fa-cloud-upload text-2xl" />
+                  <FontAwesomeIcon icon={faCloudUpload} size="2xl" />
                   <span className="text-center text-sm">
                     {label ?? t("Select image")}
                   </span>
@@ -137,7 +138,7 @@ export default function InputFile({
               role="button"
               onClick={removeFileHandler}
             >
-              <FontAwesomeIcon className="fa-xmark" />
+              <FontAwesomeIcon icon={faXmark} />
             </button>
           </div>
         ) : (

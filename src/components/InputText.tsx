@@ -1,3 +1,5 @@
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   type FocusEventHandler,
   type InputHTMLAttributes,
@@ -7,7 +9,6 @@ import {
 import { twMerge } from "tailwind-merge";
 
 import { useLanguageContext } from "src/hooks/useLanguageContext";
-import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 
 type InputTextProps = {
   name: string;
@@ -61,9 +62,9 @@ export default function InputText({
           aria-describedby={name + "-hint"}
           defaultValue={value}
           className={twMerge(
-            "w-full rounded-sm border-b-2 border-b-gray-400 bg-black/5 pb-2 pt-6 invalid:border-b-red-300 hover:bg-black/10 focus:border-b-white focus:bg-black/15",
+            "w-full rounded-sm border-b-2 border-b-gray-400 bg-black/5 pt-6 pb-2 invalid:border-b-red-300 hover:bg-black/10 focus:border-b-white focus:bg-black/15",
             error ? "border-b-red-300" : "",
-            onClear ? "pl-4 pr-7" : "px-4",
+            onClear ? "pr-7 pl-4" : "px-4",
           )}
           onFocus={onFocus}
           onBlur={onBlur}
@@ -80,7 +81,7 @@ export default function InputText({
               onClear();
             }}
           >
-            <FontAwesomeIcon className="fa-xmark" />
+            <FontAwesomeIcon icon={faXmark} />
           </button>
         )}
       </div>

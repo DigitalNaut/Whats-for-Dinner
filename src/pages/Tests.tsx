@@ -1,10 +1,11 @@
+import { t } from "i18next";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { t } from "i18next";
 // import { Link } from "react-router-dom";
 // import Floating from "src/components/common/Floating";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import ImageList from "src/components/ImageList";
 import ImageUpload from "src/components/ImageUpload";
 import Spinner from "src/components/common/Spinner";
@@ -28,7 +29,7 @@ function Tests() {
     <>
       {/* <SpinningWheel choices={enabledMenuItems} /> */}
       <Link className="m-auto flex items-center gap-1 underline" to="/">
-        <FontAwesomeIcon className="fa-chevron-left" />
+        <FontAwesomeIcon icon={faChevronLeft} />
         {t("Back to home")}
       </Link>
       <form

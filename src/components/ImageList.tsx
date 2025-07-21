@@ -1,16 +1,22 @@
+import {
+  faDownload,
+  faRotate,
+  faTrash,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
-import { useGoogleDriveContext } from "src/hooks/useGoogleDriveContext";
-import { useLanguageContext } from "src/hooks/useLanguageContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AwaitingPermissionsNotice from "src/components/AwaitingPermissionsNotice";
-import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
 import ImagePreview from "src/components/ImagePreview";
 import Kilobytes from "src/components/common/Kilobytes";
 import ProgressBar from "src/components/common/ProgressBar";
 import Spinner from "src/components/common/Spinner";
 import ThemedButton from "src/components/common/ThemedButton";
+import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
+import { useGoogleDriveContext } from "src/hooks/useGoogleDriveContext";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
 
 type ImageListProps = {
   refreshDate: number;
@@ -30,7 +36,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
   if (!file.id)
     return (
       <div className="flex items-center gap-2">
-        <FontAwesomeIcon className="fa-xmark" />
+        <FontAwesomeIcon icon={faXmark} />
         <i>{t("File unavailable")}</i>
       </div>
     );
@@ -72,7 +78,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
             {isDownloading ? (
               <Spinner text="" />
             ) : (
-              <FontAwesomeIcon className="fa-download" />
+              <FontAwesomeIcon icon={faDownload} />
             )}
           </button>
           <button
@@ -91,7 +97,7 @@ function ListItem({ file, downloadFile, removeFile }: ListItemProps) {
             {isDeleting ? (
               <Spinner text="" />
             ) : (
-              <FontAwesomeIcon className="fa-trash" />
+              <FontAwesomeIcon icon={faTrash} />
             )}
           </button>
         </>
@@ -257,11 +263,7 @@ export default function ImageList({ refreshDate }: ImageListProps) {
         title={t("Refresh list")}
         className="w-fit"
       >
-        {loadingDriveFiles ? (
-          <Spinner />
-        ) : (
-          <FontAwesomeIcon className="fa-rotate" />
-        )}
+        {loadingDriveFiles ? <Spinner /> : <FontAwesomeIcon icon={faRotate} />}
       </ThemedButton>
 
       <h3 className="text-lg">Imagen descargada</h3>

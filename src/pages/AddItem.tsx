@@ -1,25 +1,25 @@
+import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import {
   type FormEventHandler,
   type Reducer,
-  useState,
   useReducer,
   useRef,
+  useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { type FileInfo } from "src/components/InputFile";
-import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
-import { useGoogleDriveContext } from "src/hooks/useGoogleDriveContext";
-import { useLanguageContext } from "src/hooks/useLanguageContext";
-import { useSpinnerMenu } from "src/hooks/useSpinnerMenu";
-import FontAwesomeIcon from "src/components/common/FontAwesomeIcon";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ImagePreview from "src/components/ImagePreview";
-import InputFile from "src/components/InputFile";
+import InputFile, { type FileInfo } from "src/components/InputFile";
 import InputText from "src/components/InputText";
 import Kilobytes from "src/components/common/Kilobytes";
 import Spinner from "src/components/common/Spinner";
 import Switcher from "src/components/common/Switcher";
 import ThemedButton from "src/components/common/ThemedButton";
+import { useGoogleDriveAPI } from "src/hooks/useGoogleDriveAPI";
+import { useGoogleDriveContext } from "src/hooks/useGoogleDriveContext";
+import { useLanguageContext } from "src/hooks/useLanguageContext";
+import { useSpinnerMenu } from "src/hooks/useSpinnerMenu";
 
 type StateActionType = "setName" | "setURL" | "reset";
 
@@ -346,7 +346,7 @@ export default function AddItem() {
       <form className="flex flex-col gap-6" onSubmit={handleSubmitForm}>
         {errorState.formError && (
           <div className="flex w-full items-center gap-1 rounded-sm bg-amber-600 p-2 text-white">
-            <FontAwesomeIcon className="fa-warning" />
+            <FontAwesomeIcon icon={faWarning} />
             {errorState.formError}
           </div>
         )}
