@@ -7,8 +7,8 @@ import {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import ImagePreview from "src/components/ImagePreview";
 import InputFile, { type FileInfo } from "src/components/InputFile";
 import InputText from "src/components/InputText";

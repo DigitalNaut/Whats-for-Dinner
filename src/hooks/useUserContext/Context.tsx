@@ -7,9 +7,9 @@ import {
 } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { faInfoCircle, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useLanguageContext } from "src/hooks/useLanguageContext";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import LanguageSelect from "src/components/LanguageSelect";
 import LegalLinks from "src/components/LegalLinks";
 import ThemedButton from "src/components/common/ThemedButton";

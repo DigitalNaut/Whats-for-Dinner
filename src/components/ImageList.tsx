@@ -6,8 +6,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import AwaitingPermissionsNotice from "src/components/AwaitingPermissionsNotice";
 import ImagePreview from "src/components/ImagePreview";
 import Kilobytes from "src/components/common/Kilobytes";
