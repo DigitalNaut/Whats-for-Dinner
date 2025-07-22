@@ -22,8 +22,8 @@ type DishProps = { label: string; imageUrl: string | undefined };
 
 function DishThumb({ label, imageUrl }: DishProps) {
   return (
-    <div className="group">
-      <div className="relative aspect-square w-16 overflow-hidden rounded-lg bg-gray-700 md:w-24 lg:w-28">
+    <div className="group transition-transform duration-150 hover:scale-105">
+      <div className="relative flex aspect-square size-max w-22 overflow-hidden rounded-lg bg-gray-700 md:w-24 lg:w-28">
         <span className="pointer-events-none absolute hidden size-full place-items-center bg-black/50 text-center text-sm group-hover:grid">
           {label}
         </span>
@@ -32,10 +32,6 @@ function DishThumb({ label, imageUrl }: DishProps) {
     </div>
   );
 }
-
-const fireConfetti = () => {
-  confetti({ particleCount: 30, spread: 360, origin: { y: 0.4 } });
-};
 
 type HistoryItem = SpinnerEntry & { timestamp: number };
 
@@ -64,7 +60,7 @@ export default function Main() {
   };
 
   return (
-    <div className="flex w-full flex-col gap-8">
+    <div className="flex flex-col gap-8 overflow-y-auto">
       <SpinningWheel
         className="shrink-0"
         entries={enabledMenuItems}
@@ -72,9 +68,10 @@ export default function Main() {
         onSpinEnd={handleSpinEnd}
       />
 
-      <div className="flex min-w-full gap-4 overflow-x-auto rounded-md bg-slate-700 p-2 shadow-xl">
+      <div className="relative flex max-w-full grow flex-wrap justify-center gap-2 overflow-y-auto rounded-md p-2">
+        <div className="absolute top-2 right-2 shrink-0 bg-slate-700 p-2 shadow-xl">
         {resultHistory.length === 0 && (
-          <div className="aspect-square h-16 w-full text-gray-400 md:h-24 lg:h-28">
+          <div className="flex h-16 items-center text-white/40 select-none md:h-24 lg:h-28">
             {t("No history yet")}
           </div>
         )}

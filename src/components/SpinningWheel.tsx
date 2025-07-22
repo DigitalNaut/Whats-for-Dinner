@@ -343,7 +343,7 @@ export default function SpinningWheel({
   }, [entries]);
 
   return (
-    <div className="w-full">
+    <div className={`relative mt-8 w-full ${className}`}>
       <div className="relative m-auto aspect-square w-96 max-w-full rounded-full bg-white shadow-xl">
         <div className="absolute inset-0 m-auto flex aspect-square w-1/2 items-center justify-center overflow-hidden rounded-full bg-white p-1">
           {result ? (
@@ -357,15 +357,17 @@ export default function SpinningWheel({
             </div>
           )}
         </div>
-        <Arrow className="absolute inset-x-1/2 -inset-y-4 -translate-x-1/2 -translate-y-4" />
+
+        <Arrow className="absolute inset-x-1/2 -translate-x-1/2 -translate-y-1/2" />
+
         <canvas
-          className="aspect-square size-full"
+          className="inset-y-4 aspect-square size-full"
           ref={canvasRef}
           width="400"
           height="400"
         />
         <button
-          className="font-bangers absolute inset-x-1/2 bottom-2 size-fit -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-red-700 px-4 py-2 text-2xl whitespace-nowrap hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-400"
+          className="font-bangers absolute inset-x-1/2 -bottom-2 size-fit -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-red-700 px-4 py-3 text-3xl whitespace-nowrap hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-400"
           disabled={cannotSpin}
           onClick={handleClick}
         >
