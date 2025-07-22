@@ -4,14 +4,16 @@ type Props = {
   header: JSX.Element;
 };
 
+const baseStyle =
+  "m-auto size-full w-screen max-w-(--breakpoint-md) flex flex-col overflow-hidden bg-linear-to-br shadow-2xl md:rounded-xl";
 export function BaseAppLayout({ children, header }: PropsWithChildren<Props>) {
   return (
-    <div className="h-full min-h-screen w-screen max-w-(--breakpoint-md) bg-linear-to-br from-[#5B0B68] to-[#4C1D95] text-white shadow-2xl md:min-h-[calc(100vh-24px)] md:rounded-xl lg:min-h-[calc(100vh-48px)]">
-      <div className="inset-0 grid size-full grid-cols-1 grid-rows-[auto_1fr] bg-[url(/src/assets/transparent-geometry.svg)] bg-top bg-repeat pt-6">
+    <div
+      className={`${baseStyle} from-[#5B0B68] to-[#4C1D95] text-white md:rounded-xl`}
+    >
+      <div className="flex size-full flex-col gap-2 overflow-y-auto bg-[url(/src/assets/transparent-geometry.svg)] bg-top bg-repeat pt-8">
         {header}
-        <div className="overflow-y-auto p-3 sm:p-4 md:p-5 lg:p-6">
-          {children}
-        </div>
+        {children}
       </div>
     </div>
   );
@@ -19,9 +21,9 @@ export function BaseAppLayout({ children, header }: PropsWithChildren<Props>) {
 
 export function MenuLayout({ children, header }: PropsWithChildren<Props>) {
   return (
-    <div className="grid h-screen w-screen max-w-(--breakpoint-md) grid-cols-1 grid-rows-[auto_1fr] overflow-y-hidden bg-gray-700 text-white shadow-2xl md:h-[calc(100vh-24px)] md:rounded-xl lg:h-[calc(100vh-48px)]">
+    <div className={`${baseStyle} bg-gray-700 text-white md:rounded-xl`}>
       {header}
-      <div className="overflow-y-auto p-3 sm:p-4 md:p-5 lg:p-6">{children}</div>
+      <div className="flex flex-col overflow-y-auto">{children}</div>
     </div>
   );
 }
