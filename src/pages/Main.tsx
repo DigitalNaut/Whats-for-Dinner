@@ -11,7 +11,7 @@ import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const defaults = {
-  MAX_HISTORY: 40,
+  HISTORY_SIZE: 40,
 };
 
 const fireConfetti = () => {
@@ -43,19 +43,34 @@ export default function Main() {
   const { t } = useLanguageContext();
   const { enabledMenuItems } = useSpinnerMenuContext();
   const [resultHistory, setResultHistory] = useState<HistoryItem[]>([]);
+  const [spinResult, setSpinResult] = useState<HistoryItem>();
+
+  const handleSpinStart = () => {
+    if (!spinResult) return;
+
+    // Unshift and truncate
+    setResultHistory((currentHistory) => [
+      spinResult,
+      ...currentHistory.slice(0, defaults.HISTORY_SIZE - 1),
+    ]);
+
+    setSpinResult(undefined);
+  };
 
   const handleSpinEnd = (result: SpinnerEntry) => {
-    setResultHistory((currentHistory) => [
-      { ...result, timestamp: Date.now() },
-      ...currentHistory.slice(0, defaults.MAX_HISTORY - 1),
-    ]);
+    setSpinResult({ ...result, timestamp: Date.now() });
 
     fireConfetti();
   };
 
   return (
     <div className="flex w-full flex-col gap-8">
-      <SpinningWheel entries={enabledMenuItems} onSpinEnd={handleSpinEnd} />
+      <SpinningWheel
+        className="shrink-0"
+        entries={enabledMenuItems}
+        onClick={handleSpinStart}
+        onSpinEnd={handleSpinEnd}
+      />
 
       <div className="flex min-w-full gap-4 overflow-x-auto rounded-md bg-slate-700 p-2 shadow-xl">
         {resultHistory.length === 0 && (

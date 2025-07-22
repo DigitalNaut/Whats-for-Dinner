@@ -8,8 +8,10 @@ import SpinnerIcon from "src/components/common/Spinner";
 import Arrow from "src/assets/wedge.svg?react";
 
 type SpinningWheelProps = {
+  className?: string;
   entries?: SpinnerEntry[];
   onSpinEnd?: (result: SpinnerEntry) => void;
+  onClick?: () => void;
 };
 
 const TAU = 2 * Math.PI;
@@ -282,6 +284,8 @@ class Spinner {
 export default function SpinningWheel({
   entries,
   onSpinEnd,
+  onClick,
+  className,
 }: SpinningWheelProps) {
   const { t } = useLanguageContext();
   const { isLoaded } = useSpinnerMenuContext();
@@ -326,6 +330,11 @@ export default function SpinningWheel({
     });
   };
 
+  const handleClick = () => {
+    if (onClick) onClick();
+    spinTheWheel();
+  };
+
   useEffect(() => {
     if (canvasRef.current) setupSpinner(canvasRef.current, entries || []);
     // The canvasRef is never going to change
@@ -358,7 +367,7 @@ export default function SpinningWheel({
         <button
           className="font-bangers absolute inset-x-1/2 bottom-2 size-fit -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-red-700 px-4 py-2 text-2xl whitespace-nowrap hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-400"
           disabled={cannotSpin}
-          onClick={spinTheWheel}
+          onClick={handleClick}
         >
           {t("Spin the Wheel!")}
         </button>
