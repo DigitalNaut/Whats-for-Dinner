@@ -37,7 +37,8 @@ export default tseslint.config([
     settings: {
       react: { version: "detect" },
       tailwindcss: {
-        whitelist: ["g_id_[a-z]+", "fa-[a-z-]+"],
+        //TODO: Whitelisting font-family classes until eslint-plugin-tailwindcss@beta supports it
+        whitelist: ["g_id_[a-z]+", "fa-[a-z-]+", "font-\\w+"],
         config: resolve(import.meta.dirname, "./tailwind.config.js"),
       },
       env: {

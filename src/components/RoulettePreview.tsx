@@ -84,7 +84,7 @@ const content: Content = {
         </text>
       </>
     ),
-    buttonText: "Choose!",
+    buttonText: "Spin the Wheel!",
   },
 };
 

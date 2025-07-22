@@ -22,7 +22,7 @@ export default function ThemedButton({
   return (
     <Button
       className={twMerge(
-        "flex items-center justify-center gap-1 rounded-full bg-white px-3 py-1 text-purple-500 hover:bg-gray-200 hover:text-purple-900 focus:ring active:bg-gray-400 active:text-gray-700 disabled:bg-gray-500 disabled:text-gray-400",
+        "flex cursor-pointer items-center justify-center gap-1 rounded-full bg-white px-3 py-1 text-purple-500 hover:bg-gray-200 hover:text-purple-900 focus:ring active:bg-gray-400 active:text-gray-700 disabled:bg-gray-500 disabled:text-gray-400",
         danger &&
           "bg-red-500 text-white hover:bg-red-600 hover:text-white active:bg-red-700 active:text-white",
         className,

@@ -360,7 +360,7 @@ export default function SpinningWheel({
           disabled={cannotSpin}
           onClick={spinTheWheel}
         >
-          {t("Choose!")}
+          {t("Spin the Wheel!")}
         </button>
       </div>
     </div>
