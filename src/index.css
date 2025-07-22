@@ -15,6 +15,12 @@
 @plugin "@tailwindcss/forms";
 @plugin "@tailwindcss/container-queries";
 
+@layer base {
+  button {
+    @apply cursor-pointer;
+  }
+}
+
 @layer components {
   input[type="file"] {
     @apply rounded-full bg-white px-3 py-1 text-purple-500 hover:bg-gray-200 hover:text-purple-900 focus:ring active:bg-gray-400 active:text-gray-700 disabled:bg-gray-500 disabled:text-gray-400;

@@ -8,7 +8,6 @@ import Floating from "src/components/common/Floating";
 import SpinningWheel from "src/components/SpinningWheel";
 import ThemedButton from "src/components/common/ThemedButton";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const defaults = {
   HISTORY_SIZE: 40,
@@ -69,7 +68,6 @@ export default function Main() {
       />
 
       <div className="relative flex max-w-full grow flex-wrap justify-center gap-2 overflow-y-auto rounded-md p-2">
-        <div className="absolute top-2 right-2 shrink-0 bg-slate-700 p-2 shadow-xl">
         {resultHistory.length === 0 && (
           <div className="flex h-16 items-center text-white/40 select-none md:h-24 lg:h-28">
             {t("No history yet")}

@@ -50,7 +50,7 @@ function HeaderContextMenu({
   const menuStore = useMenuStore();
 
   return (
-    <div className="z-10" title={title}>
+    <div className="z-10 aspect-square size-4" title={title}>
       <ContextMenuButton store={menuStore} />
       <ContextMenu store={menuStore}>
         {showSelectionOptions || (
@@ -230,9 +230,9 @@ export default function EditMenu() {
 
   return (
     <>
-      <h2 className="font-bangers text-center text-4xl">{t("Menu")}</h2>
+      <h2 className="font-bangers py-4 text-center text-4xl">{t("Menu")}</h2>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 p-2">
         {allMenuItems?.length ? (
           allMenuItems.map(({ label, imageUrl, key, enabled }, index) => (
             <div key={key} className="flex items-center gap-2">
