@@ -50,7 +50,7 @@ function HeaderContextMenu({
   const menuStore = useMenuStore();
 
   return (
-    <div className="z-10 aspect-square size-4" title={title}>
+    <div className="z-10" title={title}>
       <ContextMenuButton store={menuStore} />
       <ContextMenu store={menuStore}>
         {showSelectionOptions || (
@@ -200,7 +200,11 @@ export default function EditMenu() {
     () => (
       <>
         {mode === "select" && (
-          <button onClick={deleteSelected} title={t("Delete")}>
+          <button
+            className="size-8"
+            onClick={deleteSelected}
+            title={t("Delete")}
+          >
             <FontAwesomeIcon icon={faTrash} />
           </button>
         )}

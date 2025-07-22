@@ -46,7 +46,18 @@ function LogoutButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-function UserCard() {
+const CARD_SIZES = {
+  sm: {
+    size: 32,
+    style: "size-8",
+  },
+  md: {
+    size: 42,
+    style: "size-12",
+  },
+} as const;
+
+function UserCard({ size }: { size: keyof typeof CARD_SIZES }) {
   const { t } = useLanguageContext();
   const { user, logout } = useUser();
 
@@ -57,21 +68,21 @@ function UserCard() {
   return (
     <div className="group relative w-fit lg:fixed lg:top-2 lg:right-2">
       <img
-        className="size-8 rounded-full"
+        className={`${CARD_SIZES[size].style} rounded-full`}
         src={picture}
         alt={t("User avatar")}
-        width={32}
-        height={32}
+        width={CARD_SIZES[size].size}
+        height={CARD_SIZES[size].size}
         referrerPolicy="no-referrer"
       />
       <div className="absolute top-0 right-0 z-50 flex flex-col justify-center group-hover:gap-4 group-hover:rounded-md group-hover:bg-white group-hover:px-6 group-hover:py-4 group-hover:text-black focus-within:gap-4 focus-within:rounded-md focus-within:bg-white focus-within:px-6 focus-within:py-4 focus-within:text-black">
         <div className="flex w-full justify-center">
           <img
-            className="size-8 rounded-full group-focus-within:size-16 group-hover:size-16"
+            className={`${CARD_SIZES[size].style} rounded-full group-focus-within:size-16 group-hover:size-16`}
             src={picture}
             alt={t("User avatar")}
-            width={32}
-            height={32}
+            width={CARD_SIZES[size].size}
+            height={CARD_SIZES[size].size}
             referrerPolicy="no-referrer"
           />
         </div>
@@ -111,6 +122,8 @@ function UserCard() {
     </div>
   );
 }
+
+export type UserCard = typeof UserCard;
 
 export function UserProvider({ children }: PropsWithChildren) {
   const { t } = useLanguageContext();

@@ -13,7 +13,7 @@ export function TitleHeader({ children }: PropsWithChildren) {
   return (
     <header className="relative flex flex-col items-center pb-6">
       <div className="absolute -top-2 right-2">
-        <UserCard />
+        <UserCard size="md" />
       </div>
       <h1 className="font-bangers text-center text-4xl [text-shadow:1px_2px_0px_rgba(245,158,11,1)] sm:text-5xl md:text-6xl">
         {children}
@@ -37,9 +37,9 @@ export function MenuHeader() {
     >
       {altBackButton ?? <BackButton className="text-white" />}
 
-      <div className="flex gap-4 align-baseline">
+      <div className="flex items-center gap-2">
         {elements}
-        <UserCard />
+        <UserCard size="sm" />
       </div>
     </div>
   );

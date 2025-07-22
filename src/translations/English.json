@@ -70,8 +70,8 @@
     "language": {
       "change": "Change language"
     },
-    "moreOptions": {
-      "header": "More options"
+    "spinnerOptions": {
+      "header": "Spinner options"
     },
     "data": {
       "manage": "Reset spinner data",

@@ -209,26 +209,11 @@ export default function Settings() {
       <Header>{t("SettingsPage.header")}</Header>
 
       <Section>
-        <a
-          className="flex items-center gap-2 hover:underline"
-          href="https://drive.google.com/drive/settings"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <span>{t("SettingsPage.Drive.open")}</span>
-          <FontAwesomeIcon icon={faExternalLink} />
-        </a>
-        <p className="text-sm text-slate-300">
-          {t("SettingsPage.Drive.description")}
-        </p>
-      </Section>
-
-      <Section>
         <p>{t("SettingsPage.language.change")}</p>
         <LanguageSelect />
       </Section>
 
-      <Header>{t("SettingsPage.moreOptions.header")}</Header>
+      <Header>{t("SettingsPage.spinnerOptions.header")}</Header>
 
       <Section>
         <div className="flex justify-between">
@@ -248,6 +233,21 @@ export default function Settings() {
       </Section>
 
       <Header>{t("SettingsPage.account.header")}</Header>
+
+      <Section>
+        <a
+          className="flex items-center gap-2 hover:underline"
+          href="https://drive.google.com/drive/settings"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span>{t("SettingsPage.Drive.open")}</span>
+          <FontAwesomeIcon icon={faExternalLink} />
+        </a>
+        <p className="text-sm text-slate-300">
+          {t("SettingsPage.Drive.description")}
+        </p>
+      </Section>
 
       <Section danger>
         <div className="flex justify-between">

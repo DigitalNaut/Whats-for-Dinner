@@ -70,8 +70,8 @@
     "language": {
       "change": "Cambiar idioma"
     },
-    "moreOptions": {
-      "header": "Opciones adicionales"
+    "spinnerOptions": {
+      "header": "Opciones de la ruleta"
     },
     "data": {
       "manage": "Restablecer datos de la lista",

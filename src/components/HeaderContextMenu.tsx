@@ -55,7 +55,7 @@ export function ContextMenuButton({ store }: { store: MenuProps["store"] }) {
     <MenuButton
       aria-label="Menú"
       store={store}
-      className="-mt-2 -ml-2 flex aspect-square size-8 flex-col items-center overflow-auto rounded-lg p-2 shadow-lg outline-none focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
+      className="flex aspect-square size-8 items-center justify-center overflow-auto rounded-lg outline-none focus:ring-1 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
     >
       <FontAwesomeIcon icon={faEllipsisV} />
     </MenuButton>

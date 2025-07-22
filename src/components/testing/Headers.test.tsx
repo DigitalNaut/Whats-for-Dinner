@@ -15,7 +15,7 @@ import * as UserContextModule from "src/hooks/useUserContext";
 
 vi.spyOn(UserContextModule, "useUser").mockReturnValue({
   user: { name: "John Doe" },
-  UserCard: () => null,
+  UserCard: (_) => null,
 } as ReturnType<typeof UserContextModule.useUser>);
 const headerContextSpy = vi
   .spyOn(HeaderContextModule, "useHeaderContext")
