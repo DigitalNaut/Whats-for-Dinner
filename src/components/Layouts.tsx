@@ -5,7 +5,7 @@ type Props = {
 };
 
 const baseStyle =
-  "m-auto size-full w-screen max-w-(--breakpoint-md) flex flex-col overflow-hidden bg-linear-to-br shadow-2xl md:rounded-xl";
+  "m-auto size-full w-screen max-w-[min(var(--breakpoint-xl),100%)] flex flex-col overflow-hidden bg-linear-to-br shadow-2xl md:rounded-xl";
 export function BaseAppLayout({ children, header }: PropsWithChildren<Props>) {
   return (
     <div

@@ -41,10 +41,4 @@
   --font-bangers: Bangers, cursive;
   --font-montserrat: Montserrat, sans-serif;
   --font-roboto: Roboto, sans-serif;
-
-  --breakpoint-xs: 360px;
-  --breakpoint-sm: 480px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 976px;
-  --breakpoint-xl: 1440px;
 }

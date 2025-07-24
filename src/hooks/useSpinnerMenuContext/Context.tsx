@@ -126,18 +126,16 @@ export function SpinnerMenuContextProvider({ children }: PropsWithChildren) {
       const menuItems = parsedData.data;
 
       // Set the image urls
-      for (const item of menuItems) {
-        console.log(`Setting image url for ${item?.key}...`);
+      for (let index = 0; index < menuItems.length; index++) {
+        const item = menuItems[index];
 
         if (!item.fileId) continue;
 
         const url = await getImageUrl(item);
 
-        console.log(`Set image url for ${item?.key} to ${url}`);
+        console.log(`Set image url for "${item?.key}": ${url}`);
 
-        const index = menuItems.findIndex((i) => i.key === item.key);
-
-        menuItems[index].imageUrl = url;
+        item.imageUrl = url;
       }
 
       setMenuItems(menuItems);

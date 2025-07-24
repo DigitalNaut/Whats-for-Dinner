@@ -353,7 +353,15 @@ export default function SpinningWheel({
             />
           ) : (
             <div className="font-bangers grid aspect-square size-full items-center rounded-full bg-slate-700 text-center text-8xl text-white">
-              {isLoaded ? "?" : <SpinnerIcon text="" />}
+              {isLoaded ? (
+                <span
+                  className={`pointer-events-none ${isSpinning ? "animate-bounce" : ""}`}
+                >
+                  ?
+                </span>
+              ) : (
+                <SpinnerIcon text="" />
+              )}
             </div>
           )}
         </div>
