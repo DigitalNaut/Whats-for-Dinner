@@ -103,20 +103,26 @@ class Spinner {
   private cyclingEntries: SpinnerEntry[];
   private entryCyclingIndex;
   private maxEntries;
+  private size: number;
   private prevSwapIndex = 0;
 
   private wheelCanvas = document.createElement("canvas");
   private decorationsCanvas = document.createElement("canvas");
 
   constructor(
-    private readonly canvas: HTMLCanvasElement,
+    readonly canvas: HTMLCanvasElement,
     private readonly origin: { x: number; y: number },
     private readonly radius: number,
     private readonly margin: number,
     private entries: SpinnerEntry[],
   ) {
-    this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
-    this.wedges = [];
+    this.size = this.radius * 2;
+
+    canvas.width = canvas.height = this.size;
+    const newContext = canvas.getContext("2d");
+    if (!newContext) throw new Error("Failed to create canvas context");
+    this.context = newContext;
+
     this.maxEntries = Math.min(this.entries.length, colors.length);
     this.cyclingEntries = this.entries.slice(0, this.maxEntries);
     this.entryCyclingIndex = this.maxEntries;
@@ -137,12 +143,13 @@ class Spinner {
       this.wedges.push(wedge);
     }
 
-    this.wheelCanvas.width = this.canvas.width;
-    this.wheelCanvas.height = this.canvas.height;
+    this.wheelCanvas.width = this.size;
+    this.wheelCanvas.height = this.size;
 
-    const offscreenContext = this.wheelCanvas.getContext(
-      "2d",
-    ) as CanvasRenderingContext2D;
+    const offscreenContext = this.wheelCanvas.getContext("2d");
+
+    if (!offscreenContext)
+      throw new Error("Failed to create offscreen context for wheel");
 
     this.wedges.forEach((wedge) =>
       wedge.drawShape(offscreenContext, this.radius - this.margin),
@@ -150,12 +157,13 @@ class Spinner {
   }
 
   createDecorations() {
-    this.decorationsCanvas.width = this.canvas.width;
-    this.decorationsCanvas.height = this.canvas.height;
+    this.decorationsCanvas.width = this.size;
+    this.decorationsCanvas.height = this.size;
 
-    const offscreenContext = this.decorationsCanvas.getContext(
-      "2d",
-    ) as CanvasRenderingContext2D;
+    const offscreenContext = this.decorationsCanvas.getContext("2d");
+
+    if (!offscreenContext)
+      throw new Error("Failed to create offscreen context for decorations");
 
     const radialGradientOverlay = this.context.createRadialGradient(
       this.origin.x,
@@ -168,7 +176,7 @@ class Spinner {
     radialGradientOverlay.addColorStop(0, "rgba(255, 255, 255, 0.5)");
     radialGradientOverlay.addColorStop(1, "rgba(255, 255, 255, 0)");
     offscreenContext.fillStyle = radialGradientOverlay;
-    offscreenContext.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    offscreenContext.fillRect(0, 0, this.size, this.size);
 
     const radiusPlusOne = this.radius + 1; // Plus one to hide the border artifacts
     offscreenContext.fillStyle = "#1f2937";
@@ -197,8 +205,7 @@ class Spinner {
   }
 
   draw(currentEntryIndex?: number, velocity = 0) {
-    if (velocity < 0.1)
-      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (velocity < 0.1) this.context.clearRect(0, 0, this.size, this.size);
     else this.context.globalAlpha = 1 / (1 + velocity * 5);
 
     let angle = this.spinAngle + this.angleOffset;
@@ -298,13 +305,12 @@ export default function SpinningWheel({
 
   const setupSpinner = (canvas: HTMLCanvasElement, entries: SpinnerEntry[]) => {
     const { width, height } = canvas;
+    const radius = Math.max(width, height) * 0.5;
+
     wheelRef.current = new Spinner(
       canvas,
-      {
-        x: width * 0.5,
-        y: height * 0.5,
-      },
-      200,
+      { x: radius, y: radius },
+      radius,
       3,
       entries,
     );
@@ -343,45 +349,41 @@ export default function SpinningWheel({
   }, [entries]);
 
   return (
-    <div className={`relative mt-8 w-full ${className}`}>
-      <div className="relative m-auto aspect-square w-96 max-w-full rounded-full bg-white shadow-xl">
-        <div className="absolute inset-0 m-auto flex aspect-square w-1/2 items-center justify-center overflow-hidden rounded-full bg-white p-1">
-          {result ? (
-            <img
-              className="aspect-square rounded-full object-cover"
-              src={result.imageUrl}
-            />
-          ) : (
-            <div className="font-bangers grid aspect-square size-full items-center rounded-full bg-slate-700 text-center text-8xl text-white">
-              {isLoaded ? (
-                <span
-                  className={`pointer-events-none ${isSpinning ? "animate-bounce" : ""}`}
-                >
-                  ?
-                </span>
-              ) : (
-                <SpinnerIcon text="" />
-              )}
-            </div>
-          )}
-        </div>
+    <div
+      className={`relative aspect-square rounded-full bg-white shadow-xl ${className}`}
+    >
+      <Arrow className="absolute inset-x-1/2 -top-8 -translate-x-1/2" />
 
-        <Arrow className="absolute inset-x-1/2 -translate-x-1/2 -translate-y-1/2" />
+      <canvas className="aspect-square size-full" ref={canvasRef} />
 
-        <canvas
-          className="inset-y-4 aspect-square size-full"
-          ref={canvasRef}
-          width="400"
-          height="400"
-        />
-        <button
-          className="font-bangers absolute inset-x-1/2 -bottom-2 size-fit -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-red-700 px-4 py-3 text-3xl whitespace-nowrap hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-400"
-          disabled={cannotSpin}
-          onClick={handleClick}
-        >
-          {t("Spin the Wheel!")}
-        </button>
+      <div className="absolute inset-1/2 size-1/2 -translate-1/2 overflow-hidden rounded-full bg-white p-1">
+        {result ? (
+          <img
+            className="size-full rounded-full object-cover"
+            src={result.imageUrl}
+          />
+        ) : (
+          <div className="font-bangers grid aspect-square size-full items-center rounded-full bg-slate-700 text-center text-8xl text-white">
+            {isLoaded ? (
+              <span
+                className={`pointer-events-none ${isSpinning ? "animate-bounce" : ""}`}
+              >
+                ?
+              </span>
+            ) : (
+              <SpinnerIcon text="" />
+            )}
+          </div>
+        )}
       </div>
+
+      <button
+        className="font-bangers absolute inset-x-1/2 -bottom-2 size-fit -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-red-700 px-4 py-3 text-3xl whitespace-nowrap hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-500 disabled:text-gray-400"
+        disabled={cannotSpin}
+        onClick={handleClick}
+      >
+        {t("Spin the Wheel!")}
+      </button>
     </div>
   );
 }

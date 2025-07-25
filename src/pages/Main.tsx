@@ -10,7 +10,7 @@ import ThemedButton from "src/components/common/ThemedButton";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 
 const defaults = {
-  HISTORY_SIZE: 40,
+  HISTORY_SIZE: 10,
 };
 
 const fireConfetti = () => {
@@ -21,7 +21,7 @@ type DishProps = { label: string; imageUrl: string | undefined };
 
 function DishThumb({ label, imageUrl }: DishProps) {
   return (
-    <div className="group transition-transform duration-150 hover:scale-105">
+    <div className="group flex w-fit transition-transform duration-150 hover:scale-105">
       <div className="relative flex aspect-square size-max w-22 overflow-hidden rounded-lg bg-gray-700 md:w-24 lg:w-28">
         <span className="pointer-events-none absolute hidden size-full place-items-center bg-black/50 text-center text-sm group-hover:grid">
           {label}
@@ -59,23 +59,24 @@ export default function Main() {
   };
 
   return (
-    <div className="flex flex-col gap-8 overflow-y-auto">
-      <SpinningWheel
-        className="shrink-0"
-        entries={enabledMenuItems}
-        onClick={handleSpinStart}
-        onSpinEnd={handleSpinEnd}
-      />
-
-      <div className="relative flex max-w-full grow flex-wrap justify-center gap-2 overflow-y-auto rounded-md p-2">
-        {resultHistory.length === 0 && (
-          <div className="flex h-16 items-center text-white/40 select-none md:h-24 lg:h-28">
-            {t("No history yet")}
-          </div>
-        )}
-        {resultHistory.map(({ timestamp, imageUrl, label }) => (
-          <DishThumb key={timestamp} imageUrl={imageUrl} label={label} />
-        ))}
+    <div className="flex grow flex-col items-center gap-8 overflow-y-auto">
+      <div className="mb-2 flex max-h-1/2 w-full grow flex-col items-center gap-4 p-4 sm:w-fit sm:flex-row sm:justify-center">
+        <SpinningWheel
+          className="aspect-square size-fit grow-0 sm:h-full sm:shrink-0 sm:grow"
+          entries={enabledMenuItems}
+          onClick={handleSpinStart}
+          onSpinEnd={handleSpinEnd}
+        />
+        <div className="flex w-full max-w-lg shrink-0 grow flex-row gap-2 overflow-auto rounded-md py-2 [scrollbar-gutter:stable] sm:h-full sm:w-fit sm:grow-0 sm:flex-col sm:px-2">
+          {resultHistory.length === 0 && (
+            <div className="mt-8 flex h-16 max-h-min items-start text-white/40 select-none md:h-24 lg:h-28">
+              {t("No history yet")}
+            </div>
+          )}
+          {resultHistory.map(({ timestamp, imageUrl, label }) => (
+            <DishThumb key={timestamp} imageUrl={imageUrl} label={label} />
+          ))}
+        </div>
       </div>
 
       <Floating>
