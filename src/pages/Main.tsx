@@ -10,7 +10,7 @@ import ThemedButton from "src/components/common/ThemedButton";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 
 const defaults = {
-  HISTORY_SIZE: 10,
+  HISTORY_SIZE: 3,
 };
 
 const fireConfetti = () => {
@@ -20,13 +20,22 @@ const fireConfetti = () => {
 type DishProps = { label: string; imageUrl: string | undefined };
 
 function DishThumb({ label, imageUrl }: DishProps) {
+  const text = label ? label : "No label";
   return (
     <div className="group flex w-fit transition-transform duration-150 hover:scale-105">
       <div className="relative flex aspect-square size-max w-22 overflow-hidden rounded-lg bg-gray-700 md:w-24 lg:w-28">
-        <span className="pointer-events-none absolute hidden size-full place-items-center bg-black/50 text-center text-sm group-hover:grid">
-          {label}
-        </span>
-        <img className="size-full object-cover" src={imageUrl} alt={label} />
+        {imageUrl && imageUrl.length > 0 ? (
+          <>
+            <span className="pointer-events-none absolute hidden size-full place-items-center bg-black/50 text-center text-sm group-hover:grid">
+              {text}
+            </span>
+            <img className="size-full object-cover" src={imageUrl} alt={text} />
+          </>
+        ) : (
+          <div className="flex size-full flex-col items-center justify-center bg-gray-600">
+            {text}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -69,7 +78,7 @@ export default function Main() {
         />
         <div className="flex w-full max-w-lg shrink-0 grow flex-row gap-2 overflow-auto rounded-md py-2 [scrollbar-gutter:stable] sm:h-full sm:w-fit sm:grow-0 sm:flex-col sm:px-2">
           {resultHistory.length === 0 && (
-            <div className="mt-8 flex h-16 max-h-min items-start text-white/40 select-none md:h-24 lg:h-28">
+            <div className="pointer-events-none relative flex aspect-square size-max w-22 items-center justify-center overflow-hidden rounded-lg bg-white/20 p-2 text-center text-white/60 md:w-24 lg:w-28">
               {t("No history yet")}
             </div>
           )}
