@@ -41,9 +41,18 @@ export function GoogleDriveProvider({ children }: PropsWithChildren) {
     gapi.load("client", () => void initGapiClient());
   }
 
+  const handleGapiError: HTMLScriptElement["onerror"] = function (event) {
+    setIsLoaded(false);
+    console.warn(
+      "Google Drive API failed to load due to:",
+      JSON.stringify(event),
+    );
+  };
+
   useScript({
-    src: "https://apis.google.com/js/api.js",
+    url: "https://apis.google.com/js/api.js",
     onLoad: handleGapiLoad,
+    onError: handleGapiError,
   });
 
   const onSignInSuccess = (tokenResponse: TokenResponseSuccess) => {

@@ -1,23 +1,26 @@
 import { useEffect } from "react";
 
 export function useScript({
-  src,
+  url,
   onLoad,
+  onError,
 }: {
-  src: string;
-  onLoad: (this: GlobalEventHandlers, ev: Event) => void;
+  url: string;
+  onLoad: GlobalEventHandlers["onload"];
+  onError: OnErrorEventHandler;
 }) {
   useEffect(() => {
     const script = document.createElement("script");
-    script.src = src;
+    script.src = url;
     script.onload = onLoad;
+    script.onerror = onError;
 
-    document.body.appendChild(script);
+    document.head.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      document.head.removeChild(script);
     };
-  }, [onLoad, src]);
+  }, [onLoad, onError, url]);
 
   return null;
 }
